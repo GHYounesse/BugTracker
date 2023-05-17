@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block body %}
+
+
+{{form_start(form)}}
+
+{{form_row(form.username)}}
+{{form_row(form.password.first)}}
+{{form_row(form.password.second)}}
+{{form_row(form.roles)}}
+  <button class="btn btn-lg btn-primary" type="submit">
+       Register
+    </button>
+{{form_end(form)}}
+
+
+
+<a href="{{ path('app_login')}}" class="btn btn-info"> You need to login to see the list</a>
+{% endblock %}

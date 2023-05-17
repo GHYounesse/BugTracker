@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Issue{% endblock %}
+{% block body %}
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      {{form_start(form2)}} 
+        {{form_row(form2.name)}} 
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </div>
+    </div>
+  </div>
+  {{form_end(form2)}}
+</div>
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel2">Add Project</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      {{form_start(form3)}} 
+        {{form_row(form3.name)}} 
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </div>
+    </div>
+  </div>
+  {{form_end(form3)}}
+</div>
+<div style="padding-top: 20px;">
+    <div class="card border-primary" style="max-width: 40rem;padding: 30px 15px; margin:auto;">
+        <div class="card-body">
+<h2  class="h3 mb-3 font-weight-normal">Issue</h2>
+    {{form_start(form)}}  
+    <div class="row"> 
+        <div class="col"> 
+        {{ form_row(form.resume)}}
+        </div>       
+         <div class="col"> 
+        {{form_row(form.description)}}
+        </div>
+    </div>  
+    <div class="row"> 
+        <div class="col">
+        {{form_row(form.visibilite)}}   
+        </div>   
+        <div class="col">
+        {{form_row(form.priorite)}} 
+        </div>  
+        <div class="col">
+        {{form_row(form.severite)}}
+        </div>  
+        <div class="col">
+        {{form_row(form.etat)}}
+        </div>  
+    </div> 
+    <div class="row"> 
+        <div class="col">
+        {{form_row(form.assigned)}} 
+        </div>   
+        <div class="col">     
+        {{form_row(form.project)}}
+        </div> 
+        <div class="col">
+        {{form_row(form.category)}}
+        </div> 
+    </div>
+    {{form_row(form.tags)}}        
+    {{form_row(form.reproduce)}}
+     <button class="btn btn-lg btn-primary w-100" type="submit">
+       Add
+  </button>
+        </div> 
+    </div> 
+</div>  
+ 
+{{form_end(form)}}
+
+
+
+
+{% endblock %}
+

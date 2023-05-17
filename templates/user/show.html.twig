@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{user.username}}{% endblock %}
+
+{% block body %}
+
+
+<table>
+<tr>
+
+<th>{{user.username}}</th>
+<th>{{user.password}}</th>
+
+</tr>
+<table> 
+
+
+<a href="{{ path('app_logout')}}" class="btn btn-info"> Logout</a>
+{% endblock %}

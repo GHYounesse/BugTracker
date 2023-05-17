@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+{% block body %}
+
+<div class="container-fluid" style="padding-top:20px;"> 
+    <div class="row">  
+        <div class="col">       
+            <div class="container">               
+                <div class="row">  
+                    <div class="col">     
+                        {% if nouveaux %}    
+                        <div class="accordion" id="accordionPanelsStayOpenExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                Nouveau
+                            </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                            <div class="accordion-body" style="padding: 0px 0px;">
+                                    <ul class="list-group list-group-flush" >
+                                    {% for nouveau in nouveaux %}
+                                    <li class="list-group-item">{{nouveau.id}} &nbsp;&nbsp;{{nouveau.resume}} &nbsp;&nbsp;{{nouveau.category.name}}  &nbsp;&nbsp;{{nouveau.getDateSoumission()}}</li>
+                                    {% endfor %}
+                                    </ul>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                        {% endif %}
+                    
+                    </div>
+                </div>
+                <div class="row"> 
+                    {% if acceptes %}
+                    <div class="accordion" id="accordionPanelsStayOpenExample" style="padding-top:20px;">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                            Acceptes
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+                        <div class="accordion-body" style="padding: 0px 0px;">
+                                <ul class="list-group list-group-flush" >
+                                {% for accepte in acceptes %}
+                                <li class="list-group-item">{{accepte.id}} &nbsp;&nbsp;{{accepte.resume}} &nbsp;&nbsp;{{accepte.category.name}}  &nbsp;&nbsp;{{accepte.getDateSoumission()}}</li>
+                                {% endfor %}
+                                </ul>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="row"> 
+                    {% if traites %}
+                    <div class="accordion" id="accordionPanelsStayOpenExample" style="padding-top:20px;">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                            Traite
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+                        <div class="accordion-body" style="padding: 0px 0px;">
+                                <ul class="list-group list-group-flush" >
+                                {% for traite in traites %}
+                                <li class="list-group-item">{{traite.id}} &nbsp;&nbsp;{{traite.resume}} &nbsp;&nbsp;{{traite.category.name}}  &nbsp;&nbsp;{{traite.getDateSoumission()}}</li>
+                            {% endfor %} 
+                                </ul>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        
+        <div class="col">  
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                    Accordion Item #1
+                </button>
+                </h2>
+                <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                    <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                    Accordion Item #2
+                </button>
+                </h2>
+                <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSeven" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                    Accordion Item #3
+                </button>
+                </h2>
+                <div id="panelsStayOpen-collapseSeven" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
