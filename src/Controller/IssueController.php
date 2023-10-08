@@ -77,7 +77,7 @@ class IssueController extends AbstractController
         return $this->render('issue/new.html.twig',['form'=>$form->createView(),'form2'=>$form2->createView(),'form3'=>$form3->createView()]);
     }
     else{
-        return $this->redirectToRoute('list');
+        return $this->redirectToRoute('app_login');
     }
     }
 
@@ -92,7 +92,7 @@ class IssueController extends AbstractController
          return $this->render('issue/index.html.twig',['nouveaux'=>$nouveaux ,'traites'=>$traites,'acceptes'=> $acceptes ]);
         }
         else{
-        return $this->redirectToRoute('list');
+        return $this->redirectToRoute('app_login');
         }
     }
 }

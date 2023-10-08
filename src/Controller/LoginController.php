@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
      public function index(AuthenticationUtils $authenticationUtils): Response
       {
         if ($this->getUser()) {
-            return $this->redirectToRoute('list');
+            return $this->redirectToRoute('app_home');
         }
          // get the login error if there is one
          $error = $authenticationUtils->getLastAuthenticationError();
@@ -68,7 +68,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
         $user = $entityManager->getRepository(User::class)->find($id);
         $entityManager->remove($user);
         $entityManager->flush();
-         return $this->redirectToRoute('list');
+         return $this->redirectToRoute('app_home');
 
     }
   }

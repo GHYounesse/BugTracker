@@ -22,7 +22,7 @@ class CategoryController extends AbstractController
         if($form2->isSubmitted() && $form2->isValid()){
             $em->persist ($category);
             $em->flush();
-            return $this->redirectToRoute('list');
+            return $this->redirectToRoute('app_home');
             
         }
         return $this->render('issue/index.html.twig',['form2'=>$form2->createView()]);

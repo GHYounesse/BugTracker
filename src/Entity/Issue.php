@@ -2,18 +2,27 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+
+
 
 #[ORM\Entity(repositoryClass: IssueRepository::class)]
+#[ApiResource()]
 class Issue
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['issue:list', 'issue:item'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'issues')]
@@ -23,13 +32,13 @@ class Issue
     #[ORM\ManyToOne(inversedBy: 'issues')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $visibilite = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_soumission = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_mise_jour = null;
 
@@ -39,25 +48,25 @@ class Issue
 
     #[ORM\ManyToOne(inversedBy: 'assignements')]
     private ?User $assigned = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $priorite = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $severite = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $reproduce = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $etat = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $resume = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $description = null;
-
+    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
     private ?string $tags = null;
 
