@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projects{% endblock %}
+
+{% block stylesheets %}
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #f8fafc;
+    }
+    .project-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .project-table th {
+        text-align: left;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #94a3b8;
+        padding: 12px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .project-table td {
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+    .project-table tr:last-child td {
+        border-bottom: none;
+    }
+    .project-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    .empty-state {
+        text-align: center;
+        color: #64748b;
+        padding: 40px 12px;
+        font-size: 0.9rem;
+    }
+    .modal-content {
+        background: #151830;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+    }
+    .modal-header, .modal-footer {
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1>Projects</h1>
+        <button type="button" class="btn-brand" style="border:none;" data-bs-toggle="modal" data-bs-target="#newProjectModal">+ New Project</button>
+    </div>
+
+    <div class="app-card">
+        {% if projects %}
+        <table class="project-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Issues</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.issues|length }}</td>
+                    <td>
+                        <div class="project-actions">
+                            <button type="button" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#editProjectModal{{ project.id }}">Edit</button>
+                            <form method="post" action="{{ path('project_delete', {id: project.id}) }}" onsubmit="return confirm('Delete project &quot;{{ project.name }}&quot;?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-project-' ~ project.id) }}">
+                                <button type="submit" class="btn-outline-brand" style="border-color: rgba(239,68,68,0.3); color:#fca5a5;">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No projects yet. Create one to start filing issues against it.</div>
+        {% endif %}
+    </div>
+
+    {# "New Project" modal #}
+    <div class="modal fade{{ openModal == 'new' ? ' show' : '' }}" id="newProjectModal" tabindex="-1" aria-labelledby="newProjectModalLabel" aria-hidden="true" style="{{ openModal == 'new' ? 'display:block;' : '' }}">
+      <div class="modal-dialog">
+        <div class="modal-content styled-form">
+          {{ form_start(newForm) }}
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="newProjectModalLabel">New Project</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ form_row(newForm.name) }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn-brand" style="border:none;">Create Project</button>
+          </div>
+          {{ form_end(newForm) }}
+        </div>
+      </div>
+    </div>
+    {% if openModal == 'new' %}<div class="modal-backdrop fade show"></div>{% endif %}
+
+    {# One "Edit Project" modal per row #}
+    {% for project in projects %}
+    <div class="modal fade{{ openModal == 'edit-' ~ project.id ? ' show' : '' }}" id="editProjectModal{{ project.id }}" tabindex="-1" aria-labelledby="editProjectModalLabel{{ project.id }}" aria-hidden="true" style="{{ openModal == 'edit-' ~ project.id ? 'display:block;' : '' }}">
+      <div class="modal-dialog">
+        <div class="modal-content styled-form">
+          {{ form_start(editForms[project.id]) }}
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="editProjectModalLabel{{ project.id }}">Edit Project</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ form_row(editForms[project.id].name) }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn-brand" style="border:none;">Save Changes</button>
+          </div>
+          {{ form_end(editForms[project.id]) }}
+        </div>
+      </div>
+    </div>
+    {% if openModal == 'edit-' ~ project.id %}<div class="modal-backdrop fade show"></div>{% endif %}
+    {% endfor %}
+{% endblock %}

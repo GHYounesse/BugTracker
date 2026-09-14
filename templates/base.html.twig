@@ -166,6 +166,17 @@
                 color: #fca5a5;
                 display: block;
             }
+            /* the default (non-Bootstrap) form theme renders errors as a bare <ul> */
+            .styled-form label + ul {
+                color: #fca5a5;
+                font-size: 0.8rem;
+                margin: 4px 0 8px;
+                padding-left: 18px;
+            }
+            .styled-form .required::after {
+                content: " *";
+                color: #64748b;
+            }
             .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
             .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
             @media (max-width: 700px) {
