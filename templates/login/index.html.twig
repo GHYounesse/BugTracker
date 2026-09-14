@@ -23,8 +23,11 @@
         <div class="card shadow-2-strong bg-dark" style="border-radius: 1rem;" data-bs-theme="dark">
           <div class="card-body p-5 text-center">
             <form  class="w-100" method="post">
+            <div class="mb-4">
+                <span style="font-size:2.5rem;">🐞</span>
+                <div class="h2 fw-bold text-white mb-0">BugTracker</div>
+            </div>
             <h3 class="mb-5">Sign in</h3>
-            <img class="mb-4" src="{{ asset('images/CTM.png') }}" alt="" width="350" height="175" style="padding:0px 50px;">
 
             <div class="form-floating mb-3">
             <input type="text" class="form-control" id="floatingInput" value="{{ last_username }}" name="username" placeholder="Username" required>
