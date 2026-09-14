@@ -3,7 +3,7 @@
 [![CI](https://github.com/GHYounesse/BugTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/GHYounesse/BugTracker/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4)](composer.json)
-[![Symfony](https://img.shields.io/badge/Symfony-6.0-000000)](composer.json)
+[![Symfony](https://img.shields.io/badge/Symfony-6.4%20LTS-000000)](composer.json)
 
 A self-hosted bug/issue tracker built with Symfony. Report bugs, triage them through a status workflow, assign them to teammates, discuss them in threaded comments, and organize everything by project and category — with a partial REST API alongside the web UI.
 
@@ -104,7 +104,8 @@ Things I know are missing and would tackle next, in rough priority order:
 
 - [ ] PHPUnit test suite (currently zero automated tests)
 - [ ] Static analysis (PHPStan) and a code style fixer
-- [ ] Bump Symfony 6.0 → 6.4 LTS and PHP to a currently-supported version
+- [x] Bump Symfony 6.0 → 6.4 LTS
+- [ ] Bump Symfony 6.4 → 7.4 LTS (blocked on upgrading API Platform 2.7 → 3.x/4.x alongside it, since 2.7 doesn't support Symfony 7)
 - [ ] Style the remaining unstyled pages (user list/show, issue creation form)
 - [ ] Live demo deployment
 

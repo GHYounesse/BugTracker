@@ -26,11 +26,14 @@ class IssueController extends AbstractController
         if($this->getUser()){
         
         $issue= new Issue();
+        // set before validation runs: reporter has a NotNull constraint, so
+        // an unpopulated Issue would always fail validation otherwise
+        $issue->setReporter($this->getUser());
         $form=$this->createForm(IssueType::class, $issue);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
         {
-            
+
              /** @var UploadedFile $attachmentFile */
              $attachmentFile = $form->get('attachment')->getData();
              if ($attachmentFile)
@@ -50,7 +53,6 @@ class IssueController extends AbstractController
             }
             $issue->setSubmittedAt(new \DateTime());
                 $issue->setUpdatedAt(new \DateTime());
-                $issue->setReporter($this->getUser());
                 $em->persist ($issue);
                 $em->flush();
                 return $this->redirectToRoute('app_home');

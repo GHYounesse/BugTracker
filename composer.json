@@ -6,7 +6,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0.2",
+        "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^2.7",
@@ -17,24 +17,24 @@
         "nelmio/cors-bundle": "^2.3",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.21",
-        "symfony/asset": "6.0.*",
-        "symfony/console": "6.0.*",
-        "symfony/dotenv": "6.0.*",
-        "symfony/expression-language": "6.0.*",
+        "symfony/asset": "6.4.*",
+        "symfony/console": "6.4.*",
+        "symfony/dotenv": "6.4.*",
+        "symfony/expression-language": "6.4.*",
         "symfony/flex": "^2",
-        "symfony/form": "6.0.*",
-        "symfony/framework-bundle": "6.0.*",
+        "symfony/form": "6.4.*",
+        "symfony/framework-bundle": "6.4.*",
         "symfony/maker-bundle": "^1.48",
-        "symfony/mime": "6.0.*",
-        "symfony/property-access": "6.0.*",
-        "symfony/property-info": "6.0.*",
-        "symfony/rate-limiter": "6.0.*",
-        "symfony/runtime": "6.0.*",
-        "symfony/security-bundle": "6.0.*",
-        "symfony/serializer": "6.0.*",
-        "symfony/twig-bundle": "6.0.*",
-        "symfony/validator": "6.0.*",
-        "symfony/yaml": "6.0.*",
+        "symfony/mime": "6.4.*",
+        "symfony/property-access": "6.4.*",
+        "symfony/property-info": "6.4.*",
+        "symfony/rate-limiter": "6.4.*",
+        "symfony/runtime": "6.4.*",
+        "symfony/security-bundle": "6.4.*",
+        "symfony/serializer": "6.4.*",
+        "symfony/twig-bundle": "6.4.*",
+        "symfony/validator": "6.4.*",
+        "symfony/yaml": "6.4.*",
         "symfonycasts/verify-email-bundle": "^1.13"
     },
     "config": {
@@ -85,11 +85,11 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.0.*"
+            "require": "6.4.*"
         }
     },
     "require-dev": {
-        "symfony/stopwatch": "6.0.*",
-        "symfony/web-profiler-bundle": "6.0.*"
+        "symfony/stopwatch": "6.4.*",
+        "symfony/web-profiler-bundle": "6.4.*"
     }
 }
