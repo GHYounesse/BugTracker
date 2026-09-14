@@ -196,8 +196,5 @@
             "./config/packages/web_profiler.yaml",
             "./config/routes/web_profiler.yaml"
         ]
-    },
-    "symfonycasts/verify-email-bundle": {
-        "version": "v1.13.0"
     }
 }

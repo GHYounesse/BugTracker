@@ -24,9 +24,7 @@ security:
                 path: app_logout
                 # require a valid CSRF token on the logout request, matching how
                 # every other state-changing action in the app is protected.
-                # csrf_token_generator is what actually turns the check on -
-                # csrf_parameter/csrf_token_id alone are silently ignored without it.
-                csrf_token_generator: security.csrf.token_manager
+                enable_csrf: true
                 csrf_parameter: _csrf_token
                 csrf_token_id: logout
             # activate different ways to authenticate

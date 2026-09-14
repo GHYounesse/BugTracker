@@ -5,4 +5,3 @@ api_platform:
         json: ['application/merge-patch+json']
     swagger:
         versions: [3]
-    metadata_backward_compatibility_layer: false
