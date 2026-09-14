@@ -11,14 +11,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
-
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: IssueRepository::class)]
 #[ApiResource()]
 class Issue
 {
+    public const VISIBILITIES = ['public', 'private'];
+    public const PRIORITIES = ['low', 'normal', 'high', 'urgent', 'immediate'];
+    public const SEVERITIES = ['trivial', 'minor', 'major', 'critical', 'blocker'];
+    public const STATUSES = ['new', 'accepted', 'confirmed', 'assigned', 'processed', 'closed'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,62 +30,84 @@ class Issue
 
     #[ORM\ManyToOne(inversedBy: 'issues')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(inversedBy: 'issues')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Category $category = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
-    private ?string $visibilite = null;
-    #[Groups(['issue:list', 'issue:item'])]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_soumission = null;
-    #[Groups(['issue:list', 'issue:item'])]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_mise_jour = null;
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::VISIBILITIES)]
+    private ?string $visibility = null;
 
-    #[ORM\ManyToOne(inversedBy: 'issues')]
+    #[Groups(['issue:list', 'issue:item'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $submittedAt = null;
+
+    #[Groups(['issue:list', 'issue:item'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reportedIssues')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $rapporteur = null;
+    #[Assert\NotNull]
+    private ?User $reporter = null;
 
-    #[ORM\ManyToOne(inversedBy: 'assignements')]
+    #[ORM\ManyToOne(inversedBy: 'assignedIssues')]
     private ?User $assigned = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
-    private ?string $priorite = null;
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::PRIORITIES)]
+    private ?string $priority = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
-    private ?string $severite = null;
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::SEVERITIES)]
+    private ?string $severity = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $reproduce = null;
+    private ?string $stepsToReproduce = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
-    private ?string $etat = null;
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::STATUSES)]
+    private ?string $status = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
-    private ?string $resume = null;
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
+    private ?string $summary = null;
+
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $description = null;
+
     #[Groups(['issue:list', 'issue:item'])]
-    #[ORM\Column(length: 255)]
-    private ?string $tags = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attachment = null;
 
-    #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Activite::class)]
-    private Collection $activites;
+    #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Comment::class)]
+    private Collection $comments;
 
-    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'relations')]
+    #[ORM\ManyToMany(targetEntity: self::class)]
     private Collection $relations;
 
     public function __construct()
     {
-        $this->activites = new ArrayCollection();
+        $this->comments = new ArrayCollection();
         $this->relations = new ArrayCollection();
     }
-
-    
 
     public function getId(): ?int
     {
@@ -113,50 +138,50 @@ class Issue
         return $this;
     }
 
-    public function getVisibilite(): ?string
+    public function getVisibility(): ?string
     {
-        return $this->visibilite;
+        return $this->visibility;
     }
 
-    public function setVisibilite(string $visibilite): self
+    public function setVisibility(string $visibility): self
     {
-        $this->visibilite = $visibilite;
+        $this->visibility = $visibility;
 
         return $this;
     }
 
-    public function getDateSoumission(): ?string
+    public function getSubmittedAt(): ?\DateTimeInterface
     {
-        return $this->date_soumission->format('Y-m-d H:i:s');
+        return $this->submittedAt;
     }
 
-    public function setDateSoumission(\DateTimeInterface $date_soumission): self
+    public function setSubmittedAt(\DateTimeInterface $submittedAt): self
     {
-        $this->date_soumission = $date_soumission;
+        $this->submittedAt = $submittedAt;
 
         return $this;
     }
 
-    public function getDateMiseJour(): ?string
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
-        return $this->date_mise_jour->format('Y-m-d H:i:s');;
+        return $this->updatedAt;
     }
 
-    public function setDateMiseJour(\DateTimeInterface $date_mise_jour): self
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
-        $this->date_mise_jour = $date_mise_jour;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getRapporteur(): ?User
+    public function getReporter(): ?User
     {
-        return $this->rapporteur;
+        return $this->reporter;
     }
 
-    public function setRapporteur(?User $rapporteur): self
+    public function setReporter(?User $reporter): self
     {
-        $this->rapporteur = $rapporteur;
+        $this->reporter = $reporter;
 
         return $this;
     }
@@ -173,62 +198,62 @@ class Issue
         return $this;
     }
 
-    public function getPriorite(): ?string
+    public function getPriority(): ?string
     {
-        return $this->priorite;
+        return $this->priority;
     }
 
-    public function setPriorite(string $priorite): self
+    public function setPriority(string $priority): self
     {
-        $this->priorite = $priorite;
+        $this->priority = $priority;
 
         return $this;
     }
 
-    public function getSeverite(): ?string
+    public function getSeverity(): ?string
     {
-        return $this->severite;
+        return $this->severity;
     }
 
-    public function setSeverite(string $severite): self
+    public function setSeverity(string $severity): self
     {
-        $this->severite = $severite;
+        $this->severity = $severity;
 
         return $this;
     }
 
-    public function getReproduce(): ?string
+    public function getStepsToReproduce(): ?string
     {
-        return $this->reproduce;
+        return $this->stepsToReproduce;
     }
 
-    public function setReproduce(?string $reproduce): self
+    public function setStepsToReproduce(?string $stepsToReproduce): self
     {
-        $this->reproduce = $reproduce;
+        $this->stepsToReproduce = $stepsToReproduce;
 
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getStatus(): ?string
     {
-        return $this->etat;
+        return $this->status;
     }
 
-    public function setEtat(string $etat): self
+    public function setStatus(string $status): self
     {
-        $this->etat = $etat;
+        $this->status = $status;
 
         return $this;
     }
 
-    public function getResume(): ?string
+    public function getSummary(): ?string
     {
-        return $this->resume;
+        return $this->summary;
     }
 
-    public function setResume(string $resume): self
+    public function setSummary(string $summary): self
     {
-        $this->resume = $resume;
+        $this->summary = $summary;
 
         return $this;
     }
@@ -245,42 +270,41 @@ class Issue
         return $this;
     }
 
-    public function getTags(): ?string
+    public function getAttachment(): ?string
     {
-        return $this->tags;
+        return $this->attachment;
     }
 
-    public function setTags(string $tags): self
+    public function setAttachment(?string $attachment): self
     {
-        $this->tags = $tags;
+        $this->attachment = $attachment;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, Activite>
+     * @return Collection<int, Comment>
      */
-    public function getActivites(): Collection
+    public function getComments(): Collection
     {
-        return $this->activites;
+        return $this->comments;
     }
 
-    public function addActivite(Activite $activite): self
+    public function addComment(Comment $comment): self
     {
-        if (!$this->activites->contains($activite)) {
-            $this->activites->add($activite);
-            $activite->setIssue($this);
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setIssue($this);
         }
 
         return $this;
     }
 
-    public function removeActivite(Activite $activite): self
+    public function removeComment(Comment $comment): self
     {
-        if ($this->activites->removeElement($activite)) {
-            // set the owning side to null (unless already changed)
-            if ($activite->getIssue() === $this) {
-                $activite->setIssue(null);
+        if ($this->comments->removeElement($comment)) {
+            if ($comment->getIssue() === $this) {
+                $comment->setIssue(null);
             }
         }
 
@@ -310,6 +334,4 @@ class Issue
 
         return $this;
     }
-
-    
 }
