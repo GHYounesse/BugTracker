@@ -5,17 +5,17 @@
     </div>
     <div class="issue-column-body">
         {% for issue in issues %}
-        <div class="issue-row">
+        <a class="issue-row" href="{{ path('issue_show', {id: issue.id}) }}">
             <div class="issue-row-top">
                 <span class="issue-id">#{{ issue.id }}</span>
-                <span class="priority-badge priority-{{ issue.priority }}">{{ issue.priority }}</span>
+                <span class="tag tag-{{ issue.priority }}">{{ issue.priority }}</span>
             </div>
             <div class="issue-summary">{{ issue.summary }}</div>
             <div class="issue-row-bottom">
-                <span class="issue-category">{{ issue.category.name }}</span>
+                <span class="tag tag-category">{{ issue.category.name }}</span>
                 <span class="issue-date">{{ issue.submittedAt|date('M j, Y') }}</span>
             </div>
-        </div>
+        </a>
         {% else %}
         <div class="issue-empty">No issues here yet.</div>
         {% endfor %}

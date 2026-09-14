@@ -66,6 +66,63 @@
                 box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
                 color: #fff;
             }
+            .btn-outline-brand {
+                display: inline-block;
+                padding: 8px 16px;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.03);
+                color: #e2e8f0;
+                font-weight: 600;
+                font-size: 0.88rem;
+                text-decoration: none;
+                transition: background 0.12s ease;
+            }
+            .btn-outline-brand:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+            }
+            .app-card {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 14px;
+            }
+            .detail-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            .detail-card h2 {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: #f1f5f9;
+                margin: 0 0 12px;
+            }
+            .tag {
+                display: inline-block;
+                text-transform: capitalize;
+                font-size: 0.72rem;
+                font-weight: 600;
+                border-radius: 999px;
+                padding: 3px 10px;
+            }
+            .tag-category {
+                background: rgba(165, 180, 252, 0.15);
+                color: #a5b4fc;
+                text-transform: none;
+            }
+            /* priority & severity share the same escalating scale */
+            .tag-low, .tag-trivial { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+            .tag-normal, .tag-minor { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+            .tag-high, .tag-major { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+            .tag-urgent, .tag-critical { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+            .tag-immediate, .tag-blocker { background: rgba(220, 38, 38, 0.35); color: #fecaca; }
+            /* status has its own distinct palette - it's a workflow stage, not a severity level */
+            .tag-new { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+            .tag-confirmed { background: rgba(167, 139, 250, 0.2); color: #c4b5fd; }
+            .tag-assigned { background: rgba(34, 211, 238, 0.2); color: #67e8f9; }
+            .tag-accepted { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+            .tag-processed { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+            .tag-closed { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
             {% block stylesheets %}{% endblock %}
         </style>
     </head>

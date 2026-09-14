@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Form\CategoryType;
+use App\Form\CommentType;
 use App\Form\IssueType;
 use App\Form\ProjectType;
 use Doctrine\ORM\EntityManager;
@@ -14,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -94,5 +97,89 @@ class IssueController extends AbstractController
         else{
         return $this->redirectToRoute('app_login');
         }
+    }
+
+    #[Route('/issue/{id}', name: 'issue_show', methods: ['GET'])]
+    public function show(int $id, EntityManagerInterface $em): Response
+    {
+        $issue = $em->getRepository(Issue::class)->find($id);
+        if (!$issue) {
+            throw new NotFoundHttpException('Issue not found.');
+        }
+
+        $commentForm = $this->createForm(CommentType::class, new Comment());
+
+        return $this->render('issue/show.html.twig', [
+            'issue' => $issue,
+            'commentForm' => $commentForm->createView(),
+        ]);
+    }
+
+    #[Route('/issue/{id}/edit', name: 'issue_edit', methods: ['GET', 'POST'])]
+    public function edit(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $issue = $em->getRepository(Issue::class)->find($id);
+        if (!$issue) {
+            throw new NotFoundHttpException('Issue not found.');
+        }
+
+        $form = $this->createForm(IssueType::class, $issue);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $attachmentFile */
+            $attachmentFile = $form->get('attachment')->getData();
+            if ($attachmentFile) {
+                $originalFilename = pathinfo($attachmentFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$attachmentFile->guessExtension();
+                try {
+                    $attachmentFile->move(
+                        $this->getParameter('kernel.project_dir').'/public/uploads',
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                }
+                $issue->setAttachment($newFilename);
+            }
+
+            $issue->setUpdatedAt(new \DateTime());
+            $em->flush();
+
+            return $this->redirectToRoute('issue_show', ['id' => $issue->getId()]);
+        }
+
+        return $this->render('issue/edit.html.twig', [
+            'issue' => $issue,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/issue/{id}/comment', name: 'issue_comment', methods: ['POST'])]
+    public function addComment(int $id, Request $request, EntityManagerInterface $em): Response
+    {
+        $issue = $em->getRepository(Issue::class)->find($id);
+        if (!$issue) {
+            throw new NotFoundHttpException('Issue not found.');
+        }
+
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setAuthor($this->getUser());
+            $comment->setIssue($issue);
+            $comment->setCreatedAt(new \DateTime());
+            $em->persist($comment);
+            $em->flush();
+
+            return $this->redirectToRoute('issue_show', ['id' => $id]);
+        }
+
+        return $this->render('issue/show.html.twig', [
+            'issue' => $issue,
+            'commentForm' => $form->createView(),
+        ]);
     }
 }

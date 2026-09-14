@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit #{{ issue.id }}{% endblock %}
+
+{% block stylesheets %}
+    .back-link {
+        display: inline-block;
+        margin-bottom: 16px;
+        font-size: 0.88rem;
+    }
+    .issue-form .form-label {
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    .issue-form .form-control,
+    .issue-form .form-select {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+        border-radius: 10px;
+    }
+    .issue-form .form-control:focus,
+    .issue-form .form-select:focus {
+        background: rgba(255, 255, 255, 0.09);
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        color: #f1f5f9;
+    }
+    .issue-form .form-select option {
+        color: #0f1123;
+    }
+    .issue-form .form-text {
+        color: #64748b;
+    }
+    .issue-form .invalid-feedback {
+        color: #fca5a5;
+        display: block;
+    }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) {
+        .form-row-2, .form-row-3 { grid-template-columns: 1fr; }
+    }
+{% endblock %}
+
+{% block body %}
+    <a href="{{ path('issue_show', {id: issue.id}) }}" class="back-link">&larr; Back to Issue</a>
+
+    <div class="app-card detail-card issue-form" style="max-width: 720px;">
+        <h1 style="font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 20px;">Edit Issue #{{ issue.id }}</h1>
+
+        {{ form_start(form) }}
+            <div class="mb-3">{{ form_row(form.summary) }}</div>
+            <div class="mb-3">{{ form_row(form.description) }}</div>
+
+            <div class="form-row-3 mb-3">
+                <div>{{ form_row(form.status) }}</div>
+                <div>{{ form_row(form.priority) }}</div>
+                <div>{{ form_row(form.severity) }}</div>
+            </div>
+
+            <div class="form-row-2 mb-3">
+                <div>{{ form_row(form.project) }}</div>
+                <div>{{ form_row(form.category) }}</div>
+            </div>
+
+            <div class="form-row-2 mb-3">
+                <div>{{ form_row(form.assigned) }}</div>
+                <div>{{ form_row(form.visibility) }}</div>
+            </div>
+
+            <div class="mb-3">{{ form_row(form.stepsToReproduce) }}</div>
+
+            <div class="mb-3">
+                {{ form_row(form.attachment) }}
+                {% if issue.attachment %}
+                    <div class="form-text">Current file: {{ issue.attachment }} (upload a new one to replace it)</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-brand">Save Changes</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
