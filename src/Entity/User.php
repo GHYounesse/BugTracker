@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -21,6 +22,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 180)]
     private ?string $username = null;
 
     #[ORM\Column]
@@ -32,23 +35,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'rapporteur', targetEntity: Issue::class)]
-    private Collection $issues;
+    #[ORM\OneToMany(mappedBy: 'reporter', targetEntity: Issue::class)]
+    private Collection $reportedIssues;
 
     #[ORM\OneToMany(mappedBy: 'assigned', targetEntity: Issue::class)]
-    private Collection $assignements;
+    private Collection $assignedIssues;
 
-    #[ORM\OneToMany(mappedBy: 'commentor', targetEntity: Activite::class)]
-    private Collection $activites;
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class)]
+    private Collection $comments;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
     public function __construct()
     {
-        $this->issues = new ArrayCollection();
-        $this->assignements = new ArrayCollection();
-        $this->activites = new ArrayCollection();
+        $this->reportedIssues = new ArrayCollection();
+        $this->assignedIssues = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,27 +127,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Issue>
      */
-    public function getIssues(): Collection
+    public function getReportedIssues(): Collection
     {
-        return $this->issues;
+        return $this->reportedIssues;
     }
 
-    public function addIssue(Issue $issue): self
+    public function addReportedIssue(Issue $issue): self
     {
-        if (!$this->issues->contains($issue)) {
-            $this->issues->add($issue);
-            $issue->setRapporteur($this);
+        if (!$this->reportedIssues->contains($issue)) {
+            $this->reportedIssues->add($issue);
+            $issue->setReporter($this);
         }
 
         return $this;
     }
 
-    public function removeIssue(Issue $issue): self
+    public function removeReportedIssue(Issue $issue): self
     {
-        if ($this->issues->removeElement($issue)) {
+        if ($this->reportedIssues->removeElement($issue)) {
             // set the owning side to null (unless already changed)
-            if ($issue->getRapporteur() === $this) {
-                $issue->setRapporteur(null);
+            if ($issue->getReporter() === $this) {
+                $issue->setReporter(null);
             }
         }
 
@@ -154,27 +157,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Issue>
      */
-    public function getAssignements(): Collection
+    public function getAssignedIssues(): Collection
     {
-        return $this->assignements;
+        return $this->assignedIssues;
     }
 
-    public function addAssignement(Issue $assignement): self
+    public function addAssignedIssue(Issue $issue): self
     {
-        if (!$this->assignements->contains($assignement)) {
-            $this->assignements->add($assignement);
-            $assignement->setAssigned($this);
+        if (!$this->assignedIssues->contains($issue)) {
+            $this->assignedIssues->add($issue);
+            $issue->setAssigned($this);
         }
 
         return $this;
     }
 
-    public function removeAssignement(Issue $assignement): self
+    public function removeAssignedIssue(Issue $issue): self
     {
-        if ($this->assignements->removeElement($assignement)) {
+        if ($this->assignedIssues->removeElement($issue)) {
             // set the owning side to null (unless already changed)
-            if ($assignement->getAssigned() === $this) {
-                $assignement->setAssigned(null);
+            if ($issue->getAssigned() === $this) {
+                $issue->setAssigned(null);
             }
         }
 
@@ -182,29 +185,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Activite>
+     * @return Collection<int, Comment>
      */
-    public function getActivites(): Collection
+    public function getComments(): Collection
     {
-        return $this->activites;
+        return $this->comments;
     }
 
-    public function addActivite(Activite $activite): self
+    public function addComment(Comment $comment): self
     {
-        if (!$this->activites->contains($activite)) {
-            $this->activites->add($activite);
-            $activite->setCommentor($this);
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setAuthor($this);
         }
 
         return $this;
     }
 
-    public function removeActivite(Activite $activite): self
+    public function removeComment(Comment $comment): self
     {
-        if ($this->activites->removeElement($activite)) {
+        if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($activite->getCommentor() === $this) {
-                $activite->setCommentor(null);
+            if ($comment->getAuthor() === $this) {
+                $comment->setAuthor(null);
             }
         }
 
