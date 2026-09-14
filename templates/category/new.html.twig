@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Category{% endblock %}
+
+{% block body %}
+    <a href="{{ path('category_index') }}" class="back-link">&larr; Back to Categories</a>
+
+    <div class="app-card detail-card styled-form" style="max-width: 480px;">
+        <h1 style="font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 20px;">New Category</h1>
+
+        {{ form_start(form) }}
+            <div class="mb-3">{{ form_row(form.name) }}</div>
+            <button type="submit" class="btn-brand">Create Category</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

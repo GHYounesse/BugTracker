@@ -2,11 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Issue;
 use App\Entity\Project;
-use App\Form\CategoryType;
 use App\Form\CommentType;
 use App\Form\IssueType;
 use App\Form\ProjectType;
@@ -57,16 +55,6 @@ class IssueController extends AbstractController
                 $em->flush();
                 return $this->redirectToRoute('app_home');
         }
-            $category= new Category();
-            $form2=$this->createForm(CategoryType::class, $category);
-            $form2->handleRequest($request);
-            if($form2->isSubmitted() && $form2->isValid())
-            {
-                $em->persist ($category);
-                $em->flush();
-                return $this->redirectToRoute('app_home');
-                
-            }
             $project= new Project();
             $form3=$this->createForm(ProjectType::class, $project);
             $form3->handleRequest($request);
@@ -77,7 +65,7 @@ class IssueController extends AbstractController
                 return $this->redirectToRoute('app_home');
                 
             }
-        return $this->render('issue/new.html.twig',['form'=>$form->createView(),'form2'=>$form2->createView(),'form3'=>$form3->createView()]);
+        return $this->render('issue/new.html.twig',['form'=>$form->createView(),'form3'=>$form3->createView()]);
     }
     else{
         return $this->redirectToRoute('app_login');
