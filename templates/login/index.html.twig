@@ -142,7 +142,11 @@
         {% endif %}
         {% if app.user %}
         <div class="alert alert-warning alert-custom">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            You are logged in as {{ app.user.userIdentifier }},
+            <form method="post" action="{{ path('app_logout') }}" style="display:inline;">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                <button type="submit" style="background:none;border:none;padding:0;color:inherit;text-decoration:underline;cursor:pointer;">Logout</button>
+            </form>
         </div>
         {% endif %}
 

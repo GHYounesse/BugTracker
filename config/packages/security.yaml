@@ -18,12 +18,25 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\LoginAuthentificateurAuthenticator
-            
+            custom_authenticator: App\Security\LoginFormAuthenticator
+
             logout:
                 path: app_logout
+                # require a valid CSRF token on the logout request, matching how
+                # every other state-changing action in the app is protected.
+                # csrf_token_generator is what actually turns the check on -
+                # csrf_parameter/csrf_token_id alone are silently ignored without it.
+                csrf_token_generator: security.csrf.token_manager
+                csrf_parameter: _csrf_token
+                csrf_token_id: logout
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
+
+            # brute-force protection: after too many failed attempts for the
+            # same username/IP, further attempts are rejected for a while
+            # https://symfony.com/doc/current/security/brute_force.html
+            login_throttling:
+                max_attempts: 5
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true

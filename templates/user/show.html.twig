@@ -14,5 +14,8 @@
 </table>
 
 
-<a href="{{ path('app_logout')}}" class="btn btn-info"> Logout</a>
+<form method="post" action="{{ path('app_logout') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+    <button type="submit" class="btn btn-info">Logout</button>
+</form>
 {% endblock %}

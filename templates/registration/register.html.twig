@@ -169,7 +169,11 @@
     <div class="login-card">
         {% if app.user %}
         <div class="alert alert-warning alert-custom">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            You are logged in as {{ app.user.userIdentifier }},
+            <form method="post" action="{{ path('app_logout') }}" style="display:inline;">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                <button type="submit" style="background:none;border:none;padding:0;color:inherit;text-decoration:underline;cursor:pointer;">Logout</button>
+            </form>
         </div>
         {% endif %}
 
@@ -185,12 +189,22 @@
             </div>
             <ul class="field-errors">{{ form_errors(registrationForm.username) }}</ul>
 
-            <label class="field-label" for="{{ registrationForm.plainPassword.vars.id }}">Password</label>
+            <label class="field-label" for="{{ registrationForm.plainPassword.first.vars.id }}">Password</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': '', 'placeholder': 'Create a password'}}) }}
+                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': '', 'placeholder': 'Create a password'}}) }}
             </div>
-            <ul class="field-errors">{{ form_errors(registrationForm.plainPassword) }}</ul>
+            <ul class="field-errors">{{ form_errors(registrationForm.plainPassword.first) }}</ul>
+
+            <label class="field-label" for="{{ registrationForm.plainPassword.second.vars.id }}">Repeat Password</label>
+            <div class="input-icon-group">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': '', 'placeholder': 'Repeat your password'}}) }}
+            </div>
+            <ul class="field-errors">
+                {{ form_errors(registrationForm.plainPassword.second) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </ul>
 
             <div class="terms-row">
                 {{ form_widget(registrationForm.agreeTerms) }}
