@@ -1,6 +1,8 @@
 {
+    "name": "ghyounesse/bug-tracker",
+    "description": "A Symfony bug/issue tracker with a REST API, projects, categories, comments and role-based access control.",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {

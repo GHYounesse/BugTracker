@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint & validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, iconv, pdo_pgsql
+          coverage: none
+
+      - name: Copy .env.example to .env
+        run: cp .env.example .env
+
+      - name: Validate composer.json/composer.lock
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Check PHP syntax
+        run: find src migrations -name "*.php" -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: Lint YAML config
+        run: php bin/console lint:yaml config
+
+      - name: Lint Twig templates
+        run: php bin/console lint:twig templates
+
+      - name: Validate Doctrine mapping
+        run: php bin/console doctrine:schema:validate --skip-sync
