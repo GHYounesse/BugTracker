@@ -1,126 +1,120 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Dashboard{% endblock %}
+
+{% block stylesheets %}
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #f8fafc;
+    }
+    .issue-board {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .issue-column {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .issue-column-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-weight: 600;
+        color: #f1f5f9;
+    }
+    .issue-count-badge {
+        background: rgba(255, 255, 255, 0.1);
+        color: #cbd5e1;
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+    .issue-column-body {
+        padding: 10px;
+        max-height: 480px;
+        overflow-y: auto;
+    }
+    .issue-row {
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .issue-row-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+    .issue-id {
+        color: #64748b;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+    .issue-summary {
+        font-size: 0.92rem;
+        color: #e2e8f0;
+        margin-bottom: 8px;
+    }
+    .issue-row-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: #94a3b8;
+    }
+    .issue-category {
+        background: rgba(165, 180, 252, 0.15);
+        color: #a5b4fc;
+        border-radius: 999px;
+        padding: 2px 10px;
+    }
+    .issue-empty {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.88rem;
+        padding: 24px 12px;
+    }
+    .priority-badge {
+        text-transform: capitalize;
+        font-size: 0.72rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: 2px 9px;
+    }
+    .priority-low { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+    .priority-normal { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+    .priority-high { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .priority-urgent { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .priority-immediate { background: rgba(220, 38, 38, 0.35); color: #fecaca; }
+{% endblock %}
+
 {% block body %}
-
-<div class="container-fluid" style="padding-top:20px;"> 
-    <div class="row">  
-        <div class="col">       
-            <div class="container">               
-                <div class="row">  
-                    <div class="col">     
-                        {% if newIssues %}
-                        <div class="accordion" id="accordionPanelsStayOpenExample">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                New
-                            </button>
-                            </h2>
-                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
-                            <div class="accordion-body" style="padding: 0px 0px;">
-                                    <ul class="list-group list-group-flush" >
-                                    {% for issue in newIssues %}
-                                    <li class="list-group-item">{{issue.id}} &nbsp;&nbsp;{{issue.summary}} &nbsp;&nbsp;{{issue.category.name}}  &nbsp;&nbsp;{{issue.submittedAt|date('Y-m-d H:i')}}</li>
-                                    {% endfor %}
-                                    </ul>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-
-                        {% endif %}
-                    
-                    </div>
-                </div>
-                <div class="row"> 
-                    {% if acceptedIssues %}
-                    <div class="accordion" id="accordionPanelsStayOpenExample" style="padding-top:20px;">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
-                            Accepted
-                        </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
-                        <div class="accordion-body" style="padding: 0px 0px;">
-                                <ul class="list-group list-group-flush" >
-                                {% for issue in acceptedIssues %}
-                                <li class="list-group-item">{{issue.id}} &nbsp;&nbsp;{{issue.summary}} &nbsp;&nbsp;{{issue.category.name}}  &nbsp;&nbsp;{{issue.submittedAt|date('Y-m-d H:i')}}</li>
-                                {% endfor %}
-                                </ul>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="row"> 
-                    {% if processedIssues %}
-                    <div class="accordion" id="accordionPanelsStayOpenExample" style="padding-top:20px;">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
-                            Processed
-                        </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
-                        <div class="accordion-body" style="padding: 0px 0px;">
-                                <ul class="list-group list-group-flush" >
-                                {% for issue in processedIssues %}
-                                <li class="list-group-item">{{issue.id}} &nbsp;&nbsp;{{issue.summary}} &nbsp;&nbsp;{{issue.category.name}}  &nbsp;&nbsp;{{issue.submittedAt|date('Y-m-d H:i')}}</li>
-                            {% endfor %}
-                                </ul>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        
-        <div class="col">  
-            <div class="accordion" id="accordionPanelsStayOpenExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    Accordion Item #1
-                </button>
-                </h2>
-                <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show">
-                <div class="accordion-body">
-                    <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                    Accordion Item #2
-                </button>
-                </h2>
-                <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse">
-                <div class="accordion-body">
-                    <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSeven" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                    Accordion Item #3
-                </button>
-                </h2>
-                <div id="panelsStayOpen-collapseSeven" class="accordion-collapse collapse">
-                <div class="accordion-body">
-                    <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <a href="{{ path('app_issue') }}" class="btn-brand">+ New Issue</a>
     </div>
-</div>
 
+    <div class="issue-board">
+        {% include 'issue/_issue_list.html.twig' with {title: 'New', issues: newIssues} %}
+        {% include 'issue/_issue_list.html.twig' with {title: 'Accepted', issues: acceptedIssues} %}
+        {% include 'issue/_issue_list.html.twig' with {title: 'Processed', issues: processedIssues} %}
+    </div>
 {% endblock %}
