@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class IssueType extends AbstractType
 {
@@ -38,8 +39,6 @@ class IssueType extends AbstractType
                     'urgente'=>'urgente',
                     'immediate'=>'immediate',
                 ],
-                'multiple'=> true ,
-                'expanded'=> true,
                 'multiple'=> false,
                 'expanded'=> false,
                 'attr'=>[
@@ -93,6 +92,18 @@ class IssueType extends AbstractType
             ->add('tags',FileType::class,[
                 'mapped'=>false,
                 'required'=>false,
+                'constraints'=>[
+                    new File([
+                        'maxSize'=>'5M',
+                        'mimeTypes'=>[
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'application/pdf',
+                        ],
+                        'mimeTypesMessage'=>'Please upload a valid image (JPEG, PNG, GIF) or PDF file.',
+                    ]),
+                ],
                 'attr'=>[
                 'class'=>'form-control',],
             ])

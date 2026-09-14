@@ -9,10 +9,9 @@
 <tr>
 {% for user in users %}
 <th>{{user.username}}</th>
-<th>{{user.password}}</th>
 {% endfor %}
 </tr>
-<table> 
+</table>
 {% else  %}
 <h3>No users exist in the database</h3>
 {% endif %}
