@@ -20,76 +20,76 @@ class IssueType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('visibilite',ChoiceType::class,[
+            ->add('visibility',ChoiceType::class,[
                 'choices'=>[
-                    'public'=>'public',
-                    'private'=>'private',
+                    'Public'=>'public',
+                    'Private'=>'private',
                 ],
                 'multiple'=> false,
                 'expanded'=> false,
                 'attr'=>[
                     'class'=>'form-select'],]
-               
+
             )
-            ->add('priorite',ChoiceType::class,[
+            ->add('priority',ChoiceType::class,[
                 'choices'=>[
-                    'basse'=>'basse',
-                    'normale'=>'normale',
-                    'élevée'=>'élevée',
-                    'urgente'=>'urgente',
-                    'immediate'=>'immediate',
+                    'Low'=>'low',
+                    'Normal'=>'normal',
+                    'High'=>'high',
+                    'Urgent'=>'urgent',
+                    'Immediate'=>'immediate',
                 ],
                 'multiple'=> false,
                 'expanded'=> false,
                 'attr'=>[
                     'class'=>'form-select'],]
-               
+
             )
-            ->add('severite',ChoiceType::class,[
+            ->add('severity',ChoiceType::class,[
                 'choices'=>[
-                    'simple'=>'simple',
-                    'mineur'=>'mineur',
-                    'majeur'=>'majeur',
-                    'critique'=>'critique',
-                    'bloquant'=>'bloquant',
+                    'Trivial'=>'trivial',
+                    'Minor'=>'minor',
+                    'Major'=>'major',
+                    'Critical'=>'critical',
+                    'Blocker'=>'blocker',
                 ],
                 'multiple'=> false,
                 'expanded'=> false,
                 'attr'=>[
                     'class'=>'form-select'],]
-               
+
             )
-            ->add('reproduce',TextType::class,['attr'=>[
+            ->add('stepsToReproduce',TextType::class,['required'=>false,'attr'=>[
                 'class'=>'form-control mb-3',
                 'id'=>'floatingInput',],
-            
+
             ])
-            ->add('etat',ChoiceType::class,[
+            ->add('status',ChoiceType::class,[
                 'choices'=>[
-                    'nouveau'=>'nouveau',
-                    'accepté'=>'accepté',
-                    'confirmé'=>'confirmé',
-                    'affecté'=>'affecté',
-                    'traité'=>'traité',
-                    'fermé'=>'fermé',
+                    'New'=>'new',
+                    'Accepted'=>'accepted',
+                    'Confirmed'=>'confirmed',
+                    'Assigned'=>'assigned',
+                    'Processed'=>'processed',
+                    'Closed'=>'closed',
                 ],
                 'multiple'=> false,
                 'expanded'=> false,
                 'attr'=>[
                     'class'=>'form-select'],]
-               
+
             )
-            ->add('resume',TextType::class,['attr'=>[
+            ->add('summary',TextType::class,['attr'=>[
                 'class'=>'form-control mb-3',
                 'id'=>'floatingInput',],
-            
+
             ])
             ->add('description',TextType::class,['attr'=>[
                 'class'=>'form-control mb-3',
                 'id'=>'floatingInput',],
-            
+
             ])
-            ->add('tags',FileType::class,[
+            ->add('attachment',FileType::class,[
                 'mapped'=>false,
                 'required'=>false,
                 'constraints'=>[
@@ -111,7 +111,7 @@ class IssueType extends AbstractType
                 'class'=>'form-select'],])
             ->add('category',EntityType::class,['class'=>Category::class,'choice_label'=>'name','attr'=>[
                 'class'=>'form-select'],])
-            ->add('assigned',EntityType::class,['class'=>User::class,'choice_label'=>'username','attr'=>[
+            ->add('assigned',EntityType::class,['class'=>User::class,'choice_label'=>'username','required'=>false,'attr'=>[
                 'class'=>'form-select'],])
         ;
     }

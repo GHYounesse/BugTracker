@@ -50,39 +50,39 @@
     {{form_start(form)}}  
     <div class="row"> 
         <div class="col"> 
-        {{ form_row(form.resume)}}
-        </div>       
-         <div class="col"> 
+        {{ form_row(form.summary)}}
+        </div>
+         <div class="col">
         {{form_row(form.description)}}
         </div>
-    </div>  
-    <div class="row"> 
+    </div>
+    <div class="row">
         <div class="col">
-        {{form_row(form.visibilite)}}   
-        </div>   
+        {{form_row(form.visibility)}}
+        </div>
         <div class="col">
-        {{form_row(form.priorite)}} 
-        </div>  
+        {{form_row(form.priority)}}
+        </div>
         <div class="col">
-        {{form_row(form.severite)}}
-        </div>  
+        {{form_row(form.severity)}}
+        </div>
         <div class="col">
-        {{form_row(form.etat)}}
-        </div>  
-    </div> 
-    <div class="row"> 
+        {{form_row(form.status)}}
+        </div>
+    </div>
+    <div class="row">
         <div class="col">
-        {{form_row(form.assigned)}} 
-        </div>   
-        <div class="col">     
+        {{form_row(form.assigned)}}
+        </div>
+        <div class="col">
         {{form_row(form.project)}}
-        </div> 
+        </div>
         <div class="col">
         {{form_row(form.category)}}
-        </div> 
+        </div>
     </div>
-    {{form_row(form.tags)}}        
-    {{form_row(form.reproduce)}}
+    {{form_row(form.attachment)}}
+    {{form_row(form.stepsToReproduce)}}
      <button class="btn btn-lg btn-primary w-100" type="submit">
        Add
   </button>

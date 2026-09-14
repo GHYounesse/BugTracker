@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,55 +38,29 @@ class IssueRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-    public function findNouveau(): array
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.etat = :val')
-            ->setParameter('val', 'nouveau')
-            ->orderBy('i.date_soumission', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-    public function findTraite(): array
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.etat = :val')
-            ->setParameter('val', 'traité')
-            ->orderBy('i.date_soumission', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-    public function findAccepte(): array
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.etat = :val')
-            ->setParameter('val', 'accepté')
-            ->orderBy('i.date_soumission', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-//    /**
-//     * @return Issue[] Returns an array of Issue objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('i.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 
-//    public function findOneBySomeField($value): ?Issue
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    private function findByStatus(string $status): array
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.status = :val')
+            ->setParameter('val', $status)
+            ->orderBy('i.submittedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findNew(): array
+    {
+        return $this->findByStatus('new');
+    }
+
+    public function findProcessed(): array
+    {
+        return $this->findByStatus('processed');
+    }
+
+    public function findAccepted(): array
+    {
+        return $this->findByStatus('accepted');
+    }
 }

@@ -30,29 +30,29 @@ class IssueController extends AbstractController
         if($form->isSubmitted() && $form->isValid())
         {
             
-             /** @var UploadedFile $tagsFile */
-             $tagsFile = $form->get('tags')->getData();
-             if ($tagsFile) 
+             /** @var UploadedFile $attachmentFile */
+             $attachmentFile = $form->get('attachment')->getData();
+             if ($attachmentFile)
             {
-                 $originalFilename = pathinfo($tagsFile->getClientOriginalName(), PATHINFO_FILENAME);
+                 $originalFilename = pathinfo($attachmentFile->getClientOriginalName(), PATHINFO_FILENAME);
                  $safeFilename = $slugger->slug($originalFilename);
-                 $newFilename = $safeFilename.'-'.uniqid().'.'.$tagsFile->guessExtension();
+                 $newFilename = $safeFilename.'-'.uniqid().'.'.$attachmentFile->guessExtension();
                  try {
-                    $tagsFile->move(
+                    $attachmentFile->move(
                          $this->getParameter('kernel.project_dir').'/public/uploads',
                          $newFilename
                      );
                  } catch (FileException $e) {
                  }
-                $issue->setTags($newFilename);
-                 
-            } 
-            $issue->setDateSoumission(new \DateTime());
-                $issue->setDateMiseJour(new \DateTime());
-                $issue->setRapporteur($this->getUser());
+                $issue->setAttachment($newFilename);
+
+            }
+            $issue->setSubmittedAt(new \DateTime());
+                $issue->setUpdatedAt(new \DateTime());
+                $issue->setReporter($this->getUser());
                 $em->persist ($issue);
                 $em->flush();
-                return $this->redirectToRoute('list');
+                return $this->redirectToRoute('app_home');
         }
             $category= new Category();
             $form2=$this->createForm(CategoryType::class, $category);
@@ -61,7 +61,7 @@ class IssueController extends AbstractController
             {
                 $em->persist ($category);
                 $em->flush();
-                return $this->redirectToRoute('list');
+                return $this->redirectToRoute('app_home');
                 
             }
             $project= new Project();
@@ -71,7 +71,7 @@ class IssueController extends AbstractController
             {
                 $em->persist ($project);
                 $em->flush();
-                return $this->redirectToRoute('list');
+                return $this->redirectToRoute('app_home');
                 
             }
         return $this->render('issue/new.html.twig',['form'=>$form->createView(),'form2'=>$form2->createView(),'form3'=>$form3->createView()]);
@@ -85,11 +85,11 @@ class IssueController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(Request $request,EntityManagerInterface $entityManager)
     {
-        if($this->getUser()){     
-         $nouveaux = $entityManager->getRepository(Issue::class)->findNouveau();
-         $traites = $entityManager->getRepository(Issue::class)->findTraite();
-         $acceptes = $entityManager->getRepository(Issue::class)->findAccepte();
-         return $this->render('issue/index.html.twig',['nouveaux'=>$nouveaux ,'traites'=>$traites,'acceptes'=> $acceptes ]);
+        if($this->getUser()){
+         $newIssues = $entityManager->getRepository(Issue::class)->findNew();
+         $processedIssues = $entityManager->getRepository(Issue::class)->findProcessed();
+         $acceptedIssues = $entityManager->getRepository(Issue::class)->findAccepted();
+         return $this->render('issue/index.html.twig',['newIssues'=>$newIssues ,'processedIssues'=>$processedIssues,'acceptedIssues'=> $acceptedIssues ]);
         }
         else{
         return $this->redirectToRoute('app_login');

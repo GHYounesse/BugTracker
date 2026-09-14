@@ -9,44 +9,44 @@
             <div class="container">               
                 <div class="row">  
                     <div class="col">     
-                        {% if nouveaux %}    
+                        {% if newIssues %}
                         <div class="accordion" id="accordionPanelsStayOpenExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Nouveau
+                                New
                             </button>
                             </h2>
                             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
                             <div class="accordion-body" style="padding: 0px 0px;">
                                     <ul class="list-group list-group-flush" >
-                                    {% for nouveau in nouveaux %}
-                                    <li class="list-group-item">{{nouveau.id}} &nbsp;&nbsp;{{nouveau.resume}} &nbsp;&nbsp;{{nouveau.category.name}}  &nbsp;&nbsp;{{nouveau.getDateSoumission()}}</li>
+                                    {% for issue in newIssues %}
+                                    <li class="list-group-item">{{issue.id}} &nbsp;&nbsp;{{issue.summary}} &nbsp;&nbsp;{{issue.category.name}}  &nbsp;&nbsp;{{issue.submittedAt|date('Y-m-d H:i')}}</li>
                                     {% endfor %}
                                     </ul>
                             </div>
                             </div>
                         </div>
                         </div>
-                        
+
                         {% endif %}
                     
                     </div>
                 </div>
                 <div class="row"> 
-                    {% if acceptes %}
+                    {% if acceptedIssues %}
                     <div class="accordion" id="accordionPanelsStayOpenExample" style="padding-top:20px;">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
-                            Acceptes
+                            Accepted
                         </button>
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
                         <div class="accordion-body" style="padding: 0px 0px;">
                                 <ul class="list-group list-group-flush" >
-                                {% for accepte in acceptes %}
-                                <li class="list-group-item">{{accepte.id}} &nbsp;&nbsp;{{accepte.resume}} &nbsp;&nbsp;{{accepte.category.name}}  &nbsp;&nbsp;{{accepte.getDateSoumission()}}</li>
+                                {% for issue in acceptedIssues %}
+                                <li class="list-group-item">{{issue.id}} &nbsp;&nbsp;{{issue.summary}} &nbsp;&nbsp;{{issue.category.name}}  &nbsp;&nbsp;{{issue.submittedAt|date('Y-m-d H:i')}}</li>
                                 {% endfor %}
                                 </ul>
                         </div>
@@ -56,20 +56,20 @@
                     {% endif %}
                 </div>
                 <div class="row"> 
-                    {% if traites %}
+                    {% if processedIssues %}
                     <div class="accordion" id="accordionPanelsStayOpenExample" style="padding-top:20px;">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
-                            Traite
+                            Processed
                         </button>
                         </h2>
                         <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
                         <div class="accordion-body" style="padding: 0px 0px;">
                                 <ul class="list-group list-group-flush" >
-                                {% for traite in traites %}
-                                <li class="list-group-item">{{traite.id}} &nbsp;&nbsp;{{traite.resume}} &nbsp;&nbsp;{{traite.category.name}}  &nbsp;&nbsp;{{traite.getDateSoumission()}}</li>
-                            {% endfor %} 
+                                {% for issue in processedIssues %}
+                                <li class="list-group-item">{{issue.id}} &nbsp;&nbsp;{{issue.summary}} &nbsp;&nbsp;{{issue.category.name}}  &nbsp;&nbsp;{{issue.submittedAt|date('Y-m-d H:i')}}</li>
+                            {% endfor %}
                                 </ul>
                         </div>
                         </div>
