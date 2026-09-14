@@ -21,9 +21,8 @@ class RegistrationFormType extends AbstractType
             ->add('username',TextType::class,[
                 'attr'=>[
                     'class'=>'form-control mb-3',
-                    'id'=>'floatingInput',
                 ],
-                
+
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
@@ -33,7 +32,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
                 'attr'=>[
-                    'class'=>'checkbox-inline',
+                    'class'=>'form-check-input',
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
@@ -54,7 +53,6 @@ class RegistrationFormType extends AbstractType
                 ],
                 'attr'=>[
                     'class'=>'form-control',
-                    'id'=>'floatingPassword',
                 ],
             ])
         ;
