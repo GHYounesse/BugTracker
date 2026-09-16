@@ -75,7 +75,7 @@ class Issue
     private ?string $severity = null;
 
     #[Groups(['issue:list', 'issue:item'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $stepsToReproduce = null;
 
     #[Groups(['issue:list', 'issue:item'])]
@@ -91,13 +91,25 @@ class Issue
     private ?string $summary = null;
 
     #[Groups(['issue:list', 'issue:item'])]
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     private ?string $description = null;
 
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $attachment = null;
+
+    #[Groups(['issue:list', 'issue:item'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dueDate = null;
+
+    #[Groups(['issue:list', 'issue:item'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $resolvedAt = null;
+
+    #[Groups(['issue:list', 'issue:item'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $environment = null;
 
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Comment::class)]
     private Collection $comments;
@@ -280,6 +292,42 @@ class Issue
     public function setAttachment(?string $attachment): self
     {
         $this->attachment = $attachment;
+
+        return $this;
+    }
+
+    public function getDueDate(): ?\DateTimeInterface
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(?\DateTimeInterface $dueDate): self
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getResolvedAt(): ?\DateTimeInterface
+    {
+        return $this->resolvedAt;
+    }
+
+    public function setResolvedAt(?\DateTimeInterface $resolvedAt): self
+    {
+        $this->resolvedAt = $resolvedAt;
+
+        return $this;
+    }
+
+    public function getEnvironment(): ?string
+    {
+        return $this->environment;
+    }
+
+    public function setEnvironment(?string $environment): self
+    {
+        $this->environment = $environment;
 
         return $this;
     }
