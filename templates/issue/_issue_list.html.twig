@@ -5,13 +5,21 @@
     </div>
     <div class="issue-column-body">
         {% for issue in issues %}
-        <a class="issue-row" href="{{ path('issue_show', {id: issue.id}) }}">
+        {% set isOverdue = issue.dueDate and issue.dueDate < date() and issue.status != 'closed' %}
+        <a class="issue-row{{ isOverdue ? ' issue-row-overdue' : '' }}" href="{{ path('issue_show', {id: issue.id}) }}">
             <div class="issue-row-top">
                 <span class="issue-id">#{{ issue.id }}</span>
-                <span class="tag tag-{{ issue.priority }}">{{ issue.priority }}</span>
+                <div class="issue-row-tags">
+                    {% if isOverdue %}<span class="tag tag-overdue">Overdue</span>{% endif %}
+                    <span class="tag tag-{{ issue.priority }}">{{ issue.priority }}</span>
+                </div>
             </div>
             <div class="issue-summary">{{ issue.summary }}</div>
             <div class="issue-row-project">{{ issue.project.name }}</div>
+            <div class="issue-row-assignee{{ issue.assigned ? '' : ' unassigned' }}">
+                <span class="assignee-avatar">{{ issue.assigned ? issue.assigned.username|first|upper : '?' }}</span>
+                {{ issue.assigned ? issue.assigned.username : 'Unassigned' }}
+            </div>
             <div class="issue-row-bottom">
                 <span class="tag tag-category">{{ issue.category.name }}</span>
                 <span class="issue-date">{{ issue.submittedAt|date('M j, Y') }}</span>
