@@ -1,7 +1,7 @@
 <div class="issue-column">
     <div class="issue-column-header">
         <span class="issue-column-title">{{ title }}</span>
-        <span class="issue-count-badge">{{ issues|length }}</span>
+        <span class="issue-count-badge">{{ page.count }}</span>
     </div>
     <div class="issue-column-body">
         {% for issue in issues %}
@@ -29,4 +29,11 @@
         <div class="issue-empty">No issues here yet.</div>
         {% endfor %}
     </div>
+    {% if page.total > 1 %}
+    <div class="issue-column-pagination">
+        <a href="{{ path('app_home', app.request.query.all|merge({('page_' ~ status): page.current - 1})) }}" class="{{ page.current <= 1 ? 'disabled' : '' }}">&larr; Prev</a>
+        <span>Page {{ page.current }} of {{ page.total }}</span>
+        <a href="{{ path('app_home', app.request.query.all|merge({('page_' ~ status): page.current + 1})) }}" class="{{ page.current >= page.total ? 'disabled' : '' }}">Next &rarr;</a>
+    </div>
+    {% endif %}
 </div>

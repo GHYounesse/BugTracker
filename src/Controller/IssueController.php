@@ -23,6 +23,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class IssueController extends AbstractController
 {
+    private const DASHBOARD_PAGE_SIZE = 10;
+
     #[Route('/issue', name: 'app_issue')]
     public function new(Request $request,EntityManagerInterface $em, SluggerInterface $slugger)
     {
@@ -119,13 +121,13 @@ class IssueController extends AbstractController
              $selectedSeverity
          );
 
-         $issuesByStatus = array_fill_keys(Issue::STATUSES, []);
+         $allByStatus = array_fill_keys(Issue::STATUSES, []);
          $openCount = 0;
          $overdueCount = 0;
          $unassignedCount = 0;
          $now = new \DateTime();
          foreach ($issues as $issue) {
-             $issuesByStatus[$issue->getStatus()][] = $issue;
+             $allByStatus[$issue->getStatus()][] = $issue;
 
              if ($issue->getStatus() === 'closed') {
                  continue;
@@ -139,8 +141,21 @@ class IssueController extends AbstractController
              }
          }
 
+         // each status column is paginated independently, via its own page_<status> query param
+         $issuesByStatus = [];
+         $pagination = [];
+         foreach (Issue::STATUSES as $status) {
+             $all = $allByStatus[$status];
+             $totalPages = max(1, (int) ceil(count($all) / self::DASHBOARD_PAGE_SIZE));
+             $page = max(1, min($totalPages, (int) $request->query->get('page_'.$status, 1)));
+
+             $issuesByStatus[$status] = array_slice($all, ($page - 1) * self::DASHBOARD_PAGE_SIZE, self::DASHBOARD_PAGE_SIZE);
+             $pagination[$status] = ['current' => $page, 'total' => $totalPages, 'count' => count($all)];
+         }
+
          return $this->render('issue/index.html.twig', [
              'issuesByStatus' => $issuesByStatus,
+             'pagination' => $pagination,
              'availableProjects' => $availableProjects,
              'selectedProjectId' => $selectedProjectId,
              'onlyMine' => $onlyMine,

@@ -88,6 +88,29 @@
         max-height: 480px;
         overflow-y: auto;
     }
+    .issue-column-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.78rem;
+        color: #94a3b8;
+    }
+    .issue-column-pagination a {
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+    .issue-column-pagination a:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+    .issue-column-pagination a.disabled {
+        pointer-events: none;
+        opacity: 0.3;
+    }
     .issue-row {
         display: block;
         padding: 12px 14px;
@@ -258,7 +281,7 @@
 
     <div class="issue-board">
         {% for status, issues in issuesByStatus %}
-        {% include 'issue/_issue_list.html.twig' with {title: status|capitalize, issues: issues} %}
+        {% include 'issue/_issue_list.html.twig' with {title: status|capitalize, issues: issues, status: status, page: pagination[status]} %}
         {% endfor %}
     </div>
 {% endblock %}
