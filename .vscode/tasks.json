@@ -1,0 +1,90 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Composer: Install",
+            "type": "shell",
+            "command": "composer",
+            "args": ["install"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Server: Start (php -S)",
+            "type": "shell",
+            "command": "php",
+            "args": ["-S", "127.0.0.1:8000", "-t", "public", "public/index.php"],
+            "isBackground": true,
+            "problemMatcher": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "Cache: Clear",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "cache:clear"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Doctrine: Run Migrations",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "doctrine:migrations:migrate", "--no-interaction"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Doctrine: Migration Status",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "doctrine:migrations:status"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Doctrine: Generate Migration Diff",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "make:migration"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Doctrine: Validate Schema",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "doctrine:schema:validate"],
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "App: Seed Demo Data",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "app:seed-demo-data"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "AssetMapper: Compile Assets",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "asset-map:compile"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "AssetMapper: Update Packages",
+            "type": "shell",
+            "command": "php",
+            "args": ["bin/console", "importmap:update"],
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}
