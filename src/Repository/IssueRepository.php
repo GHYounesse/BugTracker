@@ -40,57 +40,29 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
-    private function findByStatus(string $status): array
+    /**
+     * All issues across every status, for the dashboard's admin view.
+     */
+    public function findAllForDashboard(): array
     {
         return $this->createQueryBuilder('i')
-            ->andWhere('i.status = :val')
-            ->setParameter('val', $status)
             ->orderBy('i.submittedAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
 
-    public function findNew(): array
-    {
-        return $this->findByStatus('new');
-    }
-
-    public function findProcessed(): array
-    {
-        return $this->findByStatus('processed');
-    }
-
-    public function findAccepted(): array
-    {
-        return $this->findByStatus('accepted');
-    }
-
-    private function findByStatusForUser(string $status, User $user): array
+    /**
+     * All issues across every status, scoped to projects the given user is a member of.
+     */
+    public function findAllForDashboardForUser(User $user): array
     {
         return $this->createQueryBuilder('i')
             ->join('i.project', 'p')
             ->join('p.members', 'pm')
-            ->andWhere('i.status = :val')
             ->andWhere('pm.user = :user')
-            ->setParameter('val', $status)
             ->setParameter('user', $user)
             ->orderBy('i.submittedAt', 'DESC')
             ->getQuery()
             ->getResult();
-    }
-
-    public function findNewForUser(User $user): array
-    {
-        return $this->findByStatusForUser('new', $user);
-    }
-
-    public function findProcessedForUser(User $user): array
-    {
-        return $this->findByStatusForUser('processed', $user);
-    }
-
-    public function findAcceptedForUser(User $user): array
-    {
-        return $this->findByStatusForUser('accepted', $user);
     }
 }

@@ -81,16 +81,16 @@ class IssueController extends AbstractController
     {
         if($this->getUser()){
          $issueRepository = $entityManager->getRepository(Issue::class);
-         if ($this->isGranted('ROLE_ADMIN')) {
-             $newIssues = $issueRepository->findNew();
-             $processedIssues = $issueRepository->findProcessed();
-             $acceptedIssues = $issueRepository->findAccepted();
-         } else {
-             $newIssues = $issueRepository->findNewForUser($this->getUser());
-             $processedIssues = $issueRepository->findProcessedForUser($this->getUser());
-             $acceptedIssues = $issueRepository->findAcceptedForUser($this->getUser());
+         $issues = $this->isGranted('ROLE_ADMIN')
+             ? $issueRepository->findAllForDashboard()
+             : $issueRepository->findAllForDashboardForUser($this->getUser());
+
+         $issuesByStatus = array_fill_keys(Issue::STATUSES, []);
+         foreach ($issues as $issue) {
+             $issuesByStatus[$issue->getStatus()][] = $issue;
          }
-         return $this->render('issue/index.html.twig',['newIssues'=>$newIssues ,'processedIssues'=>$processedIssues,'acceptedIssues'=> $acceptedIssues ]);
+
+         return $this->render('issue/index.html.twig', ['issuesByStatus' => $issuesByStatus]);
         }
         else{
         return $this->redirectToRoute('app_login');

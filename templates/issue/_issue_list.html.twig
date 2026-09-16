@@ -11,6 +11,7 @@
                 <span class="tag tag-{{ issue.priority }}">{{ issue.priority }}</span>
             </div>
             <div class="issue-summary">{{ issue.summary }}</div>
+            <div class="issue-row-project">{{ issue.project.name }}</div>
             <div class="issue-row-bottom">
                 <span class="tag tag-category">{{ issue.category.name }}</span>
                 <span class="issue-date">{{ issue.submittedAt|date('M j, Y') }}</span>

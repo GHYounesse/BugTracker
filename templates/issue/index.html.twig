@@ -80,6 +80,12 @@
         color: #e2e8f0;
         margin-bottom: 8px;
     }
+    .issue-row-project {
+        font-size: 0.76rem;
+        color: #a5b4fc;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
     .issue-row-bottom {
         display: flex;
         align-items: center;
@@ -102,8 +108,8 @@
     </div>
 
     <div class="issue-board">
-        {% include 'issue/_issue_list.html.twig' with {title: 'New', issues: newIssues} %}
-        {% include 'issue/_issue_list.html.twig' with {title: 'Accepted', issues: acceptedIssues} %}
-        {% include 'issue/_issue_list.html.twig' with {title: 'Processed', issues: processedIssues} %}
+        {% for status, issues in issuesByStatus %}
+        {% include 'issue/_issue_list.html.twig' with {title: status|capitalize, issues: issues} %}
+        {% endfor %}
     </div>
 {% endblock %}
