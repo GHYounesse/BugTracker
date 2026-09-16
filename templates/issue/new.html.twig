@@ -2,77 +2,63 @@
 
 {% block title %}New Issue{% endblock %}
 {% block body %}
+
 <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel2">Add Project</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content app-card" style="border-radius: 14px;">
+      {{ form_start(form3) }}
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <h1 class="modal-title fs-5" id="exampleModalLabel2" style="color: #f8fafc;">Add Project</h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-      {{form_start(form3)}} 
-        {{form_row(form3.name)}} 
-       
+      <div class="modal-body styled-form">
+        {{ form_row(form3.name) }}
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Add</button>
+      <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn-brand">Add</button>
       </div>
+      {{ form_end(form3) }}
     </div>
   </div>
-  {{form_end(form3)}}
 </div>
-<div style="padding-top: 20px;">
-    <div class="card border-primary" style="max-width: 40rem;padding: 30px 15px; margin:auto;">
-        <div class="card-body">
-<h2  class="h3 mb-3 font-weight-normal">Issue</h2>
-    {{form_start(form)}}  
-    <div class="row"> 
-        <div class="col"> 
-        {{ form_row(form.summary)}}
-        </div>
-         <div class="col">
-        {{form_row(form.description)}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-        {{form_row(form.visibility)}}
-        </div>
-        <div class="col">
-        {{form_row(form.priority)}}
-        </div>
-        <div class="col">
-        {{form_row(form.severity)}}
-        </div>
-        <div class="col">
-        {{form_row(form.status)}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-        {{form_row(form.assigned)}}
-        </div>
-        <div class="col">
-        {{form_row(form.project)}}
-        </div>
-        <div class="col">
-        {{form_row(form.category)}}
-        </div>
-    </div>
-    {{form_row(form.attachment)}}
-    {{form_row(form.stepsToReproduce)}}
-     <button class="btn btn-lg btn-primary w-100" type="submit">
-       Add
-  </button>
-        </div> 
-    </div> 
-</div>  
- 
-{{form_end(form)}}
 
+<a href="{{ path('app_home') }}" class="back-link">&larr; Back to Issues</a>
 
+<div class="app-card detail-card styled-form" style="max-width: 720px; margin: 0 auto;">
+    <h1 style="font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 20px;">New Issue</h1>
 
+    {{ form_start(form) }}
+        <div class="mb-3">{{ form_row(form.summary) }}</div>
+        <div class="mb-3">{{ form_row(form.description) }}</div>
+
+        <div class="form-row-2 mb-3">
+            <div>{{ form_row(form.visibility) }}</div>
+            <div>{{ form_row(form.status) }}</div>
+        </div>
+
+        <div class="form-row-2 mb-3">
+            <div>{{ form_row(form.priority) }}</div>
+            <div>{{ form_row(form.severity) }}</div>
+        </div>
+
+        <div class="mb-3">{{ form_row(form.assigned) }}</div>
+
+        <div class="form-row-2 mb-3" style="align-items: end;">
+            <div>{{ form_row(form.project) }}</div>
+            <div>{{ form_row(form.category) }}</div>
+        </div>
+        <div class="mb-3" style="margin-top: -10px;">
+            <button type="button" class="btn-outline-brand" style="padding: 6px 12px; font-size: 0.8rem;" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                + New Project
+            </button>
+        </div>
+
+        <div class="mb-3">{{ form_row(form.stepsToReproduce) }}</div>
+        <div class="mb-3">{{ form_row(form.attachment) }}</div>
+
+        <button type="submit" class="btn-brand w-100" style="text-align: center;">Add Issue</button>
+    {{ form_end(form) }}
+</div>
 
 {% endblock %}
-
