@@ -152,6 +152,11 @@
             <input type="checkbox" name="mine" value="1" {{ onlyMine ? 'checked' : '' }} onchange="this.form.submit()">
             Assigned to me
         </label>
+        <select name="sort" class="form-select" onchange="this.form.submit()">
+            <option value="newest" {{ sort == 'newest' ? 'selected' : '' }}>Sort: Newest</option>
+            <option value="priority" {{ sort == 'priority' ? 'selected' : '' }}>Sort: Priority</option>
+            <option value="dueDate" {{ sort == 'dueDate' ? 'selected' : '' }}>Sort: Due date</option>
+        </select>
     </form>
 
     <div class="issue-board">

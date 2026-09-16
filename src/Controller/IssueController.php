@@ -8,6 +8,7 @@ use App\Entity\Project;
 use App\Form\CommentType;
 use App\Form\IssueType;
 use App\Form\ProjectType;
+use App\Repository\IssueRepository;
 use App\Security\Voter\IssueVoter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -93,11 +94,17 @@ class IssueController extends AbstractController
 
          $onlyMine = $request->query->getBoolean('mine');
 
+         $sort = $request->query->get('sort', IssueRepository::SORT_NEWEST);
+         if (!in_array($sort, IssueRepository::SORTS, true)) {
+             $sort = IssueRepository::SORT_NEWEST;
+         }
+
          $issueRepository = $entityManager->getRepository(Issue::class);
          $issues = $issueRepository->findForDashboard(
              $isAdmin ? null : $user,
              $selectedProject,
-             $onlyMine ? $user : null
+             $onlyMine ? $user : null,
+             $sort
          );
 
          $issuesByStatus = array_fill_keys(Issue::STATUSES, []);
@@ -110,6 +117,7 @@ class IssueController extends AbstractController
              'availableProjects' => $availableProjects,
              'selectedProjectId' => $selectedProjectId,
              'onlyMine' => $onlyMine,
+             'sort' => $sort,
          ]);
         }
         else{
