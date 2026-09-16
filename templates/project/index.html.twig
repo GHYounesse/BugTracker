@@ -87,11 +87,18 @@
                     <td>{{ project.issues|length }}</td>
                     <td>
                         <div class="project-actions">
+                            {% if is_granted('PROJECT_MANAGE_MEMBERS', project) %}
+                            <button type="button" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#membersModal{{ project.id }}">Members</button>
+                            {% endif %}
+                            {% if is_granted('PROJECT_EDIT', project) %}
                             <button type="button" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#editProjectModal{{ project.id }}">Edit</button>
+                            {% endif %}
+                            {% if is_granted('PROJECT_DELETE', project) %}
                             <form method="post" action="{{ path('project_delete', {id: project.id}) }}" onsubmit="return confirm('Delete project &quot;{{ project.name }}&quot;?');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete-project-' ~ project.id) }}">
                                 <button type="submit" class="btn-outline-brand" style="border-color: rgba(239,68,68,0.3); color:#fca5a5;">Delete</button>
                             </form>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -147,5 +154,60 @@
       </div>
     </div>
     {% if openModal == 'edit-' ~ project.id %}<div class="modal-backdrop fade show"></div>{% endif %}
+    {% endfor %}
+
+    {# One "Members" modal per row, shown only to project admins #}
+    {% for project in projects %}
+    {% if is_granted('PROJECT_MANAGE_MEMBERS', project) %}
+    <div class="modal fade" id="membersModal{{ project.id }}" tabindex="-1" aria-labelledby="membersModalLabel{{ project.id }}" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content styled-form">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="membersModalLabel{{ project.id }}">Members - {{ project.name }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {% if project.members|length %}
+            <ul style="list-style:none; padding:0; margin:0 0 16px;">
+                {% for member in project.members %}
+                <li style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <span>{{ member.user.username }} <span style="color:#94a3b8; font-size:0.8rem;">({{ member.role }})</span></span>
+                    <div style="display:flex; gap:6px;">
+                        <form method="post" action="{{ path('project_member_role', {id: project.id, memberId: member.id}) }}" style="display:flex; gap:4px;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('manage-members-' ~ project.id) }}">
+                            <select name="role" class="form-select form-select-sm">
+                                {% for role in ['admin', 'manager', 'member'] %}
+                                <option value="{{ role }}" {{ role == member.role ? 'selected' : '' }}>{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);">Save</button>
+                        </form>
+                        <form method="post" action="{{ path('project_member_remove', {id: project.id, memberId: member.id}) }}" onsubmit="return confirm('Remove &quot;{{ member.user.username }}&quot; from this project?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('manage-members-' ~ project.id) }}">
+                            <button type="submit" class="btn-outline-brand" style="border-color: rgba(239,68,68,0.3); color:#fca5a5;">Remove</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <form method="post" action="{{ path('project_member_add', {id: project.id}) }}" style="display:flex; gap:8px; align-items:flex-end;">
+                <input type="hidden" name="_token" value="{{ csrf_token('manage-members-' ~ project.id) }}">
+                <input type="text" name="username" class="form-control" placeholder="Username" required>
+                <select name="role" class="form-select">
+                    {% for role in ['member', 'manager', 'admin'] %}
+                    <option value="{{ role }}">{{ role }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn-brand" style="border:none; white-space:nowrap;">Add</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-outline-brand" style="border:1px solid rgba(255,255,255,0.15);" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
     {% endfor %}
 {% endblock %}

@@ -8,6 +8,7 @@ use App\Entity\Project;
 use App\Form\CommentType;
 use App\Form\IssueType;
 use App\Form\ProjectType;
+use App\Security\Voter\IssueVoter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +30,7 @@ class IssueController extends AbstractController
         // set before validation runs: reporter has a NotNull constraint, so
         // an unpopulated Issue would always fail validation otherwise
         $issue->setReporter($this->getUser());
-        $form=$this->createForm(IssueType::class, $issue);
+        $form=$this->createForm(IssueType::class, $issue, ['user' => $this->getUser()]);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
         {
@@ -79,9 +80,16 @@ class IssueController extends AbstractController
     public function index(Request $request,EntityManagerInterface $entityManager)
     {
         if($this->getUser()){
-         $newIssues = $entityManager->getRepository(Issue::class)->findNew();
-         $processedIssues = $entityManager->getRepository(Issue::class)->findProcessed();
-         $acceptedIssues = $entityManager->getRepository(Issue::class)->findAccepted();
+         $issueRepository = $entityManager->getRepository(Issue::class);
+         if ($this->isGranted('ROLE_ADMIN')) {
+             $newIssues = $issueRepository->findNew();
+             $processedIssues = $issueRepository->findProcessed();
+             $acceptedIssues = $issueRepository->findAccepted();
+         } else {
+             $newIssues = $issueRepository->findNewForUser($this->getUser());
+             $processedIssues = $issueRepository->findProcessedForUser($this->getUser());
+             $acceptedIssues = $issueRepository->findAcceptedForUser($this->getUser());
+         }
          return $this->render('issue/index.html.twig',['newIssues'=>$newIssues ,'processedIssues'=>$processedIssues,'acceptedIssues'=> $acceptedIssues ]);
         }
         else{
@@ -96,6 +104,8 @@ class IssueController extends AbstractController
         if (!$issue) {
             throw new NotFoundHttpException('Issue not found.');
         }
+
+        $this->denyAccessUnlessGranted(IssueVoter::VIEW, $issue);
 
         $commentForm = $this->createForm(CommentType::class, new Comment());
 
@@ -113,7 +123,9 @@ class IssueController extends AbstractController
             throw new NotFoundHttpException('Issue not found.');
         }
 
-        $form = $this->createForm(IssueType::class, $issue);
+        $this->denyAccessUnlessGranted(IssueVoter::EDIT, $issue);
+
+        $form = $this->createForm(IssueType::class, $issue, ['user' => $this->getUser()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -152,6 +164,8 @@ class IssueController extends AbstractController
         if (!$issue) {
             throw new NotFoundHttpException('Issue not found.');
         }
+
+        $this->denyAccessUnlessGranted(IssueVoter::VIEW, $issue);
 
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);

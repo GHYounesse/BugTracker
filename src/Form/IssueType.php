@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\User;
+use App\Repository\ProjectRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -108,7 +109,20 @@ class IssueType extends AbstractType
                 'class'=>'form-control',],
             ])
             ->add('project',EntityType::class,['class'=>Project::class,'choice_label'=>'name','attr'=>[
-                'class'=>'form-select'],])
+                'class'=>'form-select'],
+                'query_builder'=>function (ProjectRepository $repository) use ($options) {
+                    $user = $options['user'];
+                    if (!$user || in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                        return $repository->createQueryBuilder('p')->orderBy('p.name', 'ASC');
+                    }
+
+                    return $repository->createQueryBuilder('p')
+                        ->join('p.members', 'pm')
+                        ->andWhere('pm.user = :user')
+                        ->setParameter('user', $user)
+                        ->orderBy('p.name', 'ASC');
+                },
+            ])
             ->add('category',EntityType::class,['class'=>Category::class,'choice_label'=>'name','attr'=>[
                 'class'=>'form-select'],])
             ->add('assigned',EntityType::class,['class'=>User::class,'choice_label'=>'username','required'=>false,'attr'=>[
@@ -120,6 +134,8 @@ class IssueType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Issue::class,
+            'user' => null,
         ]);
+        $resolver->setAllowedTypes('user', [User::class, 'null']);
     }
 }

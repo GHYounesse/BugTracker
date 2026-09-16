@@ -43,9 +43,13 @@ class Project
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
     private Collection $issues;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectMember::class, orphanRemoval: true)]
+    private Collection $members;
+
     public function __construct()
     {
         $this->issues = new ArrayCollection();
+        $this->members = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
@@ -150,6 +154,35 @@ class Project
             // set the owning side to null (unless already changed)
             if ($issue->getProject() === $this) {
                 $issue->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProjectMember>
+     */
+    public function getMembers(): Collection
+    {
+        return $this->members;
+    }
+
+    public function addMember(ProjectMember $member): self
+    {
+        if (!$this->members->contains($member)) {
+            $this->members->add($member);
+            $member->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMember(ProjectMember $member): self
+    {
+        if ($this->members->removeElement($member)) {
+            if ($member->getProject() === $this) {
+                $member->setProject(null);
             }
         }
 

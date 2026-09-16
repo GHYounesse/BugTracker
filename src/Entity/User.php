@@ -62,12 +62,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Project::class)]
     private Collection $ownedProjects;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ProjectMember::class, orphanRemoval: true)]
+    private Collection $projectMemberships;
+
     public function __construct()
     {
         $this->reportedIssues = new ArrayCollection();
         $this->assignedIssues = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->ownedProjects = new ArrayCollection();
+        $this->projectMemberships = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
@@ -302,6 +306,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->ownedProjects->removeElement($project)) {
             if ($project->getOwner() === $this) {
                 $project->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProjectMember>
+     */
+    public function getProjectMemberships(): Collection
+    {
+        return $this->projectMemberships;
+    }
+
+    public function addProjectMembership(ProjectMember $membership): self
+    {
+        if (!$this->projectMemberships->contains($membership)) {
+            $this->projectMemberships->add($membership);
+            $membership->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectMembership(ProjectMember $membership): self
+    {
+        if ($this->projectMemberships->removeElement($membership)) {
+            if ($membership->getUser() === $this) {
+                $membership->setUser(null);
             }
         }
 

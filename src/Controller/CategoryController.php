@@ -30,6 +30,8 @@ class CategoryController extends AbstractController
     #[Route('/category/new', name: 'category_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
@@ -51,6 +53,8 @@ class CategoryController extends AbstractController
     #[Route('/category/{id}/edit', name: 'category_edit', methods: ['GET', 'POST'])]
     public function edit(int $id, Request $request, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $category = $em->getRepository(Category::class)->find($id);
         if (!$category) {
             throw new NotFoundHttpException('Category not found.');
@@ -76,6 +80,8 @@ class CategoryController extends AbstractController
     #[Route('/category/{id}/delete', name: 'category_delete', methods: ['POST'])]
     public function delete(int $id, Request $request, EntityManagerInterface $em, CsrfTokenManagerInterface $csrfTokenManager): RedirectResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $category = $em->getRepository(Category::class)->find($id);
         if (!$category) {
             throw new NotFoundHttpException('Category not found.');
