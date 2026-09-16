@@ -16,8 +16,9 @@ class IssueVoter extends Voter
 {
     public const VIEW = 'ISSUE_VIEW';
     public const EDIT = 'ISSUE_EDIT';
+    public const MANAGE = 'ISSUE_MANAGE';
 
-    private const ATTRIBUTES = [self::VIEW, self::EDIT];
+    private const ATTRIBUTES = [self::VIEW, self::EDIT, self::MANAGE];
 
     public function __construct(private ProjectMemberRepository $projectMembers)
     {
@@ -56,6 +57,7 @@ class IssueVoter extends Voter
             self::EDIT => in_array($membership->getRole(), [ProjectMember::ROLE_ADMIN, ProjectMember::ROLE_MANAGER], true)
                 || $issue->getReporter() === $user
                 || $issue->getAssigned() === $user,
+            self::MANAGE => in_array($membership->getRole(), [ProjectMember::ROLE_ADMIN, ProjectMember::ROLE_MANAGER], true),
             default => false,
         };
     }

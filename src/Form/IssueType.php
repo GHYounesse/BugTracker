@@ -65,21 +65,6 @@ class IssueType extends AbstractType
                 'id'=>'floatingInput',],
 
             ])
-            ->add('status',ChoiceType::class,[
-                'choices'=>[
-                    'New'=>'new',
-                    'Accepted'=>'accepted',
-                    'Confirmed'=>'confirmed',
-                    'Assigned'=>'assigned',
-                    'Processed'=>'processed',
-                    'Closed'=>'closed',
-                ],
-                'multiple'=> false,
-                'expanded'=> false,
-                'attr'=>[
-                    'class'=>'form-select'],]
-
-            )
             ->add('summary',TextType::class,['attr'=>[
                 'class'=>'form-control mb-3',
                 'id'=>'floatingInput',],
@@ -125,9 +110,30 @@ class IssueType extends AbstractType
             ])
             ->add('category',EntityType::class,['class'=>Category::class,'choice_label'=>'name','attr'=>[
                 'class'=>'form-select'],])
-            ->add('assigned',EntityType::class,['class'=>User::class,'choice_label'=>'username','required'=>false,'attr'=>[
-                'class'=>'form-select'],])
         ;
+
+        // status/assignee are triage decisions: hide them from the form entirely
+        // (not just visually) for members who aren't a project admin/manager, so
+        // the fields can't be tampered with via a raw POST either
+        if ($options['canManage']) {
+            $builder->add('status',ChoiceType::class,[
+                'choices'=>[
+                    'New'=>'new',
+                    'Accepted'=>'accepted',
+                    'Confirmed'=>'confirmed',
+                    'Assigned'=>'assigned',
+                    'Processed'=>'processed',
+                    'Closed'=>'closed',
+                ],
+                'multiple'=> false,
+                'expanded'=> false,
+                'attr'=>[
+                    'class'=>'form-select'],]
+
+            );
+            $builder->add('assigned',EntityType::class,['class'=>User::class,'choice_label'=>'username','required'=>false,'attr'=>[
+                'class'=>'form-select'],]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -135,7 +141,9 @@ class IssueType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Issue::class,
             'user' => null,
+            'canManage' => true,
         ]);
         $resolver->setAllowedTypes('user', [User::class, 'null']);
+        $resolver->setAllowedTypes('canManage', 'bool');
     }
 }

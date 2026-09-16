@@ -125,7 +125,10 @@ class IssueController extends AbstractController
 
         $this->denyAccessUnlessGranted(IssueVoter::EDIT, $issue);
 
-        $form = $this->createForm(IssueType::class, $issue, ['user' => $this->getUser()]);
+        $form = $this->createForm(IssueType::class, $issue, [
+            'user' => $this->getUser(),
+            'canManage' => $this->isGranted(IssueVoter::MANAGE, $issue),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
