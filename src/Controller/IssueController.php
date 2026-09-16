@@ -108,8 +108,23 @@ class IssueController extends AbstractController
          );
 
          $issuesByStatus = array_fill_keys(Issue::STATUSES, []);
+         $openCount = 0;
+         $overdueCount = 0;
+         $unassignedCount = 0;
+         $now = new \DateTime();
          foreach ($issues as $issue) {
              $issuesByStatus[$issue->getStatus()][] = $issue;
+
+             if ($issue->getStatus() === 'closed') {
+                 continue;
+             }
+             ++$openCount;
+             if ($issue->getDueDate() && $issue->getDueDate() < $now) {
+                 ++$overdueCount;
+             }
+             if (!$issue->getAssigned()) {
+                 ++$unassignedCount;
+             }
          }
 
          return $this->render('issue/index.html.twig', [
@@ -118,6 +133,9 @@ class IssueController extends AbstractController
              'selectedProjectId' => $selectedProjectId,
              'onlyMine' => $onlyMine,
              'sort' => $sort,
+             'openCount' => $openCount,
+             'overdueCount' => $overdueCount,
+             'unassignedCount' => $unassignedCount,
          ]);
         }
         else{

@@ -17,6 +17,34 @@
         margin: 0;
         color: #f8fafc;
     }
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    @media (max-width: 600px) {
+        .kpi-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    .kpi-tile {
+        padding: 16px 18px;
+    }
+    .kpi-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #f8fafc;
+        line-height: 1;
+    }
+    .kpi-value.kpi-alert {
+        color: #fca5a5;
+    }
+    .kpi-label {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-top: 4px;
+    }
     .issue-board {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -139,6 +167,21 @@
     <div class="dashboard-header">
         <h1>Dashboard</h1>
         <a href="{{ path('app_issue') }}" class="btn-brand">+ New Issue</a>
+    </div>
+
+    <div class="kpi-row">
+        <div class="app-card kpi-tile">
+            <div class="kpi-value">{{ openCount }}</div>
+            <div class="kpi-label">Open issues</div>
+        </div>
+        <div class="app-card kpi-tile">
+            <div class="kpi-value{{ overdueCount > 0 ? ' kpi-alert' : '' }}">{{ overdueCount }}</div>
+            <div class="kpi-label">Overdue</div>
+        </div>
+        <div class="app-card kpi-tile">
+            <div class="kpi-value">{{ unassignedCount }}</div>
+            <div class="kpi-label">Unassigned</div>
+        </div>
     </div>
 
     <form method="get" action="{{ path('app_home') }}" class="dashboard-filters">
