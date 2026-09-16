@@ -80,17 +80,37 @@ class IssueController extends AbstractController
     public function index(Request $request,EntityManagerInterface $entityManager)
     {
         if($this->getUser()){
+         $user = $this->getUser();
+         $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+         $projectRepository = $entityManager->getRepository(Project::class);
+         $availableProjects = $isAdmin
+             ? $projectRepository->findBy([], ['name' => 'ASC'])
+             : $projectRepository->findAllForUser($user);
+
+         $selectedProjectId = $request->query->get('project');
+         $selectedProject = $selectedProjectId ? $entityManager->getRepository(Project::class)->find($selectedProjectId) : null;
+
+         $onlyMine = $request->query->getBoolean('mine');
+
          $issueRepository = $entityManager->getRepository(Issue::class);
-         $issues = $this->isGranted('ROLE_ADMIN')
-             ? $issueRepository->findAllForDashboard()
-             : $issueRepository->findAllForDashboardForUser($this->getUser());
+         $issues = $issueRepository->findForDashboard(
+             $isAdmin ? null : $user,
+             $selectedProject,
+             $onlyMine ? $user : null
+         );
 
          $issuesByStatus = array_fill_keys(Issue::STATUSES, []);
          foreach ($issues as $issue) {
              $issuesByStatus[$issue->getStatus()][] = $issue;
          }
 
-         return $this->render('issue/index.html.twig', ['issuesByStatus' => $issuesByStatus]);
+         return $this->render('issue/index.html.twig', [
+             'issuesByStatus' => $issuesByStatus,
+             'availableProjects' => $availableProjects,
+             'selectedProjectId' => $selectedProjectId,
+             'onlyMine' => $onlyMine,
+         ]);
         }
         else{
         return $this->redirectToRoute('app_login');

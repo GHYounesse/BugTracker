@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Issue;
+use App\Entity\Project;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -41,28 +42,31 @@ class IssueRepository extends ServiceEntityRepository
     }
 
     /**
-     * All issues across every status, for the dashboard's admin view.
+     * Issues for the dashboard, across every status.
+     *
+     * @param User|null    $membershipUser scope to projects this user is a member of (omit for the admin view, which sees everything)
+     * @param Project|null $project        restrict to a single project
+     * @param User|null    $assignedTo     restrict to issues assigned to this user ("assigned to me")
      */
-    public function findAllForDashboard(): array
+    public function findForDashboard(?User $membershipUser, ?Project $project, ?User $assignedTo): array
     {
-        return $this->createQueryBuilder('i')
-            ->orderBy('i.submittedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
+        $qb = $this->createQueryBuilder('i')->orderBy('i.submittedAt', 'DESC');
 
-    /**
-     * All issues across every status, scoped to projects the given user is a member of.
-     */
-    public function findAllForDashboardForUser(User $user): array
-    {
-        return $this->createQueryBuilder('i')
-            ->join('i.project', 'p')
-            ->join('p.members', 'pm')
-            ->andWhere('pm.user = :user')
-            ->setParameter('user', $user)
-            ->orderBy('i.submittedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        if ($membershipUser) {
+            $qb->join('i.project', 'p')
+                ->join('p.members', 'pm')
+                ->andWhere('pm.user = :membershipUser')
+                ->setParameter('membershipUser', $membershipUser);
+        }
+
+        if ($project) {
+            $qb->andWhere('i.project = :project')->setParameter('project', $project);
+        }
+
+        if ($assignedTo) {
+            $qb->andWhere('i.assigned = :assignedTo')->setParameter('assignedTo', $assignedTo);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

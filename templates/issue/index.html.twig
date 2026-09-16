@@ -109,6 +109,30 @@
         font-size: 0.88rem;
         padding: 24px 12px;
     }
+    .dashboard-filters {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    .dashboard-filters select {
+        width: auto;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    .dashboard-filters label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+        cursor: pointer;
+    }
 {% endblock %}
 
 {% block body %}
@@ -116,6 +140,19 @@
         <h1>Dashboard</h1>
         <a href="{{ path('app_issue') }}" class="btn-brand">+ New Issue</a>
     </div>
+
+    <form method="get" action="{{ path('app_home') }}" class="dashboard-filters">
+        <select name="project" class="form-select" onchange="this.form.submit()">
+            <option value="">All projects</option>
+            {% for project in availableProjects %}
+            <option value="{{ project.id }}" {{ selectedProjectId == project.id ? 'selected' : '' }}>{{ project.name }}</option>
+            {% endfor %}
+        </select>
+        <label>
+            <input type="checkbox" name="mine" value="1" {{ onlyMine ? 'checked' : '' }} onchange="this.form.submit()">
+            Assigned to me
+        </label>
+    </form>
 
     <div class="issue-board">
         {% for status, issues in issuesByStatus %}
