@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\User;
@@ -49,13 +50,21 @@ class IssueRepository extends ServiceEntityRepository
     /**
      * Issues for the dashboard, across every status.
      *
-     * @param User|null    $membershipUser scope to projects this user is a member of (omit for the admin view, which sees everything)
-     * @param Project|null $project        restrict to a single project
-     * @param User|null    $assignedTo     restrict to issues assigned to this user ("assigned to me")
-     * @param string       $sort           one of self::SORTS
+     * @param User|null     $membershipUser scope to projects this user is a member of (omit for the admin view, which sees everything)
+     * @param Project|null  $project        restrict to a single project
+     * @param User|null     $assignedTo     restrict to issues assigned to this user ("assigned to me")
+     * @param string        $sort           one of self::SORTS
+     * @param Category|null $category       restrict to a single category
+     * @param string|null   $severity       restrict to a single severity, one of Issue::SEVERITIES
      */
-    public function findForDashboard(?User $membershipUser, ?Project $project, ?User $assignedTo, string $sort = self::SORT_NEWEST): array
-    {
+    public function findForDashboard(
+        ?User $membershipUser,
+        ?Project $project,
+        ?User $assignedTo,
+        string $sort = self::SORT_NEWEST,
+        ?Category $category = null,
+        ?string $severity = null,
+    ): array {
         $qb = $this->createQueryBuilder('i');
 
         if ($membershipUser) {
@@ -71,6 +80,14 @@ class IssueRepository extends ServiceEntityRepository
 
         if ($assignedTo) {
             $qb->andWhere('i.assigned = :assignedTo')->setParameter('assignedTo', $assignedTo);
+        }
+
+        if ($category) {
+            $qb->andWhere('i.category = :category')->setParameter('category', $category);
+        }
+
+        if ($severity) {
+            $qb->andWhere('i.severity = :severity')->setParameter('severity', $severity);
         }
 
         match ($sort) {

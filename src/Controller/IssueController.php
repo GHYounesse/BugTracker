@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Issue;
 use App\Entity\Project;
@@ -99,12 +100,23 @@ class IssueController extends AbstractController
              $sort = IssueRepository::SORT_NEWEST;
          }
 
+         $availableCategories = $entityManager->getRepository(Category::class)->findBy([], ['name' => 'ASC']);
+         $selectedCategoryId = $request->query->get('category');
+         $selectedCategory = $selectedCategoryId ? $entityManager->getRepository(Category::class)->find($selectedCategoryId) : null;
+
+         $selectedSeverity = $request->query->get('severity');
+         if (!in_array($selectedSeverity, Issue::SEVERITIES, true)) {
+             $selectedSeverity = null;
+         }
+
          $issueRepository = $entityManager->getRepository(Issue::class);
          $issues = $issueRepository->findForDashboard(
              $isAdmin ? null : $user,
              $selectedProject,
              $onlyMine ? $user : null,
-             $sort
+             $sort,
+             $selectedCategory,
+             $selectedSeverity
          );
 
          $issuesByStatus = array_fill_keys(Issue::STATUSES, []);
@@ -133,6 +145,10 @@ class IssueController extends AbstractController
              'selectedProjectId' => $selectedProjectId,
              'onlyMine' => $onlyMine,
              'sort' => $sort,
+             'availableCategories' => $availableCategories,
+             'selectedCategoryId' => $selectedCategoryId,
+             'severities' => Issue::SEVERITIES,
+             'selectedSeverity' => $selectedSeverity,
              'openCount' => $openCount,
              'overdueCount' => $overdueCount,
              'unassignedCount' => $unassignedCount,

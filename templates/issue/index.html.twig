@@ -233,6 +233,18 @@
             <option value="{{ project.id }}" {{ selectedProjectId == project.id ? 'selected' : '' }}>{{ project.name }}</option>
             {% endfor %}
         </select>
+        <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            {% for category in availableCategories %}
+            <option value="{{ category.id }}" {{ selectedCategoryId == category.id ? 'selected' : '' }}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="severity" class="form-select" onchange="this.form.submit()">
+            <option value="">All severities</option>
+            {% for severity in severities %}
+            <option value="{{ severity }}" {{ selectedSeverity == severity ? 'selected' : '' }}>{{ severity|capitalize }}</option>
+            {% endfor %}
+        </select>
         <label>
             <input type="checkbox" name="mine" value="1" {{ onlyMine ? 'checked' : '' }} onchange="this.form.submit()">
             Assigned to me
