@@ -69,7 +69,6 @@
             transition: background 0.2s ease;
         }
         .login-card {
-            position: relative;
             width: 100%;
             max-width: 400px;
             background: var(--card-bg);
@@ -81,9 +80,14 @@
             transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .theme-toggle {
-            position: absolute;
-            top: 16px;
-            right: 16px;
+            /* floats outside the card, pinned to the viewport corner: a
+               flex/grid flow layout can't anchor an element to the page
+               corner independent of the card's own content, so this is one
+               of the few cases where fixed positioning is the right tool */
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            flex-shrink: 0;
             width: 34px;
             height: 34px;
             border-radius: 50%;
@@ -139,48 +143,48 @@
             display: block;
         }
         .input-icon-group {
-            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 18px;
-        }
-        .input-icon-group > svg {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            opacity: 0.8;
-            pointer-events: none;
-        }
-        .input-icon-group input {
-            width: 100%;
-            padding: 11px 14px 11px 42px;
+            padding: 0 14px;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             border-radius: 10px;
+            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+        }
+        .input-icon-group > svg {
+            flex-shrink: 0;
+            color: var(--text-muted);
+            opacity: 0.8;
+        }
+        .input-icon-group input {
+            flex: 1 1 auto;
+            min-width: 0;
+            width: 100%;
+            padding: 11px 0;
+            background: transparent;
+            border: none;
             color: var(--input-text);
             font-size: 0.95rem;
-            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .input-icon-group input:focus {
+            outline: none;
         }
         .input-icon-group input::placeholder {
             color: var(--input-placeholder);
         }
-        .input-icon-group input:focus {
-            outline: none;
+        .input-icon-group:focus-within {
             border-color: var(--brand);
             background: var(--input-focus-bg);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
         }
-        .input-icon-group input#password {
-            padding-right: 42px;
-        }
         .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            flex-shrink: 0;
             background: none;
             border: none;
             padding: 4px;
+            margin: 0;
             color: var(--text-muted);
             cursor: pointer;
             display: flex;
@@ -256,15 +260,42 @@
         .remember-me {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 18px;
             font-size: 0.85rem;
             color: var(--text-label);
             cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
         }
-        .remember-me input {
-            accent-color: var(--brand);
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            border-radius: 5px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 11px 11px;
             cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .remember-me input[type="checkbox"]:hover {
+            border-color: var(--brand);
+        }
+        .remember-me input[type="checkbox"]:checked {
+            background-color: var(--brand);
+            border-color: var(--brand);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5'/%3E%3C/svg%3E");
+        }
+        .remember-me input[type="checkbox"]:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
         }
     </style>
     <script>
@@ -278,12 +309,12 @@
   </head>
   <body>
 
-    <div class="login-card">
-        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
 
+    <div class="login-card">
         {% if error %}
         {% set isThrottled = 'Too many failed login attempts' in error.messageKey %}
         <div class="alert {{ isThrottled ? 'alert-warning' : 'alert-danger' }} alert-custom">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
