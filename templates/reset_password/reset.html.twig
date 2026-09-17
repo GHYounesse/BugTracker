@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reset password</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     {{ importmap('app') }}
     <style>
         :root {
-            --brand: #6366f1;
-            --brand-dark: #4f46e5;
+            --brand: #3b82f6;
+            --brand-dark: #2563eb;
 
             --body-bg: radial-gradient(circle at top, #1e2140 0%, #0f1123 65%, #0a0b18 100%);
             --card-bg: rgba(255, 255, 255, 0.04);
@@ -22,7 +23,7 @@
             --input-text: #f1f5f9;
             --input-placeholder: #64748b;
             --input-focus-bg: rgba(255, 255, 255, 0.09);
-            --link-color: #a5b4fc;
+            --link-color: #93c5fd;
             --toggle-bg: rgba(255, 255, 255, 0.06);
             --toggle-border: rgba(255, 255, 255, 0.1);
             --toggle-icon: #cbd5e1;
@@ -34,7 +35,7 @@
             --body-bg: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 65%, #ffffff 100%);
             --card-bg: rgba(255, 255, 255, 0.75);
             --card-border: rgba(15, 23, 42, 0.08);
-            --card-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+            --card-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
             --text-heading: #1e293b;
             --text-muted: #64748b;
             --text-label: #475569;
@@ -43,7 +44,7 @@
             --input-text: #1e293b;
             --input-placeholder: #94a3b8;
             --input-focus-bg: rgba(15, 23, 42, 0.05);
-            --link-color: #4f46e5;
+            --link-color: #2563eb;
             --toggle-bg: rgba(15, 23, 42, 0.04);
             --toggle-border: rgba(15, 23, 42, 0.1);
             --toggle-icon: #475569;
@@ -104,13 +105,10 @@
             width: 56px;
             height: 56px;
             border-radius: 14px;
-            background: linear-gradient(135deg, var(--brand), #a855f7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
+            display: block;
+            object-fit: cover;
             margin: 0 auto 16px;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
         }
         .brand-name {
             color: var(--text-heading);
@@ -167,7 +165,7 @@
         .input-icon-group:focus-within {
             border-color: var(--brand);
             background: var(--input-focus-bg);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
         .password-toggle {
             flex-shrink: 0;
@@ -207,7 +205,7 @@
         }
         .btn-login:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
             color: #fff;
         }
         .btn-login:disabled {
@@ -267,7 +265,7 @@
     </button>
 
     <div class="login-card">
-        <div class="brand-badge">🐞</div>
+        <img class="brand-badge" src="{{ asset('images/logo.png') }}" alt="BugTracker logo">
         <div class="brand-name">Set a new password</div>
         <div class="brand-tagline">Choose a new password for your account</div>
 
