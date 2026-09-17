@@ -9,27 +9,107 @@
         :root {
             --brand: #6366f1;
             --brand-dark: #4f46e5;
+
+            --body-bg: radial-gradient(circle at top, #1e2140 0%, #0f1123 65%, #0a0b18 100%);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            --text-heading: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-label: #cbd5e1;
+            --input-bg: rgba(255, 255, 255, 0.06);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --input-text: #f1f5f9;
+            --input-placeholder: #64748b;
+            --input-focus-bg: rgba(255, 255, 255, 0.09);
+            --link-color: #a5b4fc;
+            --toggle-bg: rgba(255, 255, 255, 0.06);
+            --toggle-border: rgba(255, 255, 255, 0.1);
+            --toggle-icon: #cbd5e1;
+            --alert-danger-bg: rgba(239, 68, 68, 0.15);
+            --alert-danger-text: #fca5a5;
+            --alert-danger-border: rgba(239, 68, 68, 0.3);
+            --alert-warning-bg: rgba(245, 158, 11, 0.15);
+            --alert-warning-text: #fcd34d;
+            --alert-warning-border: rgba(245, 158, 11, 0.35);
+        }
+        html[data-theme="light"] {
+            --body-bg: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 65%, #ffffff 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(15, 23, 42, 0.08);
+            --card-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+            --text-heading: #1e293b;
+            --text-muted: #64748b;
+            --text-label: #475569;
+            --input-bg: rgba(15, 23, 42, 0.03);
+            --input-border: rgba(15, 23, 42, 0.12);
+            --input-text: #1e293b;
+            --input-placeholder: #94a3b8;
+            --input-focus-bg: rgba(15, 23, 42, 0.05);
+            --link-color: #4f46e5;
+            --toggle-bg: rgba(15, 23, 42, 0.04);
+            --toggle-border: rgba(15, 23, 42, 0.1);
+            --toggle-icon: #475569;
+            --alert-danger-bg: rgba(239, 68, 68, 0.1);
+            --alert-danger-text: #b91c1c;
+            --alert-danger-border: rgba(239, 68, 68, 0.25);
+            --alert-warning-bg: rgba(245, 158, 11, 0.12);
+            --alert-warning-text: #92400e;
+            --alert-warning-border: rgba(245, 158, 11, 0.3);
         }
         body {
             min-height: 100vh;
             margin: 0;
-            background: radial-gradient(circle at top, #1e2140 0%, #0f1123 65%, #0a0b18 100%);
+            background: var(--body-bg);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background 0.2s ease;
         }
         .login-card {
             width: 100%;
             max-width: 400px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 18px;
             padding: 40px 36px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            box-shadow: var(--card-shadow);
             backdrop-filter: blur(6px);
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
+        .theme-toggle {
+            /* floats outside the card, pinned to the viewport corner: a
+               flex/grid flow layout can't anchor an element to the page
+               corner independent of the card's own content, so this is one
+               of the few cases where fixed positioning is the right tool */
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--toggle-bg);
+            border: 1px solid var(--toggle-border);
+            color: var(--toggle-icon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+        }
+        .theme-toggle svg {
+            width: 16px;
+            height: 16px;
+        }
+        .theme-toggle .icon-moon { display: none; }
+        html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+        html[data-theme="light"] .theme-toggle .icon-moon { display: block; }
         .brand-badge {
             width: 56px;
             height: 56px;
@@ -43,20 +123,20 @@
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
         }
         .brand-name {
-            color: #f8fafc;
+            color: var(--text-heading);
             font-weight: 700;
             font-size: 1.4rem;
             text-align: center;
             margin-bottom: 4px;
         }
         .brand-tagline {
-            color: #94a3b8;
+            color: var(--text-muted);
             text-align: center;
             font-size: 0.85rem;
             margin-bottom: 32px;
         }
         .field-label {
-            color: #cbd5e1;
+            color: var(--text-label);
             font-size: 0.82rem;
             font-weight: 600;
             margin-bottom: 6px;
@@ -68,14 +148,14 @@
             gap: 10px;
             margin-bottom: 6px;
             padding: 0 14px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
             border-radius: 10px;
             transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
         }
         .input-icon-group > svg {
             flex-shrink: 0;
-            color: #94a3b8;
+            color: var(--text-muted);
             opacity: 0.8;
         }
         .input-icon-group input {
@@ -85,22 +165,39 @@
             padding: 11px 0;
             background: transparent;
             border: none;
-            color: #f1f5f9;
+            color: var(--input-text);
             font-size: 0.95rem;
         }
         .input-icon-group input:focus {
             outline: none;
         }
         .input-icon-group input::placeholder {
-            color: #64748b;
+            color: var(--input-placeholder);
         }
         .input-icon-group:focus-within {
             border-color: var(--brand);
-            background: rgba(255, 255, 255, 0.09);
+            background: var(--input-focus-bg);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
         }
+        .password-toggle {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            padding: 4px;
+            margin: 0;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+        }
+        .password-toggle svg {
+            width: 16px;
+            height: 16px;
+        }
+        .password-toggle .icon-eye-off { display: none; }
+        .password-toggle.is-visible .icon-eye { display: none; }
+        .password-toggle.is-visible .icon-eye-off { display: block; }
         .field-errors {
-            color: #fca5a5;
+            color: var(--alert-danger-text);
             font-size: 0.8rem;
             list-style: none;
             padding: 0;
@@ -109,22 +206,40 @@
         .terms-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin: 18px 0;
         }
-        .terms-row .form-check-input {
-            width: 1.05em;
-            height: 1.05em;
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.25);
+        .terms-row input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            border-radius: 5px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 11px 11px;
             cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
         }
-        .terms-row .form-check-input:checked {
-            background-color: var(--brand);
+        .terms-row input[type="checkbox"]:hover {
             border-color: var(--brand);
         }
+        .terms-row input[type="checkbox"]:checked {
+            background-color: var(--brand);
+            border-color: var(--brand);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5'/%3E%3C/svg%3E");
+        }
+        .terms-row input[type="checkbox"]:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+        }
         .terms-row label {
-            color: #cbd5e1;
+            color: var(--text-label);
             font-size: 0.88rem;
             margin: 0;
             cursor: pointer;
@@ -146,15 +261,27 @@
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
             color: #fff;
         }
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: default;
+            transform: none !important;
+        }
+        .btn-login:focus-visible,
+        .theme-toggle:focus-visible,
+        .password-toggle:focus-visible,
+        .register-link a:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+        }
         .register-link {
             display: block;
             text-align: center;
             margin-top: 20px;
-            color: #94a3b8;
+            color: var(--text-muted);
             font-size: 0.88rem;
         }
         .register-link a {
-            color: #a5b4fc;
+            color: var(--link-color);
             font-weight: 600;
             text-decoration: none;
         }
@@ -166,10 +293,34 @@
             font-size: 0.88rem;
             padding: 12px 14px;
             margin-bottom: 18px;
+            border: 1px solid transparent;
+        }
+        .alert-custom.alert-danger {
+            background: var(--alert-danger-bg);
+            color: var(--alert-danger-text);
+            border-color: var(--alert-danger-border);
+        }
+        .alert-custom.alert-warning {
+            background: var(--alert-warning-bg);
+            color: var(--alert-warning-text);
+            border-color: var(--alert-warning-border);
         }
     </style>
+    <script>
+        (function () {
+            var stored = null;
+            try { stored = localStorage.getItem('bugtracker-theme'); } catch (e) {}
+            var theme = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
   </head>
   <body>
+
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
 
     <div class="login-card">
         {% if app.user %}
@@ -186,25 +337,33 @@
         <div class="brand-name">BugTracker</div>
         <div class="brand-tagline">Create your account</div>
 
-        {{ form_start(registrationForm) }}
+        {{ form_start(registrationForm, {'attr': {'id': 'registerForm'}}) }}
             <label class="field-label" for="{{ registrationForm.username.vars.id }}">Username</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                {{ form_widget(registrationForm.username, {'attr': {'class': '', 'placeholder': 'Choose a username', 'autofocus': true}}) }}
+                {{ form_widget(registrationForm.username, {'attr': {'class': '', 'placeholder': 'Choose a username', 'autocomplete': 'username', 'autofocus': true}}) }}
             </div>
             <ul class="field-errors">{{ form_errors(registrationForm.username) }}</ul>
 
             <label class="field-label" for="{{ registrationForm.plainPassword.first.vars.id }}">Password</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': '', 'placeholder': 'Create a password'}}) }}
+                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': '', 'placeholder': 'Create a password', 'autocomplete': 'new-password'}}) }}
+                <button type="button" class="password-toggle" data-toggle-for="{{ registrationForm.plainPassword.first.vars.id }}" aria-label="Show password">
+                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
+                </button>
             </div>
             <ul class="field-errors">{{ form_errors(registrationForm.plainPassword.first) }}</ul>
 
             <label class="field-label" for="{{ registrationForm.plainPassword.second.vars.id }}">Repeat Password</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': '', 'placeholder': 'Repeat your password'}}) }}
+                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': '', 'placeholder': 'Repeat your password', 'autocomplete': 'new-password'}}) }}
+                <button type="button" class="password-toggle" data-toggle-for="{{ registrationForm.plainPassword.second.vars.id }}" aria-label="Show password">
+                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
+                </button>
             </div>
             <ul class="field-errors">
                 {{ form_errors(registrationForm.plainPassword.second) }}
@@ -217,11 +376,35 @@
             </div>
             <ul class="field-errors">{{ form_errors(registrationForm.agreeTerms) }}</ul>
 
-            <button class="btn-login" type="submit">Create account</button>
+            <button class="btn-login" type="submit" id="registerSubmit">Create account</button>
         {{ form_end(registrationForm) }}
 
         <span class="register-link">Already have an account? <a href="{{ path('app_login') }}">Login</a></span>
     </div>
 
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function () {
+            var html = document.documentElement;
+            var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
+        });
+
+        document.querySelectorAll('.password-toggle').forEach(function (toggle) {
+            toggle.addEventListener('click', function () {
+                var password = document.getElementById(toggle.dataset.toggleFor);
+                var showing = password.type === 'text';
+                password.type = showing ? 'password' : 'text';
+                toggle.classList.toggle('is-visible', !showing);
+                toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+            });
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function () {
+            var submit = document.getElementById('registerSubmit');
+            submit.disabled = true;
+            submit.textContent = 'Creating account…';
+        });
+    </script>
   </body>
 </html>
