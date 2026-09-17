@@ -130,7 +130,7 @@
             position: relative;
             margin-bottom: 18px;
         }
-        .input-icon-group svg {
+        .input-icon-group > svg {
             position: absolute;
             left: 14px;
             top: 50%;
@@ -157,6 +157,40 @@
             border-color: var(--brand);
             background: var(--input-focus-bg);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+        .input-icon-group input#password {
+            padding-right: 42px;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+        }
+        .password-toggle svg {
+            width: 16px;
+            height: 16px;
+        }
+        .password-toggle .icon-eye-off { display: none; }
+        .password-toggle.is-visible .icon-eye { display: none; }
+        .password-toggle.is-visible .icon-eye-off { display: block; }
+        .btn-login:focus-visible,
+        .theme-toggle:focus-visible,
+        .password-toggle:focus-visible,
+        .register-link a:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+        }
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: default;
+            transform: none !important;
         }
         .btn-login {
             width: 100%;
@@ -217,36 +251,31 @@
         {% if error %}
         <div class="alert alert-danger alert-custom">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
-        {% if app.user %}
-        <div class="alert alert-warning alert-custom">
-            You are logged in as {{ app.user.userIdentifier }},
-            <form method="post" action="{{ path('app_logout') }}" style="display:inline;">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                <button type="submit" style="background:none;border:none;padding:0;color:inherit;text-decoration:underline;cursor:pointer;">Logout</button>
-            </form>
-        </div>
-        {% endif %}
 
         <div class="brand-badge">🐞</div>
         <div class="brand-name">BugTracker</div>
         <div class="brand-tagline">Sign in to manage your projects</div>
 
-        <form method="post">
+        <form method="post" id="loginForm">
             <label class="field-label" for="username">Username</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <input type="text" id="username" name="username" value="{{ last_username }}" placeholder="Enter your username" autofocus required>
+                <input type="text" id="username" name="username" value="{{ last_username }}" placeholder="Enter your username" autocomplete="username" autofocus required>
             </div>
 
             <label class="field-label" for="password">Password</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">
+                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
+                </button>
             </div>
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <button class="btn-login" type="submit">Sign in</button>
+            <button class="btn-login" type="submit" id="loginSubmit">Sign in</button>
         </form>
 
         <span class="register-link">Don't have an account? <a href="{{ path('app_register') }}">Register</a></span>
@@ -258,6 +287,20 @@
             var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', next);
             try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
+        });
+
+        document.getElementById('passwordToggle').addEventListener('click', function () {
+            var password = document.getElementById('password');
+            var showing = password.type === 'text';
+            password.type = showing ? 'password' : 'text';
+            this.classList.toggle('is-visible', !showing);
+            this.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function () {
+            var submit = document.getElementById('loginSubmit');
+            submit.disabled = true;
+            submit.textContent = 'Signing in…';
         });
     </script>
   </body>
