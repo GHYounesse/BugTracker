@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register</title>
+    <title>Forgot password</title>
     {{ importmap('app') }}
     <style>
         :root {
@@ -29,9 +29,6 @@
             --alert-danger-bg: rgba(239, 68, 68, 0.15);
             --alert-danger-text: #fca5a5;
             --alert-danger-border: rgba(239, 68, 68, 0.3);
-            --alert-warning-bg: rgba(245, 158, 11, 0.15);
-            --alert-warning-text: #fcd34d;
-            --alert-warning-border: rgba(245, 158, 11, 0.35);
         }
         html[data-theme="light"] {
             --body-bg: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 65%, #ffffff 100%);
@@ -53,9 +50,6 @@
             --alert-danger-bg: rgba(239, 68, 68, 0.1);
             --alert-danger-text: #b91c1c;
             --alert-danger-border: rgba(239, 68, 68, 0.25);
-            --alert-warning-bg: rgba(245, 158, 11, 0.12);
-            --alert-warning-text: #92400e;
-            --alert-warning-border: rgba(245, 158, 11, 0.3);
         }
         body {
             min-height: 100vh;
@@ -80,10 +74,6 @@
             transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .theme-toggle {
-            /* floats outside the card, pinned to the viewport corner: a
-               flex/grid flow layout can't anchor an element to the page
-               corner independent of the card's own content, so this is one
-               of the few cases where fixed positioning is the right tool */
             position: fixed;
             bottom: 24px;
             right: 24px;
@@ -146,7 +136,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 6px;
+            margin-bottom: 18px;
             padding: 0 14px;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
@@ -179,70 +169,12 @@
             background: var(--input-focus-bg);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
         }
-        .password-toggle {
-            flex-shrink: 0;
-            background: none;
-            border: none;
-            padding: 4px;
-            margin: 0;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-        }
-        .password-toggle svg {
-            width: 16px;
-            height: 16px;
-        }
-        .password-toggle .icon-eye-off { display: none; }
-        .password-toggle.is-visible .icon-eye { display: none; }
-        .password-toggle.is-visible .icon-eye-off { display: block; }
         .field-errors {
             color: var(--alert-danger-text);
             font-size: 0.8rem;
             list-style: none;
             padding: 0;
-            margin: 0 0 16px;
-        }
-        .terms-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 18px 0;
-        }
-        .terms-row input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            flex-shrink: 0;
-            width: 18px;
-            height: 18px;
-            margin: 0;
-            border-radius: 5px;
-            border: 1px solid var(--input-border);
-            background-color: var(--input-bg);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 11px 11px;
-            cursor: pointer;
-            transition: background-color 0.15s ease, border-color 0.15s ease;
-        }
-        .terms-row input[type="checkbox"]:hover {
-            border-color: var(--brand);
-        }
-        .terms-row input[type="checkbox"]:checked {
-            background-color: var(--brand);
-            border-color: var(--brand);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5'/%3E%3C/svg%3E");
-        }
-        .terms-row input[type="checkbox"]:focus-visible {
-            outline: 2px solid var(--brand);
-            outline-offset: 2px;
-        }
-        .terms-row label {
-            color: var(--text-label);
-            font-size: 0.88rem;
-            margin: 0;
-            cursor: pointer;
+            margin: -10px 0 16px;
         }
         .btn-login {
             width: 100%;
@@ -268,7 +200,6 @@
         }
         .btn-login:focus-visible,
         .theme-toggle:focus-visible,
-        .password-toggle:focus-visible,
         .register-link a:focus-visible {
             outline: 2px solid var(--brand);
             outline-offset: 2px;
@@ -300,11 +231,6 @@
             color: var(--alert-danger-text);
             border-color: var(--alert-danger-border);
         }
-        .alert-custom.alert-warning {
-            background: var(--alert-warning-bg);
-            color: var(--alert-warning-text);
-            border-color: var(--alert-warning-border);
-        }
     </style>
     <script>
         (function () {
@@ -323,70 +249,26 @@
     </button>
 
     <div class="login-card">
-        {% if app.user %}
-        <div class="alert alert-warning alert-custom">
-            You are logged in as {{ app.user.userIdentifier }},
-            <form method="post" action="{{ path('app_logout') }}" style="display:inline;">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                <button type="submit" style="background:none;border:none;padding:0;color:inherit;text-decoration:underline;cursor:pointer;">Logout</button>
-            </form>
-        </div>
-        {% endif %}
+        {% for message in app.flashes('reset_password_error') %}
+        <div class="alert alert-danger alert-custom">{{ message }}</div>
+        {% endfor %}
 
         <div class="brand-badge">🐞</div>
-        <div class="brand-name">BugTracker</div>
-        <div class="brand-tagline">Create your account</div>
+        <div class="brand-name">Forgot password?</div>
+        <div class="brand-tagline">Enter your email and we'll send you a reset link</div>
 
-        {{ form_start(registrationForm, {'attr': {'id': 'registerForm'}}) }}
-            <label class="field-label" for="{{ registrationForm.username.vars.id }}">Username</label>
-            <div class="input-icon-group">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                {{ form_widget(registrationForm.username, {'attr': {'class': '', 'placeholder': 'Choose a username', 'autocomplete': 'username', 'autofocus': true}}) }}
-            </div>
-            <ul class="field-errors">{{ form_errors(registrationForm.username) }}</ul>
-
-            <label class="field-label" for="{{ registrationForm.email.vars.id }}">Email</label>
+        {{ form_start(requestForm, {'attr': {'id': 'requestForm'}}) }}
+            <label class="field-label" for="{{ requestForm.email.vars.id }}">Email</label>
             <div class="input-icon-group">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-                {{ form_widget(registrationForm.email, {'attr': {'class': '', 'placeholder': 'you@example.com', 'autocomplete': 'email'}}) }}
+                {{ form_widget(requestForm.email) }}
             </div>
-            <ul class="field-errors">{{ form_errors(registrationForm.email) }}</ul>
+            <ul class="field-errors">{{ form_errors(requestForm.email) }}</ul>
 
-            <label class="field-label" for="{{ registrationForm.plainPassword.first.vars.id }}">Password</label>
-            <div class="input-icon-group">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': '', 'placeholder': 'Create a password', 'autocomplete': 'new-password'}}) }}
-                <button type="button" class="password-toggle" data-toggle-for="{{ registrationForm.plainPassword.first.vars.id }}" aria-label="Show password">
-                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
-                </button>
-            </div>
-            <ul class="field-errors">{{ form_errors(registrationForm.plainPassword.first) }}</ul>
+            <button class="btn-login" type="submit" id="requestSubmit">Send reset link</button>
+        {{ form_end(requestForm) }}
 
-            <label class="field-label" for="{{ registrationForm.plainPassword.second.vars.id }}">Repeat Password</label>
-            <div class="input-icon-group">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': '', 'placeholder': 'Repeat your password', 'autocomplete': 'new-password'}}) }}
-                <button type="button" class="password-toggle" data-toggle-for="{{ registrationForm.plainPassword.second.vars.id }}" aria-label="Show password">
-                    <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
-                </button>
-            </div>
-            <ul class="field-errors">
-                {{ form_errors(registrationForm.plainPassword.second) }}
-                {{ form_errors(registrationForm.plainPassword) }}
-            </ul>
-
-            <div class="terms-row">
-                {{ form_widget(registrationForm.agreeTerms) }}
-                <label for="{{ registrationForm.agreeTerms.vars.id }}">I agree to the terms</label>
-            </div>
-            <ul class="field-errors">{{ form_errors(registrationForm.agreeTerms) }}</ul>
-
-            <button class="btn-login" type="submit" id="registerSubmit">Create account</button>
-        {{ form_end(registrationForm) }}
-
-        <span class="register-link">Already have an account? <a href="{{ path('app_login') }}">Login</a></span>
+        <span class="register-link">Remembered it? <a href="{{ path('app_login') }}">Back to login</a></span>
     </div>
 
     <script>
@@ -397,20 +279,10 @@
             try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
         });
 
-        document.querySelectorAll('.password-toggle').forEach(function (toggle) {
-            toggle.addEventListener('click', function () {
-                var password = document.getElementById(toggle.dataset.toggleFor);
-                var showing = password.type === 'text';
-                password.type = showing ? 'password' : 'text';
-                toggle.classList.toggle('is-visible', !showing);
-                toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
-            });
-        });
-
-        document.getElementById('registerForm').addEventListener('submit', function () {
-            var submit = document.getElementById('registerSubmit');
+        document.getElementById('requestForm').addEventListener('submit', function () {
+            var submit = document.getElementById('requestSubmit');
             submit.disabled = true;
-            submit.textContent = 'Creating account…';
+            submit.textContent = 'Sending…';
         });
     </script>
   </body>

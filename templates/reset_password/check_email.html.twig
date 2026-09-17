@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Check your email</title>
+    {{ importmap('app') }}
+    <style>
+        :root {
+            --brand: #6366f1;
+            --brand-dark: #4f46e5;
+
+            --body-bg: radial-gradient(circle at top, #1e2140 0%, #0f1123 65%, #0a0b18 100%);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            --text-heading: #f8fafc;
+            --text-muted: #94a3b8;
+            --link-color: #a5b4fc;
+            --toggle-bg: rgba(255, 255, 255, 0.06);
+            --toggle-border: rgba(255, 255, 255, 0.1);
+            --toggle-icon: #cbd5e1;
+        }
+        html[data-theme="light"] {
+            --body-bg: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 65%, #ffffff 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(15, 23, 42, 0.08);
+            --card-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+            --text-heading: #1e293b;
+            --text-muted: #64748b;
+            --link-color: #4f46e5;
+            --toggle-bg: rgba(15, 23, 42, 0.04);
+            --toggle-border: rgba(15, 23, 42, 0.1);
+            --toggle-icon: #475569;
+        }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--body-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background 0.2s ease;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 40px 36px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(6px);
+            text-align: center;
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .theme-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--toggle-bg);
+            border: 1px solid var(--toggle-border);
+            color: var(--toggle-icon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+        }
+        .theme-toggle svg {
+            width: 16px;
+            height: 16px;
+        }
+        .theme-toggle .icon-moon { display: none; }
+        html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+        html[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+        .brand-badge {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--brand), #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+        }
+        .brand-name {
+            color: var(--text-heading);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+        }
+        .brand-tagline {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+        .register-link {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+        .register-link a {
+            color: var(--link-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        (function () {
+            var stored = null;
+            try { stored = localStorage.getItem('bugtracker-theme'); } catch (e) {}
+            var theme = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+  </head>
+  <body>
+
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+
+    <div class="login-card">
+        <div class="brand-badge">📬</div>
+        <div class="brand-name">Check your email</div>
+        <div class="brand-tagline">If an account exists for that email address, we've sent a link to reset your password. It should arrive within a few minutes.</div>
+
+        <span class="register-link"><a href="{{ path('app_login') }}">Back to login</a></span>
+    </div>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function () {
+            var html = document.documentElement;
+            var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
+        });
+    </script>
+  </body>
+</html>

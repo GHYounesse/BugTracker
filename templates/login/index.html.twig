@@ -32,6 +32,9 @@
             --alert-warning-bg: rgba(245, 158, 11, 0.15);
             --alert-warning-text: #fcd34d;
             --alert-warning-border: rgba(245, 158, 11, 0.35);
+            --alert-success-bg: rgba(34, 197, 94, 0.15);
+            --alert-success-text: #86efac;
+            --alert-success-border: rgba(34, 197, 94, 0.3);
         }
         html[data-theme="light"] {
             --body-bg: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 65%, #ffffff 100%);
@@ -56,6 +59,9 @@
             --alert-warning-bg: rgba(245, 158, 11, 0.12);
             --alert-warning-text: #92400e;
             --alert-warning-border: rgba(245, 158, 11, 0.3);
+            --alert-success-bg: rgba(34, 197, 94, 0.1);
+            --alert-success-text: #15803d;
+            --alert-success-border: rgba(34, 197, 94, 0.25);
         }
         body {
             min-height: 100vh;
@@ -257,6 +263,24 @@
             color: var(--alert-warning-text);
             border-color: var(--alert-warning-border);
         }
+        .alert-custom.alert-success {
+            background: var(--alert-success-bg);
+            color: var(--alert-success-text);
+            border-color: var(--alert-success-border);
+        }
+        .forgot-password-link {
+            display: block;
+            text-align: right;
+            margin: -10px 0 18px;
+            font-size: 0.8rem;
+        }
+        .forgot-password-link a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }
         .remember-me {
             display: flex;
             align-items: center;
@@ -315,6 +339,10 @@
     </button>
 
     <div class="login-card">
+        {% for message in app.flashes('reset_password_success') %}
+        <div class="alert alert-success alert-custom">{{ message }}</div>
+        {% endfor %}
+
         {% if error %}
         {% set isThrottled = 'Too many failed login attempts' in error.messageKey %}
         <div class="alert {{ isThrottled ? 'alert-warning' : 'alert-danger' }} alert-custom">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -340,6 +368,8 @@
                     <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
                 </button>
             </div>
+
+            <span class="forgot-password-link"><a href="{{ path('app_forgot_password_request') }}">Forgot password?</a></span>
 
             <label class="remember-me" for="_remember_me">
                 <input type="checkbox" id="_remember_me" name="_remember_me">
