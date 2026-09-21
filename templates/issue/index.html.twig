@@ -3,89 +3,170 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block stylesheets %}
-    .dashboard-header {
+    /* ---------- stage: the summary band, same panel as the sign-in page ---------- */
+    .stage {
+        display: grid;
+        align-items: center;
+        margin-bottom: 24px;
+        padding: clamp(24px, 3.4vw, 44px);
+        overflow: hidden;
+        border-radius: 28px;
+        background: var(--stage-bg);
+        color: var(--stage-ink);
+    }
+    .stage > * { grid-area: 1 / 1; }
+    .stage-ring {
+        justify-self: end;
+        width: clamp(220px, 26vw, 340px);
+        height: auto;
+        /* negative margins keep the ring from setting the band's height; the stage clips the overflow */
+        margin: -70px -3% -70px 0;
+        color: var(--stage-ring);
+    }
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(20px, 4vw, 56px);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .stat {
+        display: grid;
+        gap: 6px;
+        padding: 12px 16px;
+        border-radius: 14px;
+    }
+    .stat-value {
+        font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+        line-height: 1;
+        font-weight: 600;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+    }
+    .stat-label {
+        color: var(--stage-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    /* resting state = locked on, as on the sign-in page; motion only for people who allow it */
+    .stat.is-target {
+        outline: 2px solid var(--stage-lock);
+        outline-offset: 4px;
+    }
+    .stat.is-target .stat-value { color: #ffb4b4; }
+    @media (prefers-reduced-motion: no-preference) {
+        .stat.is-target { animation: lock-on 0.85s 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+    }
+    @keyframes lock-on {
+        from { outline-color: transparent; outline-offset: 24px; }
+        to { outline-color: var(--stage-lock); outline-offset: 4px; }
+    }
+
+    /* ---------- filters ---------- */
+    .dashboard-filters {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
         gap: 12px;
-        margin-bottom: 24px;
-    }
-    .dashboard-header h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 0;
-        color: #f8fafc;
-    }
-    .kpi-row {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+        flex-wrap: wrap;
         margin-bottom: 20px;
     }
-    @media (max-width: 600px) {
-        .kpi-row {
-            grid-template-columns: 1fr;
-        }
+    .dashboard-filters .form-select {
+        width: auto;
+        min-height: 40px;
+        background-color: var(--field-bg);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 10px;
+        font-size: 0.9rem;
     }
-    .kpi-tile {
-        padding: 16px 18px;
+    .dashboard-filters .form-select:hover { border-color: var(--muted); }
+    .dashboard-filters .form-select:focus {
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px var(--ring);
     }
-    .kpi-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #f8fafc;
-        line-height: 1;
+    .check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
     }
-    .kpi-value.kpi-alert {
-        color: #fca5a5;
+    .check input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        border-radius: 5px;
+        border: 1px solid var(--line);
+        background-color: var(--field-bg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 11px 11px;
+        cursor: pointer;
     }
-    .kpi-label {
-        font-size: 0.8rem;
-        color: #94a3b8;
-        margin-top: 4px;
+    .check input[type="checkbox"]:hover { border-color: var(--signal); }
+    .check input[type="checkbox"]:checked {
+        background-color: var(--signal);
+        border-color: var(--signal);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5'/%3E%3C/svg%3E");
     }
+
+    /* ---------- board ---------- */
     .issue-board {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 20px;
     }
     @media (max-width: 900px) {
-        .issue-board {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .issue-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 600px) {
-        .issue-board {
-            grid-template-columns: 1fr;
-        }
+        .issue-board { grid-template-columns: minmax(0, 1fr); }
     }
     .issue-column {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
         overflow: hidden;
     }
     .issue-column-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 10px;
         padding: 14px 18px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        font-weight: 600;
-        color: #f1f5f9;
+        border-bottom: 1px solid var(--line-soft);
+        font-weight: 650;
+        letter-spacing: -0.01em;
     }
+    .issue-column-title { flex: 1 1 auto; }
+    .stage-dot {
+        --t: var(--t-slate);
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--t);
+    }
+    .dot-new { --t: var(--t-indigo); }
+    .dot-confirmed { --t: var(--t-violet); }
+    .dot-assigned { --t: var(--t-cyan); }
+    .dot-accepted { --t: var(--t-blue); }
+    .dot-processed { --t: var(--t-green); }
+    .dot-closed { --t: var(--t-slate); }
     .issue-count-badge {
-        background: rgba(255, 255, 255, 0.1);
-        color: #cbd5e1;
-        border-radius: 999px;
-        padding: 2px 10px;
-        font-size: 0.78rem;
+        color: var(--muted);
+        font-size: 0.82rem;
         font-weight: 600;
+        font-variant-numeric: tabular-nums;
     }
     .issue-column-body {
         padding: 10px;
-        max-height: 480px;
+        max-height: 520px;
         overflow-y: auto;
     }
     .issue-column-pagination {
@@ -94,45 +175,40 @@
         justify-content: center;
         gap: 14px;
         padding: 10px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        font-size: 0.78rem;
-        color: #94a3b8;
+        border-top: 1px solid var(--line-soft);
+        font-size: 0.8rem;
+        color: var(--muted);
     }
     .issue-column-pagination a {
-        color: #cbd5e1;
+        color: var(--soft);
+        font-weight: 600;
         text-decoration: none;
-        padding: 2px 8px;
+        padding: 3px 8px;
         border-radius: 6px;
     }
-    .issue-column-pagination a:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
+    .issue-column-pagination a:hover { background: var(--surface-2); }
     .issue-column-pagination a.disabled {
         pointer-events: none;
-        opacity: 0.3;
+        opacity: 0.35;
     }
     .issue-row {
         display: block;
         padding: 12px 14px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 8px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: var(--surface-2);
+        border: 1px solid var(--line-soft);
+        color: var(--ink);
         text-decoration: none;
-        transition: background 0.12s ease, border-color 0.12s ease;
+        transition: border-color 0.12s ease;
     }
-    .issue-row:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.12);
-    }
+    .issue-row:last-child { margin-bottom: 0; }
+    .issue-row:hover { border-color: var(--signal); }
     .issue-row-overdue {
-        border-color: rgba(239, 68, 68, 0.35);
-        background: rgba(239, 68, 68, 0.06);
+        border-color: var(--danger-line);
+        background: var(--danger-bg);
     }
-    .issue-row-overdue:hover {
-        border-color: rgba(239, 68, 68, 0.5);
-        background: rgba(239, 68, 68, 0.1);
-    }
+    .issue-row-overdue:hover { border-color: var(--danger); }
     .issue-row-top {
         display: flex;
         align-items: center;
@@ -144,23 +220,22 @@
         align-items: center;
         gap: 6px;
     }
-    .tag-overdue {
-        background: rgba(239, 68, 68, 0.25);
-        color: #fca5a5;
-    }
+    .tag-overdue { --t: var(--t-red); }
     .issue-id {
-        color: #64748b;
-        font-size: 0.78rem;
+        color: var(--muted);
+        font-size: 0.8rem;
         font-weight: 600;
+        font-variant-numeric: tabular-nums;
     }
     .issue-summary {
-        font-size: 0.92rem;
-        color: #e2e8f0;
+        font-size: 0.96rem;
+        font-weight: 550;
+        line-height: 1.35;
         margin-bottom: 8px;
     }
     .issue-row-project {
-        font-size: 0.76rem;
-        color: #a5b4fc;
+        font-size: 0.78rem;
+        color: var(--link);
         font-weight: 600;
         margin-bottom: 6px;
     }
@@ -168,21 +243,18 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 0.78rem;
-        color: #cbd5e1;
+        font-size: 0.8rem;
+        color: var(--soft);
         margin-bottom: 8px;
     }
-    .issue-row-assignee.unassigned {
-        color: #64748b;
-        font-style: italic;
-    }
+    .issue-row-assignee.unassigned { color: var(--muted); }
     .assignee-avatar {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
-        background: rgba(59, 130, 246, 0.25);
-        color: #bfdbfe;
-        font-size: 0.65rem;
+        background: color-mix(in srgb, var(--signal) 16%, transparent);
+        color: var(--link);
+        font-size: 0.68rem;
         font-weight: 700;
         display: flex;
         align-items: center;
@@ -194,85 +266,71 @@
         align-items: center;
         justify-content: space-between;
         font-size: 0.78rem;
-        color: #94a3b8;
+        color: var(--muted);
     }
     .issue-empty {
         text-align: center;
-        color: #64748b;
-        font-size: 0.88rem;
+        color: var(--muted);
+        font-size: 0.9rem;
         padding: 24px 12px;
-    }
-    .dashboard-filters {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
-    .dashboard-filters select {
-        width: auto;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #f1f5f9;
-        border-radius: 8px;
-        padding: 6px 10px;
-        font-size: 0.85rem;
-    }
-    .dashboard-filters label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        color: #cbd5e1;
-        cursor: pointer;
     }
 {% endblock %}
 
 {% block body %}
-    <div class="dashboard-header">
+    <div class="page-header">
         <h1>Dashboard</h1>
-        <a href="{{ path('app_issue') }}" class="btn-brand">+ New Issue</a>
+        <a href="{{ path('app_issue') }}" class="btn-brand">New issue</a>
     </div>
 
-    <div class="kpi-row">
-        <div class="app-card kpi-tile">
-            <div class="kpi-value">{{ openCount }}</div>
-            <div class="kpi-label">Open issues</div>
-        </div>
-        <div class="app-card kpi-tile">
-            <div class="kpi-value{{ overdueCount > 0 ? ' kpi-alert' : '' }}">{{ overdueCount }}</div>
-            <div class="kpi-label">Overdue</div>
-        </div>
-        <div class="app-card kpi-tile">
-            <div class="kpi-value">{{ unassignedCount }}</div>
-            <div class="kpi-label">Unassigned</div>
-        </div>
-    </div>
+    <section class="stage" aria-label="Summary">
+        <svg class="stage-ring" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" aria-hidden="true">
+            <path d="M335.84 166.13A140 140 0 0 0 233.87 64.16"></path>
+            <path d="M166.13 64.16A140 140 0 0 0 64.16 166.13"></path>
+            <path d="M64.16 233.87A140 140 0 0 0 166.13 335.84"></path>
+            <path d="M233.87 335.84A140 140 0 0 0 335.84 233.87"></path>
+            <path d="M200 30V70M330 200H370M200 330V370M30 200H70"></path>
+        </svg>
 
-    <form method="get" action="{{ path('app_home') }}" class="dashboard-filters">
-        <select name="project" class="form-select" onchange="this.form.submit()">
+        <ul class="stats">
+            <li class="stat">
+                <span class="stat-value">{{ openCount }}</span>
+                <span class="stat-label">Open issues</span>
+            </li>
+            <li class="stat{{ overdueCount > 0 ? ' is-target' : '' }}">
+                <span class="stat-value">{{ overdueCount }}</span>
+                <span class="stat-label">Overdue</span>
+            </li>
+            <li class="stat">
+                <span class="stat-value">{{ unassignedCount }}</span>
+                <span class="stat-label">Unassigned</span>
+            </li>
+        </ul>
+    </section>
+
+    <form method="get" action="{{ path('app_home') }}" class="dashboard-filters" aria-label="Filter issues">
+        <select name="project" class="form-select" aria-label="Project" onchange="this.form.submit()">
             <option value="">All projects</option>
             {% for project in availableProjects %}
             <option value="{{ project.id }}" {{ selectedProjectId == project.id ? 'selected' : '' }}>{{ project.name }}</option>
             {% endfor %}
         </select>
-        <select name="category" class="form-select" onchange="this.form.submit()">
+        <select name="category" class="form-select" aria-label="Category" onchange="this.form.submit()">
             <option value="">All categories</option>
             {% for category in availableCategories %}
             <option value="{{ category.id }}" {{ selectedCategoryId == category.id ? 'selected' : '' }}>{{ category.name }}</option>
             {% endfor %}
         </select>
-        <select name="severity" class="form-select" onchange="this.form.submit()">
+        <select name="severity" class="form-select" aria-label="Severity" onchange="this.form.submit()">
             <option value="">All severities</option>
             {% for severity in severities %}
             <option value="{{ severity }}" {{ selectedSeverity == severity ? 'selected' : '' }}>{{ severity|capitalize }}</option>
             {% endfor %}
         </select>
-        <label>
+        <label class="check">
             <input type="checkbox" name="mine" value="1" {{ onlyMine ? 'checked' : '' }} onchange="this.form.submit()">
             Assigned to me
         </label>
-        <select name="sort" class="form-select" onchange="this.form.submit()">
+        <select name="sort" class="form-select" aria-label="Sort order" onchange="this.form.submit()">
             <option value="newest" {{ sort == 'newest' ? 'selected' : '' }}>Sort: Newest</option>
             <option value="priority" {{ sort == 'priority' ? 'selected' : '' }}>Sort: Priority</option>
             <option value="dueDate" {{ sort == 'dueDate' ? 'selected' : '' }}>Sort: Due date</option>

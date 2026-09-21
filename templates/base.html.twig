@@ -6,20 +6,160 @@
         <title>{% block title %}BugTracker{% endblock %}</title>
         <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
         {% block importmap %}{{ importmap('app') }}{% endblock %}
+        <script>
+            (function () {
+                var stored = null;
+                try { stored = localStorage.getItem('bugtracker-theme'); } catch (e) {}
+                var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            })();
+        </script>
         <style>
-            :root {
-                --brand: #3b82f6;
-                --brand-dark: #2563eb;
+            @font-face {
+                font-family: "Bricolage Grotesque";
+                src: url("{{ asset('fonts/bricolage-grotesque.woff2') }}") format("woff2");
+                font-weight: 200 800;
+                font-style: normal;
+                font-display: swap;
             }
+
+            :root {
+                --font: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+                --bg: #f4f6fa;
+                --surface: #ffffff;
+                --surface-2: #f6f8fc;
+                --ink: #0b1220;
+                --soft: #2c3850;
+                --muted: #5b667a;
+                --line: #d3dae6;
+                --line-soft: #e4e9f2;
+                --field-bg: #ffffff;
+                --signal: #2563eb;
+                --signal-hover: #1d4ed8;
+                --ring: rgba(37, 99, 235, 0.25);
+                --link: #1d4ed8;
+                --danger: #b42328;
+                --danger-line: rgba(229, 72, 77, 0.32);
+                --danger-bg: rgba(229, 72, 77, 0.08);
+
+                --stage-bg: #0b1220;
+                --stage-ink: #eaf0fb;
+                --stage-muted: #8f9db6;
+                --stage-line: rgba(255, 255, 255, 0.09);
+                --stage-lock: #6ea8ff;
+                --stage-ring: rgba(110, 168, 255, 0.2);
+
+                /* tag / status hues (text colour; backgrounds are mixed from it) */
+                --t-slate: #475569;
+                --t-indigo: #4338ca;
+                --t-amber: #92400e;
+                --t-red: #b42328;
+                --t-blocker: #991b1b;
+                --t-violet: #6d28d9;
+                --t-cyan: #0e7490;
+                --t-blue: #1d4ed8;
+                --t-green: #15803d;
+
+                --alert-danger-bg: rgba(229, 72, 77, 0.09);
+                --alert-danger-text: #b42328;
+                --alert-danger-border: rgba(229, 72, 77, 0.28);
+                --alert-success-bg: rgba(34, 197, 94, 0.11);
+                --alert-success-text: #14703a;
+                --alert-success-border: rgba(34, 197, 94, 0.3);
+            }
+            html[data-theme="dark"] {
+                --bg: #080d19;
+                --surface: #111c33;
+                --surface-2: #0f1829;
+                --ink: #eaf0fb;
+                --soft: #c5d0e4;
+                --muted: #93a0b8;
+                --line: #223049;
+                --line-soft: #1a263c;
+                --field-bg: #0f1829;
+                --signal-hover: #3b7bff;
+                --ring: rgba(96, 150, 255, 0.35);
+                --link: #8db6ff;
+                --danger: #fca5a5;
+                --danger-line: rgba(239, 68, 68, 0.36);
+                --danger-bg: rgba(239, 68, 68, 0.12);
+
+                --stage-bg: #0f1a30;
+
+                --t-slate: #cbd5e1;
+                --t-indigo: #a5b4fc;
+                --t-amber: #fbbf24;
+                --t-red: #fca5a5;
+                --t-blocker: #fecaca;
+                --t-violet: #c4b5fd;
+                --t-cyan: #67e8f9;
+                --t-blue: #93c5fd;
+                --t-green: #86efac;
+
+                --alert-danger-bg: rgba(239, 68, 68, 0.14);
+                --alert-danger-text: #fca5a5;
+                --alert-danger-border: rgba(239, 68, 68, 0.32);
+                --alert-success-bg: rgba(34, 197, 94, 0.14);
+                --alert-success-text: #86efac;
+                --alert-success-border: rgba(34, 197, 94, 0.32);
+            }
+            /* point Bootstrap's own tokens at ours so its components follow the theme */
+            html[data-bs-theme] {
+                --bs-body-bg: var(--bg);
+                --bs-body-color: var(--ink);
+                --bs-body-font-family: var(--font);
+                --bs-border-color: var(--line);
+                --bs-link-color: var(--link);
+                --bs-link-hover-color: var(--signal-hover);
+            }
+
             body {
                 min-height: 100vh;
                 margin: 0;
-                background: #0f1123;
-                color: #e2e8f0;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                background: var(--bg);
+                color: var(--ink);
+                font-family: var(--font);
+                -webkit-font-smoothing: antialiased;
+                transition: background-color 0.2s ease, color 0.2s ease;
             }
             a {
-                color: #93c5fd;
+                color: var(--link);
+            }
+            :focus-visible {
+                outline: 2px solid var(--signal);
+                outline-offset: 2px;
+            }
+            .app-main {
+                max-width: 1480px;
+                margin: 0 auto;
+                padding: clamp(18px, 3vw, 36px);
+            }
+
+            /* ---------- navbar ---------- */
+            /* Bootstrap's stylesheet loads after this block, so navbar/dropdown/modal
+               overrides use doubled selectors to win on specificity, not source order. */
+            .navbar.app-navbar {
+                --bs-navbar-color: var(--muted);
+                --bs-navbar-hover-color: var(--ink);
+                --bs-navbar-active-color: var(--link);
+                --bs-navbar-brand-color: var(--ink);
+                --bs-navbar-brand-hover-color: var(--ink);
+                --bs-navbar-toggler-border-color: var(--line);
+                --bs-navbar-toggler-focus-width: 3px;
+                background: var(--surface);
+                border-bottom: 1px solid var(--line);
+                padding-block: 10px;
+            }
+            html[data-theme="dark"] .navbar.app-navbar {
+                --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28234, 240, 251, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+            .app-navbar .navbar-brand {
+                color: var(--ink);
+                font-size: 1.2rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
             }
             .navbar-brand-badge {
                 width: 34px;
@@ -27,62 +167,96 @@
                 border-radius: 9px;
                 display: inline-block;
                 object-fit: cover;
+                border: 1px solid var(--line);
             }
-            .app-navbar {
-                background: rgba(255, 255, 255, 0.03);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            .app-navbar .navbar-nav .nav-link {
+                border-radius: 8px;
+                padding: 7px 12px;
+                font-weight: 500;
             }
-            .dropdown-menu {
-                background: #151830;
-                border: 1px solid rgba(255, 255, 255, 0.08);
+            .app-navbar .navbar-nav .nav-link:hover { color: var(--ink); }
+            .app-navbar .navbar-nav .nav-link.active {
+                background: color-mix(in srgb, var(--signal) 12%, transparent);
+                color: var(--link);
             }
-            .dropdown-item {
-                color: #e2e8f0;
+            .app-navbar .navbar-nav .nav-link.dropdown-toggle.show { color: var(--ink); }
+            .app-navbar .dropdown-menu {
+                --bs-dropdown-bg: var(--surface);
+                --bs-dropdown-border-color: var(--line);
+                --bs-dropdown-color: var(--ink);
+                --bs-dropdown-link-color: var(--ink);
+                --bs-dropdown-link-hover-color: var(--ink);
+                --bs-dropdown-link-hover-bg: var(--surface-2);
+                --bs-dropdown-divider-bg: var(--line);
+                border-radius: 12px;
             }
-            .dropdown-item:hover,
-            .dropdown-item:focus {
-                background: rgba(255, 255, 255, 0.08);
-                color: #fff;
+            .theme-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                border-radius: 50%;
+                background: var(--surface);
+                border: 1px solid var(--line);
+                color: var(--ink);
+                cursor: pointer;
             }
-            .dropdown-divider {
-                border-color: rgba(255, 255, 255, 0.1);
-            }
+            .theme-toggle:hover { border-color: var(--muted); }
+            .theme-toggle svg { width: 16px; height: 16px; }
+            .theme-toggle .icon-moon { display: none; }
+            html:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
+            html:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+
+            /* ---------- buttons ---------- */
             .btn-brand {
-                display: inline-block;
-                padding: 9px 18px;
-                border: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+                padding: 0 18px;
+                border: 0;
                 border-radius: 10px;
-                background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+                background: var(--signal);
                 color: #fff;
+                font: inherit;
                 font-weight: 600;
-                font-size: 0.9rem;
+                font-size: 0.92rem;
                 text-decoration: none;
-                transition: transform 0.12s ease, box-shadow 0.12s ease;
+                cursor: pointer;
+                transition: background-color 0.15s ease, transform 0.1s ease;
             }
-            .btn-brand:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-                color: #fff;
-            }
+            .btn-brand:hover { background: var(--signal-hover); color: #fff; }
+            .btn-brand:active { transform: translateY(1px); }
             .btn-outline-brand {
-                display: inline-block;
-                padding: 8px 16px;
-                border: 1px solid rgba(255, 255, 255, 0.15);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 36px;
+                padding: 0 14px;
+                border: 1px solid var(--line);
                 border-radius: 10px;
-                background: rgba(255, 255, 255, 0.03);
-                color: #e2e8f0;
+                background: var(--surface);
+                color: var(--ink);
+                font: inherit;
                 font-weight: 600;
-                font-size: 0.88rem;
+                font-size: 0.86rem;
                 text-decoration: none;
-                transition: background 0.12s ease;
+                cursor: pointer;
+                transition: border-color 0.15s ease;
             }
-            .btn-outline-brand:hover {
-                background: rgba(255, 255, 255, 0.08);
-                color: #fff;
+            .btn-outline-brand:hover { border-color: var(--muted); color: var(--ink); }
+            .btn-outline-brand.is-danger {
+                border-color: var(--danger-line);
+                color: var(--danger);
             }
+            .btn-outline-brand.is-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+
+            /* ---------- surfaces ---------- */
             .app-card {
-                background: rgba(255, 255, 255, 0.04);
-                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: var(--surface);
+                border: 1px solid var(--line);
                 border-radius: 14px;
             }
             .detail-card {
@@ -92,93 +266,141 @@
             .detail-card h2 {
                 font-size: 0.95rem;
                 font-weight: 700;
-                color: #f1f5f9;
+                color: var(--ink);
                 margin: 0 0 12px;
             }
+            .page-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+            .page-header h1 {
+                margin: 0;
+                font-size: 1.9rem;
+                line-height: 1.1;
+                font-weight: 650;
+                letter-spacing: -0.035em;
+                color: var(--ink);
+            }
+            .empty-state {
+                text-align: center;
+                color: var(--muted);
+                padding: 40px 12px;
+                font-size: 0.92rem;
+            }
+
+            /* ---------- tags ---------- */
             .tag {
+                --t: var(--t-slate);
                 display: inline-block;
                 text-transform: capitalize;
                 font-size: 0.72rem;
                 font-weight: 600;
                 border-radius: 999px;
                 padding: 3px 10px;
+                background: color-mix(in srgb, var(--t) 15%, transparent);
+                color: var(--t);
             }
-            .tag-category {
-                background: rgba(165, 180, 252, 0.15);
-                color: #a5b4fc;
-                text-transform: none;
-            }
+            .tag-category { --t: var(--t-indigo); text-transform: none; }
             /* priority & severity share the same escalating scale */
-            .tag-low, .tag-trivial { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
-            .tag-normal, .tag-minor { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
-            .tag-high, .tag-major { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-            .tag-urgent, .tag-critical { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-            .tag-immediate, .tag-blocker { background: rgba(220, 38, 38, 0.35); color: #fecaca; }
+            .tag-low, .tag-trivial { --t: var(--t-slate); }
+            .tag-normal, .tag-minor { --t: var(--t-indigo); }
+            .tag-high, .tag-major { --t: var(--t-amber); }
+            .tag-urgent, .tag-critical { --t: var(--t-red); }
+            .tag-immediate, .tag-blocker { --t: var(--t-blocker); background: color-mix(in srgb, #dc2626 26%, transparent); }
             /* status has its own distinct palette - it's a workflow stage, not a severity level */
-            .tag-new { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
-            .tag-confirmed { background: rgba(167, 139, 250, 0.2); color: #c4b5fd; }
-            .tag-assigned { background: rgba(34, 211, 238, 0.2); color: #67e8f9; }
-            .tag-accepted { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
-            .tag-processed { background: rgba(34, 197, 94, 0.2); color: #86efac; }
-            .tag-closed { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+            .tag-new { --t: var(--t-indigo); }
+            .tag-confirmed { --t: var(--t-violet); }
+            .tag-assigned { --t: var(--t-cyan); }
+            .tag-accepted { --t: var(--t-blue); }
+            .tag-processed { --t: var(--t-green); }
+            .tag-closed { --t: var(--t-slate); }
+
             .flash-message {
                 border-radius: 10px;
-                padding: 12px 16px;
+                padding: 12px 14px;
                 margin-bottom: 16px;
-                font-size: 0.88rem;
+                font-size: 0.9rem;
+                line-height: 1.45;
+                border: 1px solid transparent;
             }
-            .flash-success { background: rgba(34, 197, 94, 0.15); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.25); }
-            .flash-error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.25); }
+            .flash-success { background: var(--alert-success-bg); color: var(--alert-success-text); border-color: var(--alert-success-border); }
+            .flash-error, .flash-danger { background: var(--alert-danger-bg); color: var(--alert-danger-text); border-color: var(--alert-danger-border); }
             .back-link {
                 display: inline-block;
                 margin-bottom: 16px;
-                font-size: 0.88rem;
+                font-size: 0.9rem;
+                font-weight: 500;
+                text-decoration: none;
             }
+            .back-link:hover { text-decoration: underline; }
+
+            /* ---------- forms ---------- */
             .styled-form .form-label {
-                color: #cbd5e1;
-                font-size: 0.82rem;
+                color: var(--ink);
+                font-size: 0.86rem;
                 font-weight: 600;
-                margin-bottom: 6px;
+                margin-bottom: 8px;
             }
             .styled-form .form-control,
             .styled-form .form-select {
-                background: rgba(255, 255, 255, 0.06);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                color: #f1f5f9;
+                min-height: 44px;
+                background-color: var(--field-bg);
+                border: 1px solid var(--line);
+                color: var(--ink);
                 border-radius: 10px;
             }
+            .styled-form .form-control:hover,
+            .styled-form .form-select:hover { border-color: var(--muted); }
             .styled-form .form-control:focus,
             .styled-form .form-select:focus {
-                background: rgba(255, 255, 255, 0.09);
-                border-color: var(--brand);
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-                color: #f1f5f9;
+                background-color: var(--field-bg);
+                border-color: var(--signal);
+                box-shadow: 0 0 0 3px var(--ring);
+                color: var(--ink);
             }
             .styled-form .form-select option {
-                color: #0f1123;
+                background: var(--surface);
+                color: var(--ink);
             }
             .styled-form .form-text {
-                color: #64748b;
+                color: var(--muted);
             }
             .styled-form .invalid-feedback {
-                color: #fca5a5;
+                color: var(--danger);
                 display: block;
             }
             /* the default (non-Bootstrap) form theme renders errors as a bare <ul> */
             .styled-form label + ul {
-                color: #fca5a5;
+                color: var(--danger);
                 font-size: 0.8rem;
                 margin: 4px 0 8px;
                 padding-left: 18px;
             }
             .styled-form .required::after {
                 content: " *";
-                color: #64748b;
+                color: var(--muted);
             }
             .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
             .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
             @media (max-width: 700px) {
                 .form-row-2, .form-row-3 { grid-template-columns: 1fr; }
+            }
+
+            /* ---------- modals ---------- */
+            .modal .modal-content {
+                background: var(--surface);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                color: var(--ink);
+            }
+            .modal-header, .modal-footer { border-color: var(--line); }
+
+            @media (prefers-reduced-motion: reduce) {
+                * { transition: none !important; }
             }
             {% block stylesheets %}{% endblock %}
         </style>
@@ -186,7 +408,7 @@
     <body>
         {% include 'partials/_navbar.html.twig' %}
 
-        <main class="container-fluid" style="padding: 28px;">
+        <main class="app-main">
             {% for type, messages in app.flashes %}
                 {% for message in messages %}
                     <div class="flash-message flash-{{ type }}">{{ message }}</div>
@@ -196,6 +418,19 @@
             {% block body %}{% endblock %}
         </main>
 
+        <script>
+            (function () {
+                var toggle = document.getElementById('themeToggle');
+                if (!toggle) { return; }
+                toggle.addEventListener('click', function () {
+                    var html = document.documentElement;
+                    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    html.setAttribute('data-theme', next);
+                    html.setAttribute('data-bs-theme', next);
+                    try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
+                });
+            })();
+        </script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

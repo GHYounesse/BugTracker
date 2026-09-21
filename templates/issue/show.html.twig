@@ -12,15 +12,17 @@
         margin-bottom: 24px;
     }
     .issue-detail-header .issue-id {
-        color: #64748b;
+        color: var(--muted);
         font-size: 0.85rem;
         font-weight: 600;
     }
     .issue-detail-header h1 {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #f8fafc;
-        margin: 4px 0 10px;
+        font-size: 1.7rem;
+        line-height: 1.15;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin: 4px 0 12px;
     }
     .tag-row {
         display: flex;
@@ -37,25 +39,30 @@
         .issue-detail-grid { grid-template-columns: 1fr; }
     }
     .detail-card p {
-        color: #cbd5e1;
-        font-size: 0.9rem;
+        color: var(--soft);
+        font-size: 0.95rem;
+        line-height: 1.5;
         white-space: pre-line;
         margin: 0;
+    }
+    .detail-card .empty-note {
+        color: var(--muted);
+        font-size: 0.9rem;
     }
     .meta-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 9px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 0.85rem;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 0.88rem;
     }
     .meta-row:last-child { border-bottom: none; }
-    .meta-label { color: #94a3b8; }
-    .meta-value { color: #e2e8f0; font-weight: 500; }
+    .meta-label { color: var(--muted); }
+    .meta-value { color: var(--ink); font-weight: 500; }
     .comment {
         padding: 12px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid var(--line-soft);
     }
     .comment:last-of-type { border-bottom: none; }
     .comment-header {
@@ -64,26 +71,28 @@
         justify-content: space-between;
         margin-bottom: 4px;
     }
-    .comment-author { color: #f1f5f9; font-weight: 600; font-size: 0.85rem; }
-    .comment-date { color: #64748b; font-size: 0.75rem; }
-    .comment-body { color: #cbd5e1; font-size: 0.88rem; white-space: pre-line; }
+    .comment-author { color: var(--ink); font-weight: 600; font-size: 0.88rem; }
+    .comment-date { color: var(--muted); font-size: 0.78rem; }
+    .comment-body { color: var(--soft); font-size: 0.92rem; white-space: pre-line; }
     .comment-textarea {
         width: 100%;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--field-bg);
+        border: 1px solid var(--line);
         border-radius: 10px;
-        color: #f1f5f9;
+        color: var(--ink);
+        font-family: inherit;
         padding: 10px 12px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         resize: vertical;
     }
+    .comment-textarea:hover { border-color: var(--muted); }
     .comment-textarea:focus {
         outline: none;
-        border-color: var(--brand);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px var(--ring);
     }
     .comment-errors {
-        color: #fca5a5;
+        color: var(--danger);
         font-size: 0.8rem;
         list-style: none;
         padding: 0;
@@ -92,7 +101,7 @@
 {% endblock %}
 
 {% block body %}
-    <a href="{{ path('app_home') }}" class="back-link">&larr; Back to Dashboard</a>
+    <a href="{{ path('app_home') }}" class="back-link">Back to dashboard</a>
 
     <div class="issue-detail-header">
         <div>
@@ -104,7 +113,7 @@
                 <span class="tag tag-{{ issue.severity }}">{{ issue.severity }} severity</span>
             </div>
         </div>
-        <a href="{{ path('issue_edit', {id: issue.id}) }}" class="btn-brand">Edit Issue</a>
+        <a href="{{ path('issue_edit', {id: issue.id}) }}" class="btn-brand">Edit issue</a>
     </div>
 
     <div class="issue-detail-grid">
@@ -140,7 +149,7 @@
                     <div class="comment-body">{{ comment.content }}</div>
                 </div>
                 {% else %}
-                <p style="color:#64748b; font-size:0.88rem;">No comments yet — be the first to say something.</p>
+                <p class="empty-note">No comments yet. Add the first one below.</p>
                 {% endfor %}
 
                 {{ form_start(commentForm, {action: path('issue_comment', {id: issue.id}), attr: {style: 'margin-top:16px;'}}) }}

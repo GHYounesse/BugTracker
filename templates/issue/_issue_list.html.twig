@@ -1,5 +1,6 @@
 <div class="issue-column">
     <div class="issue-column-header">
+        <span class="stage-dot dot-{{ status }}" aria-hidden="true"></span>
         <span class="issue-column-title">{{ title }}</span>
         <span class="issue-count-badge">{{ page.count }}</span>
     </div>
@@ -26,7 +27,7 @@
             </div>
         </a>
         {% else %}
-        <div class="issue-empty">No issues here yet.</div>
+        <div class="issue-empty">No issues in this stage.</div>
         {% endfor %}
     </div>
     {% if page.total > 1 %}

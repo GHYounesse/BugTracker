@@ -1,7 +1,8 @@
-<nav class="navbar navbar-expand-lg app-navbar" data-bs-theme="dark">
+{% set current_route = app.request.attributes.get('_route') %}
+<nav class="navbar navbar-expand-lg app-navbar">
   <div class="container-fluid px-4">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ path('app_home') }}" style="color:#f8fafc;">
-      <img class="navbar-brand-badge" src="{{ asset('images/logo.png') }}" alt="BugTracker logo">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ path('app_home') }}">
+      <img class="navbar-brand-badge" src="{{ asset('images/logo.png') }}" alt="">
       BugTracker
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,27 +12,30 @@
       {% if app.user %}
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_home') }}">Dashboard</a>
+            <a class="nav-link{{ current_route == 'app_home' ? ' active' : '' }}"{{ current_route == 'app_home' ? ' aria-current="page"' : '' }} href="{{ path('app_home') }}">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_issue') }}">New Issue</a>
+            <a class="nav-link{{ current_route == 'app_issue' ? ' active' : '' }}"{{ current_route == 'app_issue' ? ' aria-current="page"' : '' }} href="{{ path('app_issue') }}">New Issue</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('category_index') }}">Categories</a>
+            <a class="nav-link{{ current_route starts with 'category_' ? ' active' : '' }}" href="{{ path('category_index') }}">Categories</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('project_index') }}">Projects</a>
+            <a class="nav-link{{ current_route starts with 'project_' ? ' active' : '' }}" href="{{ path('project_index') }}">Projects</a>
           </li>
           {% if is_granted('ROLE_ADMIN') %}
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('list') }}">Manage Users</a>
+            <a class="nav-link{{ current_route == 'list' ? ' active' : '' }}" href="{{ path('list') }}">Manage Users</a>
           </li>
           {% endif %}
         </ul>
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            {% include 'partials/_theme_toggle.html.twig' %}
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               {{ app.user.userIdentifier }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -47,7 +51,10 @@
           </li>
         </ul>
       {% else %}
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            {% include 'partials/_theme_toggle.html.twig' %}
+          </li>
           <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ path('app_register') }}">Register</a></li>
         </ul>

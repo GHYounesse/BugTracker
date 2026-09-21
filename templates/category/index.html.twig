@@ -3,38 +3,22 @@
 {% block title %}Categories{% endblock %}
 
 {% block stylesheets %}
-    .page-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-bottom: 24px;
-    }
-    .page-header h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 0;
-        color: #f8fafc;
-    }
     .category-table {
         width: 100%;
         border-collapse: collapse;
     }
     .category-table th {
         text-align: left;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: #94a3b8;
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--muted);
         padding: 12px 18px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--line);
     }
     .category-table td {
         padding: 14px 18px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: #e2e8f0;
-        font-size: 0.9rem;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 0.95rem;
         vertical-align: middle;
     }
     .category-table tr:last-child td {
@@ -45,18 +29,12 @@
         gap: 8px;
         justify-content: flex-end;
     }
-    .empty-state {
-        text-align: center;
-        color: #64748b;
-        padding: 40px 12px;
-        font-size: 0.9rem;
-    }
 {% endblock %}
 
 {% block body %}
     <div class="page-header">
         <h1>Categories</h1>
-        <a href="{{ path('category_new') }}" class="btn-brand">+ New Category</a>
+        <a href="{{ path('category_new') }}" class="btn-brand">New category</a>
     </div>
 
     <div class="app-card">
@@ -79,7 +57,7 @@
                             <a href="{{ path('category_edit', {id: category.id}) }}" class="btn-outline-brand">Edit</a>
                             <form method="post" action="{{ path('category_delete', {id: category.id}) }}" onsubmit="return confirm('Delete category &quot;{{ category.name }}&quot;?');">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete-category-' ~ category.id) }}">
-                                <button type="submit" class="btn-outline-brand" style="border-color: rgba(239,68,68,0.3); color:#fca5a5;">Delete</button>
+                                <button type="submit" class="btn-outline-brand is-danger">Delete</button>
                             </form>
                         </div>
                     </td>
