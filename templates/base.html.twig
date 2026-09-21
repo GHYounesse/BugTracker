@@ -409,6 +409,104 @@
                 margin: 4px 0 8px;
                 padding-left: 18px;
             }
+            .field-errors ul {
+                list-style: none;
+                margin: 6px 0 0;
+                padding: 0;
+                color: var(--danger);
+                font-size: 0.82rem;
+            }
+            .label-row {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 8px;
+            }
+            .label-row .form-label { margin-bottom: 0; }
+            .link-btn {
+                padding: 0;
+                border: 0;
+                background: none;
+                color: var(--link);
+                font: inherit;
+                font-size: 0.83rem;
+                font-weight: 500;
+                cursor: pointer;
+            }
+            .link-btn:hover { text-decoration: underline; }
+
+            /* segmented scale: one radio per level, tinted like the matching .tag-* hue.
+               The radio is collapsed to nothing but stays focusable; the label carries the look. */
+            fieldset.scale { min-width: 0; margin: 0; padding: 0; border: 0; }
+            fieldset.scale legend {
+                float: none;
+                width: auto;
+                padding: 0;
+                margin-bottom: 8px;
+            }
+            .seg {
+                --t: var(--signal);
+                display: grid;
+                grid-auto-flow: column;
+                grid-auto-columns: minmax(min-content, 1fr);
+                gap: 4px;
+                padding: 4px;
+                background: var(--field-bg);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+            }
+            .seg-opt {
+                display: flex;
+                cursor: pointer;
+            }
+            .seg-opt input {
+                appearance: none;
+                -webkit-appearance: none;
+                width: 0;
+                height: 0;
+                margin: 0;
+                border: 0;
+            }
+            /* the look lives on the span so it can follow the input with a sibling selector;
+               :has() did not reliably restyle the previously selected option in a radio group */
+            .seg-opt span {
+                flex: 1 1 auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 38px;
+                padding: 0 4px;
+                border: 1px solid transparent;
+                border-radius: 8px;
+                color: var(--muted);
+                font-size: 0.82rem;
+                font-weight: 600;
+                text-align: center;
+                transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+            }
+            /* on phones five labels don't fit in one row: wrap into rows of three */
+            @media (max-width: 480px) {
+                .seg {
+                    grid-auto-flow: row;
+                    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+                }
+            }
+            .seg-opt[data-level="low"], .seg-opt[data-level="trivial"] { --t: var(--t-slate); }
+            .seg-opt[data-level="normal"], .seg-opt[data-level="minor"] { --t: var(--t-indigo); }
+            .seg-opt[data-level="high"], .seg-opt[data-level="major"] { --t: var(--t-amber); }
+            .seg-opt[data-level="urgent"], .seg-opt[data-level="critical"] { --t: var(--t-red); }
+            .seg-opt[data-level="immediate"], .seg-opt[data-level="blocker"] { --t: var(--t-blocker); }
+            .seg-opt:hover span { background: var(--surface-2); color: var(--ink); }
+            .seg-opt input:checked + span {
+                background: color-mix(in srgb, var(--t) 16%, transparent);
+                border-color: color-mix(in srgb, var(--t) 45%, transparent);
+                color: var(--t);
+            }
+            .seg-opt input:focus-visible + span {
+                outline: 2px solid var(--signal);
+                outline-offset: 2px;
+            }
             .styled-form .help-text {
                 color: var(--muted);
                 font-size: 0.82rem;

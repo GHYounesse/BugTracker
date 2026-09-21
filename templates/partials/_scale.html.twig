@@ -1,0 +1,16 @@
+{# Segmented choice for an expanded-looking ChoiceType. field: the form field, label: text shown above it.
+   data-level maps each value to the same hue as its .tag-<value> chip (see .seg-opt[data-level] in base). #}
+{# the radios below are hand-rendered, so tell the form this field is done or form_end() renders a second copy as a <select> #}
+{% do field.setRendered %}
+<fieldset class="scale">
+    <legend class="form-label">{{ label }}</legend>
+    <div class="seg" role="radiogroup" aria-label="{{ label }}">
+        {% for choice in field.vars.choices %}
+        <label class="seg-opt" data-level="{{ choice.value }}">
+            <input type="radio" name="{{ field.vars.full_name }}" value="{{ choice.value }}"{{ field.vars.value == choice.value ? ' checked' : '' }}>
+<span>{{ choice.label }}</span>
+        </label>
+        {% endfor %}
+    </div>
+    <div class="field-errors">{{ form_errors(field) }}</div>
+</fieldset>

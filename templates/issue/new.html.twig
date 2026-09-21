@@ -1,64 +1,178 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Issue{% endblock %}
-{% block body %}
+{% block title %}New issue{% endblock %}
 
-<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+{% block stylesheets %}
+    .issue-form {
+        max-width: 1160px;
+        margin: 0 auto;
+    }
+    .issue-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 24px;
+        align-items: start;
+    }
+    @media (max-width: 960px) {
+        .issue-layout { grid-template-columns: minmax(0, 1fr); }
+    }
+    .issue-layout .detail-card { margin-bottom: 0; padding: 24px; }
+    .issue-side {
+        position: sticky;
+        top: 24px;
+    }
+    @media (max-width: 960px) {
+        .issue-side { position: static; }
+    }
+    .issue-fields { display: grid; gap: 22px; }
+    .issue-fields > * { min-width: 0; }
+    .scale-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+    /* two five-step scales only fit side by side when the main column is wide */
+    @media (max-width: 1240px) {
+        .scale-row { grid-template-columns: minmax(0, 1fr); }
+    }
+    .issue-fields .form-label { margin-bottom: 8px; }
+    .styled-form .title-input {
+        min-height: 56px;
+        padding: 0 16px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+    .styled-form textarea.form-control {
+        padding: 12px 14px;
+        line-height: 1.5;
+        resize: vertical;
+    }
+    .optional { color: var(--muted); font-weight: 500; }
+    .issue-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 4px;
+    }
+    .issue-actions .btn-brand { min-height: 46px; padding: 0 26px; font-size: 1rem; }
+    .side-note {
+        margin: 6px 0 0;
+        font-size: 0.85rem;
+        line-height: 1.45;
+        color: var(--muted);
+    }
+{% endblock %}
+
+{% block body %}
+<div class="modal fade" id="newProjectModal" tabindex="-1" aria-labelledby="newProjectModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       {{ form_start(form3) }}
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel2">Add Project</h1>
+        <h1 class="modal-title fs-5" id="newProjectModalLabel">New project</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body styled-form">
         {{ form_row(form3.name) }}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn-brand">Add</button>
+        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn-brand">Create project</button>
       </div>
       {{ form_end(form3) }}
     </div>
   </div>
 </div>
 
-<a href="{{ path('app_home') }}" class="back-link">&larr; Back to Issues</a>
+<div class="issue-form">
+    <a href="{{ path('app_home') }}" class="back-link">Back to dashboard</a>
 
-<div class="app-card detail-card styled-form" style="max-width: 720px; margin: 0 auto;">
-    <h1 class="form-title">New Issue</h1>
+    <div class="page-header">
+        <h1>New issue</h1>
+    </div>
 
-    {{ form_start(form) }}
-        <div class="mb-3">{{ form_row(form.summary) }}</div>
-        <div class="mb-3">{{ form_row(form.description) }}</div>
+    {{ form_start(form, {attr: {class: 'styled-form'}}) }}
+    <div class="issue-layout">
+        <div class="app-card detail-card">
+            <div class="issue-fields">
+                <div>
+                    {{ form_label(form.summary, 'Summary', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.summary, {attr: {class: 'form-control title-input', placeholder: 'What is going wrong?', autofocus: true}}) }}
+                    <div class="field-errors">{{ form_errors(form.summary) }}</div>
+                </div>
 
-        <div class="form-row-2 mb-3">
-            <div>{{ form_row(form.visibility) }}</div>
-            <div>{{ form_row(form.status) }}</div>
+                <div>
+                    {{ form_label(form.description, 'Description', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.description, {attr: {class: 'form-control', rows: 6, placeholder: 'What happened, and what did you expect to happen instead?'}}) }}
+                    <div class="field-errors">{{ form_errors(form.description) }}</div>
+                </div>
+
+                <div class="scale-row">
+                    {% include 'partials/_scale.html.twig' with {field: form.priority, label: 'Priority'} %}
+                    {% include 'partials/_scale.html.twig' with {field: form.severity, label: 'Severity'} %}
+                </div>
+
+                <div>
+                    {{ form_label(form.stepsToReproduce, null, {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.stepsToReproduce, {attr: {class: 'form-control', rows: 4, placeholder: 'List what you did, in order, so someone else can see the same problem.'}}) }}
+                    <div class="field-errors">{{ form_errors(form.stepsToReproduce) }}</div>
+                </div>
+
+                <div>
+                    {{ form_label(form.attachment, 'Attachment', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.attachment) }}
+                    <p class="side-note">JPEG, PNG, GIF or PDF, up to 5 MB.</p>
+                    <div class="field-errors">{{ form_errors(form.attachment) }}</div>
+                </div>
+
+                <div class="issue-actions">
+                    <button type="submit" class="btn-brand">Create issue</button>
+                    <a href="{{ path('app_home') }}" class="btn-outline-brand">Cancel</a>
+                </div>
+            </div>
         </div>
 
-        <div class="form-row-2 mb-3">
-            <div>{{ form_row(form.priority) }}</div>
-            <div>{{ form_row(form.severity) }}</div>
-        </div>
+        <aside class="app-card detail-card issue-side">
+            <div class="issue-fields">
+                <div>
+                    <div class="label-row">
+                        <label class="form-label" for="{{ form.project.vars.id }}">Project</label>
+                        <button type="button" class="link-btn" data-bs-toggle="modal" data-bs-target="#newProjectModal">New project</button>
+                    </div>
+                    {{ form_widget(form.project) }}
+                    {% if form.project.vars.choices|length == 0 %}
+                        <p class="side-note">You are not a member of any project yet. Create one, or ask a project admin to add you.</p>
+                    {% endif %}
+                    <div class="field-errors">{{ form_errors(form.project) }}</div>
+                </div>
 
-        <div class="mb-3">{{ form_row(form.assigned) }}</div>
+                <div>
+                    {{ form_label(form.category, 'Category', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.category) }}
+                    <div class="field-errors">{{ form_errors(form.category) }}</div>
+                </div>
 
-        <div class="form-row-2 mb-3" style="align-items: end;">
-            <div>{{ form_row(form.project) }}</div>
-            <div>{{ form_row(form.category) }}</div>
-        </div>
-        <div class="mb-3" style="margin-top: -10px;">
-            <button type="button" class="btn-outline-brand" style="padding: 6px 12px; font-size: 0.8rem;" data-bs-toggle="modal" data-bs-target="#exampleModal2">
-                + New Project
-            </button>
-        </div>
+                {% include 'partials/_scale.html.twig' with {field: form.visibility, label: 'Visibility'} %}
 
-        <div class="mb-3">{{ form_row(form.stepsToReproduce) }}</div>
-        <div class="mb-3">{{ form_row(form.attachment) }}</div>
+                {% if form.status is defined %}
+                <div>
+                    {{ form_label(form.status, 'Status', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.status) }}
+                    <div class="field-errors">{{ form_errors(form.status) }}</div>
+                </div>
+                {% endif %}
 
-        <button type="submit" class="btn-brand w-100" style="text-align: center;">Add Issue</button>
+                {% if form.assigned is defined %}
+                <div>
+                    {{ form_label(form.assigned, 'Assigned to', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.assigned, {placeholder: 'Unassigned'}) }}
+                    <div class="field-errors">{{ form_errors(form.assigned) }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
     {{ form_end(form) }}
 </div>
-
 {% endblock %}

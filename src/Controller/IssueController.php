@@ -34,6 +34,8 @@ class IssueController extends AbstractController
         // set before validation runs: reporter has a NotNull constraint, so
         // an unpopulated Issue would always fail validation otherwise
         $issue->setReporter($this->getUser());
+        // sensible starting point so the priority/severity scales open on a real choice
+        $issue->setVisibility('public')->setPriority('normal')->setSeverity('minor')->setStatus('new');
         $form=$this->createForm(IssueType::class, $issue, ['user' => $this->getUser()]);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid())
@@ -60,6 +62,7 @@ class IssueController extends AbstractController
                 $issue->setUpdatedAt(new \DateTime());
                 $em->persist ($issue);
                 $em->flush();
+                $this->addFlash('success', 'Issue created.');
                 return $this->redirectToRoute('app_home');
         }
             $project= new Project();
