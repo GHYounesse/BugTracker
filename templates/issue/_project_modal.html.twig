@@ -1,0 +1,21 @@
+{# "New project" modal for the issue form. Submits in the background (see _project_modal.js.twig). #}
+<div class="modal fade" id="newProjectModal" tabindex="-1" aria-labelledby="newProjectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      {{ form_start(form3) }}
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="newProjectModalLabel">New project</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body styled-form">
+        {{ form_row(form3.name) }}
+        <div class="field-errors" id="newProjectErrors" role="alert"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn-brand" id="newProjectSubmit">Create project</button>
+      </div>
+      {{ form_end(form3) }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<script>
+    // "New project" modal: create in the background, then add the project to the
+    // dropdown and select it, so nothing typed into the issue form is lost.
+    // Without JavaScript the form still posts to the server (and lands on Projects).
+    (function () {
+        var modal = document.getElementById('newProjectModal');
+        var select = document.getElementById('issue_project');
+        if (!modal || !select) { return; }
+
+        var form = modal.querySelector('form');
+        var submit = document.getElementById('newProjectSubmit');
+        var errors = document.getElementById('newProjectErrors');
+        var status = document.getElementById('projectStatus');
+        var noProjects = document.getElementById('noProjectsNote');
+        var nameInput = form.querySelector('input[type="text"]');
+
+        function showErrors(messages) {
+            errors.innerHTML = '';
+            var list = document.createElement('ul');
+            messages.forEach(function (message) {
+                var item = document.createElement('li');
+                item.textContent = message;
+                list.appendChild(item);
+            });
+            errors.appendChild(list);
+        }
+
+        modal.addEventListener('shown.bs.modal', function () { nameInput.focus(); });
+        modal.addEventListener('hidden.bs.modal', function () { errors.innerHTML = ''; });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            errors.innerHTML = '';
+            submit.disabled = true;
+            submit.textContent = 'Creating…';
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' },
+                credentials: 'same-origin'
+            }).then(function (response) {
+                return response.json().then(function (data) { return { ok: response.ok, data: data }; });
+            }).then(function (result) {
+                if (!result.ok) {
+                    showErrors(result.data.errors || ['Could not create the project. Try again.']);
+                    return;
+                }
+
+                var option = new Option(result.data.name, result.data.id, true, true);
+                select.appendChild(option);
+                select.value = String(result.data.id);
+                if (noProjects) { noProjects.hidden = true; }
+                status.textContent = 'Created “' + result.data.name + '” and selected it.';
+                status.hidden = false;
+                nameInput.value = '';
+                // closing via the modal's own dismiss button; Bootstrap returns focus to "New project"
+                modal.querySelector('[data-bs-dismiss="modal"]').click();
+            }).catch(function () {
+                showErrors(['Could not reach the server. Check your connection and try again.']);
+            }).then(function () {
+                submit.disabled = false;
+                submit.textContent = 'Create project';
+            });
+        });
+    })();
+</script>

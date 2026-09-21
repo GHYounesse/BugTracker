@@ -86,13 +86,13 @@ class Issue
 
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 3, max: 255)]
+    #[Assert\NotBlank(message: 'Enter a short summary of the problem.')]
+    #[Assert\Length(min: 3, max: 255, minMessage: 'Use at least {{ limit }} characters.', maxMessage: 'Use {{ limit }} characters or fewer.')]
     private ?string $summary = null;
 
     #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Describe what happened.')]
     private ?string $description = null;
 
     #[Groups(['issue:list', 'issue:item'])]
@@ -157,7 +157,7 @@ class Issue
         return $this->visibility;
     }
 
-    public function setVisibility(string $visibility): self
+    public function setVisibility(?string $visibility): self
     {
         $this->visibility = $visibility;
 
@@ -217,7 +217,7 @@ class Issue
         return $this->priority;
     }
 
-    public function setPriority(string $priority): self
+    public function setPriority(?string $priority): self
     {
         $this->priority = $priority;
 
@@ -229,7 +229,7 @@ class Issue
         return $this->severity;
     }
 
-    public function setSeverity(string $severity): self
+    public function setSeverity(?string $severity): self
     {
         $this->severity = $severity;
 
@@ -253,7 +253,7 @@ class Issue
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 
@@ -265,7 +265,7 @@ class Issue
         return $this->summary;
     }
 
-    public function setSummary(string $summary): self
+    public function setSummary(?string $summary): self
     {
         $this->summary = $summary;
 
@@ -277,7 +277,7 @@ class Issue
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 

@@ -1,0 +1,104 @@
+{# Layout shared by the new and edit issue pages.
+   Needs: form, heading, submit_label, back_url, back_label, cancel_url
+   Optional: issue (shows the current attachment), form3 (enables the "New project" modal),
+   autofocus (true focuses the summary on load) #}
+{% if form3 is defined %}
+    {% include 'issue/_project_modal.html.twig' %}
+{% endif %}
+
+<div class="issue-form">
+    <a href="{{ back_url }}" class="back-link">{{ back_label }}</a>
+
+    <div class="page-header">
+        <h1>{{ heading }}</h1>
+    </div>
+
+    {{ form_start(form, {attr: {class: 'styled-form'}}) }}
+    <div class="issue-layout">
+        <div class="app-card detail-card">
+            <div class="issue-fields">
+                <div>
+                    {{ form_label(form.summary, 'Summary', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.summary, {attr: {class: 'form-control title-input', placeholder: 'What is going wrong?', autofocus: autofocus|default(false)}}) }}
+                    <div class="field-errors">{{ form_errors(form.summary) }}</div>
+                </div>
+
+                <div>
+                    {{ form_label(form.description, 'Description', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.description, {attr: {class: 'form-control', rows: 6, placeholder: 'What happened, and what did you expect to happen instead?'}}) }}
+                    <div class="field-errors">{{ form_errors(form.description) }}</div>
+                </div>
+
+                <div class="scale-row">
+                    {% include 'partials/_scale.html.twig' with {field: form.priority, label: 'Priority'} %}
+                    {% include 'partials/_scale.html.twig' with {field: form.severity, label: 'Severity'} %}
+                </div>
+
+                <div>
+                    {{ form_label(form.stepsToReproduce, null, {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.stepsToReproduce, {attr: {class: 'form-control', rows: 4, placeholder: 'List what you did, in order, so someone else can see the same problem.'}}) }}
+                    <div class="field-errors">{{ form_errors(form.stepsToReproduce) }}</div>
+                </div>
+
+                <div>
+                    {{ form_label(form.attachment, 'Attachment', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.attachment) }}
+                    {% if issue is defined and issue.attachment %}
+                        <p class="side-note">Current file: <a href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">{{ issue.attachment }}</a>. Upload a new one to replace it.</p>
+                    {% endif %}
+                    <p class="side-note">JPEG, PNG, GIF or PDF, up to 5 MB.</p>
+                    <div class="field-errors">{{ form_errors(form.attachment) }}</div>
+                </div>
+
+                <div class="issue-actions">
+                    <button type="submit" class="btn-brand">{{ submit_label }}</button>
+                    <a href="{{ cancel_url }}" class="btn-outline-brand">Cancel</a>
+                </div>
+            </div>
+        </div>
+
+        <aside class="app-card detail-card issue-side">
+            <div class="issue-fields">
+                <div>
+                    <div class="label-row">
+                        <label class="form-label" for="{{ form.project.vars.id }}">Project</label>
+                        {% if form3 is defined %}
+                            <button type="button" class="link-btn" data-bs-toggle="modal" data-bs-target="#newProjectModal">New project</button>
+                        {% endif %}
+                    </div>
+                    {{ form_widget(form.project) }}
+                    {% if form.project.vars.choices|length == 0 %}
+                        <p class="side-note" id="noProjectsNote">You are not a member of any project yet. Create one, or ask a project admin to add you.</p>
+                    {% endif %}
+                    <p class="side-note" id="projectStatus" role="status" hidden></p>
+                    <div class="field-errors">{{ form_errors(form.project) }}</div>
+                </div>
+
+                <div>
+                    {{ form_label(form.category, 'Category', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.category) }}
+                    <div class="field-errors">{{ form_errors(form.category) }}</div>
+                </div>
+
+                {% include 'partials/_scale.html.twig' with {field: form.visibility, label: 'Visibility'} %}
+
+                {% if form.status is defined %}
+                <div>
+                    {{ form_label(form.status, 'Status', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.status) }}
+                    <div class="field-errors">{{ form_errors(form.status) }}</div>
+                </div>
+                {% endif %}
+
+                {% if form.assigned is defined %}
+                <div>
+                    {{ form_label(form.assigned, 'Assigned to', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.assigned, {placeholder: 'Unassigned'}) }}
+                    <div class="field-errors">{{ form_errors(form.assigned) }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+    {{ form_end(form) }}
+</div>

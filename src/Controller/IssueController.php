@@ -229,9 +229,15 @@ class IssueController extends AbstractController
             return $this->redirectToRoute('issue_show', ['id' => $issue->getId()]);
         }
 
+        // same "New project" modal as the new-issue page (see project_quick_create)
+        $form3 = $this->createForm(ProjectType::class, new Project(), [
+            'action' => $this->generateUrl('project_quick_create'),
+        ]);
+
         return $this->render('issue/edit.html.twig', [
             'issue' => $issue,
             'form' => $form->createView(),
+            'form3' => $form3->createView(),
         ]);
     }
 

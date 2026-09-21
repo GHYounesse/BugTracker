@@ -2,42 +2,20 @@
 
 {% block title %}Edit #{{ issue.id }}{% endblock %}
 
+{% block stylesheets %}
+    {% include 'issue/_form.css.twig' %}
+{% endblock %}
+
 {% block body %}
-    <a href="{{ path('issue_show', {id: issue.id}) }}" class="back-link">&larr; Back to Issue</a>
+    {% include 'issue/_form.html.twig' with {
+        heading: 'Edit issue #' ~ issue.id,
+        submit_label: 'Save changes',
+        back_url: path('issue_show', {id: issue.id}),
+        back_label: 'Back to issue',
+        cancel_url: path('issue_show', {id: issue.id})
+    } %}
+{% endblock %}
 
-    <div class="app-card detail-card styled-form" style="max-width: 720px;">
-        <h1 class="form-title">Edit Issue #{{ issue.id }}</h1>
-
-        {{ form_start(form) }}
-            <div class="mb-3">{{ form_row(form.summary) }}</div>
-            <div class="mb-3">{{ form_row(form.description) }}</div>
-
-            <div class="form-row-3 mb-3">
-                {% if form.status is defined %}<div>{{ form_row(form.status) }}</div>{% endif %}
-                <div>{{ form_row(form.priority) }}</div>
-                <div>{{ form_row(form.severity) }}</div>
-            </div>
-
-            <div class="form-row-2 mb-3">
-                <div>{{ form_row(form.project) }}</div>
-                <div>{{ form_row(form.category) }}</div>
-            </div>
-
-            <div class="form-row-2 mb-3">
-                {% if form.assigned is defined %}<div>{{ form_row(form.assigned) }}</div>{% endif %}
-                <div>{{ form_row(form.visibility) }}</div>
-            </div>
-
-            <div class="mb-3">{{ form_row(form.stepsToReproduce) }}</div>
-
-            <div class="mb-3">
-                {{ form_row(form.attachment) }}
-                {% if issue.attachment %}
-                    <div class="form-text">Current file: {{ issue.attachment }} (upload a new one to replace it)</div>
-                {% endif %}
-            </div>
-
-            <button type="submit" class="btn-brand">Save Changes</button>
-        {{ form_end(form) }}
-    </div>
+{% block javascripts %}
+    {% include 'issue/_project_modal.js.twig' %}
 {% endblock %}
