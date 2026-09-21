@@ -1,9 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}#{{ issue.id }} - {{ issue.summary }}{% endblock %}
+{% block title %}#{{ issue.id }} {{ issue.summary }}{% endblock %}
 
 {% block stylesheets %}
-    .issue-detail-header {
+    {% include 'issue/_page.css.twig' %}
+
+    .issue-head {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
@@ -11,166 +13,250 @@
         gap: 16px;
         margin-bottom: 24px;
     }
-    .issue-detail-header .issue-id {
-        color: var(--muted);
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-    .issue-detail-header h1 {
-        font-size: 1.7rem;
-        line-height: 1.15;
-        font-weight: 650;
-        letter-spacing: -0.03em;
-        color: var(--ink);
-        margin: 4px 0 12px;
-    }
-    .tag-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .issue-detail-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-        align-items: start;
-    }
-    @media (max-width: 900px) {
-        .issue-detail-grid { grid-template-columns: 1fr; }
-    }
-    .detail-card p {
-        color: var(--soft);
-        font-size: 0.95rem;
-        line-height: 1.5;
-        white-space: pre-line;
-        margin: 0;
-    }
-    .detail-card .empty-note {
+    .issue-head-main { flex: 1 1 420px; min-width: 0; }
+    .issue-key {
         color: var(--muted);
         font-size: 0.9rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
     }
-    .meta-row {
+    .issue-head h1 {
+        margin: 4px 0 14px;
+        max-width: 28em;
+        font-size: 2rem;
+        line-height: 1.12;
+        font-weight: 650;
+        letter-spacing: -0.035em;
+        overflow-wrap: anywhere;
+    }
+    .tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag-overdue { --t: var(--t-red); }
+
+    .issue-main { display: grid; gap: 24px; min-width: 0; }
+    .doc-section + .doc-section {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line-soft);
+    }
+    .doc-section h2 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+    }
+    .prose {
+        max-width: 70ch;
+        margin: 0;
+        color: var(--soft);
+        font-size: 1rem;
+        line-height: 1.65;
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+    }
+    .muted-note { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+    .attachment-image {
+        display: block;
+        max-width: min(100%, 520px);
+        max-height: 340px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        object-fit: contain;
+        background: var(--surface-2);
+    }
+    .attachment-file {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 100%;
+        padding: 10px 14px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--ink);
+        font-weight: 550;
+        text-decoration: none;
+    }
+    .attachment-file:hover { border-color: var(--signal); }
+    .attachment-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .attachment-file svg { flex-shrink: 0; width: 18px; height: 18px; color: var(--muted); }
+
+    .facts { margin: 0; }
+    .fact {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 9px 0;
+        gap: 16px;
+        padding: 11px 0;
         border-bottom: 1px solid var(--line-soft);
-        font-size: 0.88rem;
+        font-size: 0.92rem;
     }
-    .meta-row:last-child { border-bottom: none; }
-    .meta-label { color: var(--muted); }
-    .meta-value { color: var(--ink); font-weight: 500; }
+    .fact:first-child { padding-top: 0; }
+    .fact:last-child { padding-bottom: 0; border-bottom: none; }
+    .fact dt { flex-shrink: 0; color: var(--muted); font-weight: 400; }
+    .fact dd {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        min-width: 0;
+        margin: 0;
+        text-align: right;
+        font-weight: 550;
+        overflow-wrap: anywhere;
+    }
+    .fact dd.is-empty { color: var(--muted); font-weight: 400; }
+    .fact dd.is-overdue { color: var(--danger); }
+
     .comment {
-        padding: 12px 0;
+        display: flex;
+        gap: 12px;
+        padding: 16px 0;
         border-bottom: 1px solid var(--line-soft);
     }
-    .comment:last-of-type { border-bottom: none; }
+    .comment:first-of-type { padding-top: 4px; }
+    .comment-main { flex: 1 1 auto; min-width: 0; }
     .comment-header {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px 10px;
         margin-bottom: 4px;
     }
-    .comment-author { color: var(--ink); font-weight: 600; font-size: 0.88rem; }
-    .comment-date { color: var(--muted); font-size: 0.78rem; }
-    .comment-body { color: var(--soft); font-size: 0.92rem; white-space: pre-line; }
-    .comment-textarea {
-        width: 100%;
-        background: var(--field-bg);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        color: var(--ink);
-        font-family: inherit;
-        padding: 10px 12px;
-        font-size: 0.95rem;
+    .comment-author { font-weight: 650; font-size: 0.95rem; }
+    .comment-date { color: var(--muted); font-size: 0.82rem; }
+    .comment-body { max-width: 70ch; margin: 0; color: var(--soft); line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
+    .comment-form { margin-top: 20px; }
+    .comment-form textarea.form-control {
+        min-height: 96px;
+        padding: 12px 14px;
+        line-height: 1.5;
         resize: vertical;
     }
-    .comment-textarea:hover { border-color: var(--muted); }
-    .comment-textarea:focus {
-        outline: none;
-        border-color: var(--signal);
-        box-shadow: 0 0 0 3px var(--ring);
-    }
-    .comment-errors {
-        color: var(--danger);
-        font-size: 0.8rem;
-        list-style: none;
-        padding: 0;
-        margin: 6px 0 0;
-    }
+    .comment-form .btn-brand { margin-top: 12px; }
 {% endblock %}
 
 {% block body %}
-    <a href="{{ path('app_home') }}" class="back-link">Back to dashboard</a>
+    {% set today = date() %}
+    {% set isOverdue = issue.dueDate and issue.dueDate < today and issue.status != 'closed' %}
+    {% set image_types = ['jpg', 'jpeg', 'png', 'gif'] %}
 
-    <div class="issue-detail-header">
-        <div>
-            <span class="issue-id">#{{ issue.id }}</span>
-            <h1>{{ issue.summary }}</h1>
-            <div class="tag-row">
-                <span class="tag tag-{{ issue.status }}">{{ issue.status }}</span>
-                <span class="tag tag-{{ issue.priority }}">{{ issue.priority }} priority</span>
-                <span class="tag tag-{{ issue.severity }}">{{ issue.severity }} severity</span>
-            </div>
-        </div>
-        <a href="{{ path('issue_edit', {id: issue.id}) }}" class="btn-brand">Edit issue</a>
-    </div>
+    <div class="issue-form">
+        <a href="{{ path('app_home') }}" class="back-link">Back to dashboard</a>
 
-    <div class="issue-detail-grid">
-        <div>
-            <div class="app-card detail-card">
-                <h2>Description</h2>
-                <p>{{ issue.description }}</p>
-            </div>
-
-            {% if issue.stepsToReproduce %}
-            <div class="app-card detail-card">
-                <h2>Steps to Reproduce</h2>
-                <p>{{ issue.stepsToReproduce }}</p>
-            </div>
-            {% endif %}
-
-            {% if issue.attachment %}
-            <div class="app-card detail-card">
-                <h2>Attachment</h2>
-                <a href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">{{ issue.attachment }}</a>
-            </div>
-            {% endif %}
-
-            <div class="app-card detail-card">
-                <h2>Comments ({{ issue.comments|length }})</h2>
-
-                {% for comment in issue.comments %}
-                <div class="comment">
-                    <div class="comment-header">
-                        <span class="comment-author">{{ comment.author.userIdentifier }}</span>
-                        <span class="comment-date">{{ comment.createdAt|date('M j, Y H:i') }}</span>
-                    </div>
-                    <div class="comment-body">{{ comment.content }}</div>
+        <div class="issue-head">
+            <div class="issue-head-main">
+                <span class="issue-key">#{{ issue.id }}</span>
+                <h1>{{ issue.summary }}</h1>
+                <div class="tag-row">
+                    <span class="tag tag-{{ issue.status }}">{{ issue.status }}</span>
+                    {% if isOverdue %}<span class="tag tag-overdue">Overdue</span>{% endif %}
+                    <span class="tag tag-category">{{ issue.category.name }}</span>
                 </div>
-                {% else %}
-                <p class="empty-note">No comments yet. Add the first one below.</p>
-                {% endfor %}
-
-                {{ form_start(commentForm, {action: path('issue_comment', {id: issue.id}), attr: {style: 'margin-top:16px;'}}) }}
-                    {{ form_widget(commentForm.content, {attr: {class: 'comment-textarea'}}) }}
-                    <ul class="comment-errors">{{ form_errors(commentForm.content) }}</ul>
-                    <button type="submit" class="btn-brand" style="margin-top:8px;">Post Comment</button>
-                {{ form_end(commentForm) }}
             </div>
+            {% if is_granted('ISSUE_EDIT', issue) %}
+                <a href="{{ path('issue_edit', {id: issue.id}) }}" class="btn-brand">Edit issue</a>
+            {% endif %}
         </div>
 
-        <div>
-            <div class="app-card detail-card">
-                <h2>Details</h2>
-                <div class="meta-row"><span class="meta-label">Project</span><span class="meta-value">{{ issue.project.name }}</span></div>
-                <div class="meta-row"><span class="meta-label">Category</span><span class="meta-value">{{ issue.category.name }}</span></div>
-                <div class="meta-row"><span class="meta-label">Reporter</span><span class="meta-value">{{ issue.reporter.userIdentifier }}</span></div>
-                <div class="meta-row"><span class="meta-label">Assigned to</span><span class="meta-value">{{ issue.assigned ? issue.assigned.userIdentifier : 'Unassigned' }}</span></div>
-                <div class="meta-row"><span class="meta-label">Visibility</span><span class="meta-value">{{ issue.visibility }}</span></div>
-                <div class="meta-row"><span class="meta-label">Submitted</span><span class="meta-value">{{ issue.submittedAt|date('M j, Y H:i') }}</span></div>
-                <div class="meta-row"><span class="meta-label">Updated</span><span class="meta-value">{{ issue.updatedAt|date('M j, Y H:i') }}</span></div>
+        <div class="issue-layout">
+            <div class="issue-main">
+                <div class="app-card detail-card">
+                    <div class="doc-section">
+                        <div class="scale-row">
+                            {% include 'partials/_scale_read.html.twig' with {label: 'Priority', levels: constant('App\\Entity\\Issue::PRIORITIES'), current: issue.priority} %}
+                            {% include 'partials/_scale_read.html.twig' with {label: 'Severity', levels: constant('App\\Entity\\Issue::SEVERITIES'), current: issue.severity} %}
+                        </div>
+                    </div>
+
+                    <div class="doc-section">
+                        <h2>Description</h2>
+                        <p class="prose">{{ issue.description }}</p>
+                    </div>
+
+                    {% if issue.stepsToReproduce %}
+                    <div class="doc-section">
+                        <h2>Steps to reproduce</h2>
+                        <p class="prose">{{ issue.stepsToReproduce }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if issue.attachment %}
+                    {% set ext = issue.attachment|split('.')|last|lower %}
+                    <div class="doc-section">
+                        <h2>Attachment</h2>
+                        {% if ext in image_types %}
+                            <a href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">
+                                <img class="attachment-image" src="{{ asset('uploads/' ~ issue.attachment) }}" alt="Attachment: {{ issue.attachment }}">
+                            </a>
+                        {% else %}
+                            <a class="attachment-file" href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
+                                <span>{{ issue.attachment }}</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="app-card detail-card">
+                    <div class="doc-section">
+                        <h2>Comments ({{ issue.comments|length }})</h2>
+
+                        {% for comment in issue.comments %}
+                        <div class="comment">
+                            {% include 'partials/_avatar.html.twig' with {user: comment.author, size: 'sm'} %}
+                            <div class="comment-main">
+                                <div class="comment-header">
+                                    <span class="comment-author">{{ comment.author.displayName ?: comment.author.userIdentifier }}</span>
+                                    <span class="comment-date">{{ comment.createdAt|date('M j, Y H:i') }}</span>
+                                </div>
+                                <p class="comment-body">{{ comment.content }}</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="muted-note">No comments yet. Add the first one below.</p>
+                        {% endfor %}
+
+                        {{ form_start(commentForm, {action: path('issue_comment', {id: issue.id}), attr: {class: 'styled-form comment-form'}}) }}
+                            {{ form_label(commentForm.content, 'Add a comment', {label_attr: {class: 'form-label'}}) }}
+                            {{ form_widget(commentForm.content, {attr: {class: 'form-control', rows: 3, placeholder: 'Share an update, a question, or what you found.'}}) }}
+                            <div class="field-errors">{{ form_errors(commentForm.content) }}</div>
+                            <button type="submit" class="btn-brand">Post comment</button>
+                        {{ form_end(commentForm) }}
+                    </div>
+                </div>
             </div>
+
+            <aside class="app-card detail-card issue-side">
+                <dl class="facts">
+                    <div class="fact"><dt>Project</dt><dd>{{ issue.project.name }}</dd></div>
+                    <div class="fact">
+                        <dt>Reporter</dt>
+                        <dd>{% include 'partials/_avatar.html.twig' with {user: issue.reporter, size: 'sm'} %}{{ issue.reporter.displayName ?: issue.reporter.userIdentifier }}</dd>
+                    </div>
+                    <div class="fact">
+                        <dt>Assigned to</dt>
+                        {% if issue.assigned %}
+                        <dd>{% include 'partials/_avatar.html.twig' with {user: issue.assigned, size: 'sm'} %}{{ issue.assigned.displayName ?: issue.assigned.userIdentifier }}</dd>
+                        {% else %}
+                        <dd class="is-empty">Unassigned</dd>
+                        {% endif %}
+                    </div>
+                    <div class="fact"><dt>Visibility</dt><dd>{{ issue.visibility|capitalize }}</dd></div>
+                    {% if issue.dueDate %}
+                    <div class="fact"><dt>Due</dt><dd{% if isOverdue %} class="is-overdue"{% endif %}>{{ issue.dueDate|date('M j, Y') }}</dd></div>
+                    {% endif %}
+                    {% if issue.environment %}
+                    <div class="fact"><dt>Environment</dt><dd>{{ issue.environment }}</dd></div>
+                    {% endif %}
+                    <div class="fact"><dt>Submitted</dt><dd>{{ issue.submittedAt|date('M j, Y H:i') }}</dd></div>
+                    <div class="fact"><dt>Updated</dt><dd>{{ issue.updatedAt|date('M j, Y H:i') }}</dd></div>
+                    {% if issue.resolvedAt %}
+                    <div class="fact"><dt>Resolved</dt><dd>{{ issue.resolvedAt|date('M j, Y H:i') }}</dd></div>
+                    {% endif %}
+                </dl>
+            </aside>
         </div>
     </div>
 {% endblock %}

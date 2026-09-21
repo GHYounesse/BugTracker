@@ -492,11 +492,11 @@
                     grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
                 }
             }
-            .seg-opt[data-level="low"], .seg-opt[data-level="trivial"] { --t: var(--t-slate); }
-            .seg-opt[data-level="normal"], .seg-opt[data-level="minor"] { --t: var(--t-indigo); }
-            .seg-opt[data-level="high"], .seg-opt[data-level="major"] { --t: var(--t-amber); }
-            .seg-opt[data-level="urgent"], .seg-opt[data-level="critical"] { --t: var(--t-red); }
-            .seg-opt[data-level="immediate"], .seg-opt[data-level="blocker"] { --t: var(--t-blocker); }
+            .seg [data-level="low"], .seg [data-level="trivial"] { --t: var(--t-slate); }
+            .seg [data-level="normal"], .seg [data-level="minor"] { --t: var(--t-indigo); }
+            .seg [data-level="high"], .seg [data-level="major"] { --t: var(--t-amber); }
+            .seg [data-level="urgent"], .seg [data-level="critical"] { --t: var(--t-red); }
+            .seg [data-level="immediate"], .seg [data-level="blocker"] { --t: var(--t-blocker); }
             .seg-opt:hover span { background: var(--surface-2); color: var(--ink); }
             .seg-opt input:checked + span {
                 background: color-mix(in srgb, var(--t) 16%, transparent);
@@ -506,6 +506,30 @@
             .seg-opt input:focus-visible + span {
                 outline: 2px solid var(--signal);
                 outline-offset: 2px;
+            }
+            /* read-only version of the scale (issue detail): same cells, the current level lit */
+            .seg-read span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 38px;
+                padding: 0 4px;
+                border: 1px solid transparent;
+                border-radius: 8px;
+                color: var(--muted);
+                font-size: 0.82rem;
+                font-weight: 600;
+                text-align: center;
+            }
+            .seg-read span.is-current {
+                background: color-mix(in srgb, var(--t) 16%, transparent);
+                border-color: color-mix(in srgb, var(--t) 45%, transparent);
+                color: var(--t);
+            }
+            .scale-label {
+                margin-bottom: 8px;
+                font-size: 0.86rem;
+                font-weight: 600;
             }
             .styled-form .help-text {
                 color: var(--muted);

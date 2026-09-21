@@ -1,0 +1,10 @@
+{# Read-only scale. label: text above it, levels: ordered list of values, current: the lit value.
+   Same cells and hues as partials/_scale.html.twig, so what you set on the form is what you read here. #}
+<div>
+    <div class="scale-label">{{ label }}</div>
+    <div class="seg seg-read" role="img" aria-label="{{ label }}: {{ current }}">
+        {% for level in levels %}
+        <span data-level="{{ level }}"{{ level == current ? ' class="is-current" aria-current="true"' : '' }}>{{ level|capitalize }}</span>
+        {% endfor %}
+    </div>
+</div>
