@@ -5,16 +5,16 @@
 
 <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content app-card" style="border-radius: 14px;">
+    <div class="modal-content">
       {{ form_start(form3) }}
-      <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-        <h1 class="modal-title fs-5" id="exampleModalLabel2" style="color: #f8fafc;">Add Project</h1>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel2">Add Project</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body styled-form">
         {{ form_row(form3.name) }}
       </div>
-      <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+      <div class="modal-footer">
         <button type="button" class="btn-outline-brand" data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn-brand">Add</button>
       </div>
@@ -26,7 +26,7 @@
 <a href="{{ path('app_home') }}" class="back-link">&larr; Back to Issues</a>
 
 <div class="app-card detail-card styled-form" style="max-width: 720px; margin: 0 auto;">
-    <h1 style="font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 20px;">New Issue</h1>
+    <h1 class="form-title">New Issue</h1>
 
     {{ form_start(form) }}
         <div class="mb-3">{{ form_row(form.summary) }}</div>

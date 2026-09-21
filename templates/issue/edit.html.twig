@@ -6,7 +6,7 @@
     <a href="{{ path('issue_show', {id: issue.id}) }}" class="back-link">&larr; Back to Issue</a>
 
     <div class="app-card detail-card styled-form" style="max-width: 720px;">
-        <h1 style="font-size: 1.3rem; font-weight: 700; color: #f8fafc; margin-bottom: 20px;">Edit Issue #{{ issue.id }}</h1>
+        <h1 class="form-title">Edit Issue #{{ issue.id }}</h1>
 
         {{ form_start(form) }}
             <div class="mb-3">{{ form_row(form.summary) }}</div>
