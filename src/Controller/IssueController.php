@@ -65,16 +65,11 @@ class IssueController extends AbstractController
                 $this->addFlash('success', 'Issue created.');
                 return $this->redirectToRoute('app_home');
         }
-            $project= new Project();
-            $form3=$this->createForm(ProjectType::class, $project);
-            $form3->handleRequest($request);
-            if($form3->isSubmitted() && $form3->isValid())
-            {
-                $em->persist ($project);
-                $em->flush();
-                return $this->redirectToRoute('app_home');
-                
-            }
+            // "New project" modal: submitted in the background to project_quick_create so
+            // the page (and whatever has been typed into the issue form) is left alone
+            $form3=$this->createForm(ProjectType::class, new Project(), [
+                'action' => $this->generateUrl('project_quick_create'),
+            ]);
         return $this->render('issue/new.html.twig',['form'=>$form->createView(),'form3'=>$form3->createView()]);
     }
     else{

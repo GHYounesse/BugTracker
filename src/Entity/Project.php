@@ -20,8 +20,8 @@ class Project
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank(message: 'Enter a project name.')]
+    #[Assert\Length(max: 255, maxMessage: 'Use {{ limit }} characters or fewer.')]
     private ?string $name = null;
 
     #[ORM\Column(length: 10, nullable: true, unique: true)]

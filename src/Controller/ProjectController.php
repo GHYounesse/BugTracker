@@ -10,6 +10,7 @@ use App\Security\Voter\ProjectVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,15 +38,7 @@ class ProjectController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($project);
-
-            $membership = (new ProjectMember())
-                ->setProject($project)
-                ->setUser($this->getUser())
-                ->setRole(ProjectMember::ROLE_ADMIN);
-            $em->persist($membership);
-
-            $em->flush();
+            $this->saveNewProject($project, $em);
 
             $this->addFlash('success', sprintf('Project "%s" created.', $project->getName()));
 
@@ -53,6 +46,45 @@ class ProjectController extends AbstractController
         }
 
         return $this->renderIndex($em, 'new', null, $form);
+    }
+
+    /**
+     * Used by the "New project" modal on the new-issue page, which stays on the
+     * page so a half-written issue isn't lost. Same rules as project_new.
+     */
+    #[Route('/project/quick', name: 'project_quick_create', methods: ['POST'])]
+    public function quickCreate(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $project = new Project();
+        $form = $this->createForm(ProjectType::class, $project);
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            $errors = [];
+            foreach ($form->getErrors(true) as $error) {
+                $errors[] = $error->getMessage();
+            }
+
+            return $this->json(['errors' => $errors ?: ['Enter a project name.']], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $this->saveNewProject($project, $em);
+
+        return $this->json(['id' => $project->getId(), 'name' => $project->getName()], Response::HTTP_CREATED);
+    }
+
+    /** A new project always starts with its creator as the project admin. */
+    private function saveNewProject(Project $project, EntityManagerInterface $em): void
+    {
+        $em->persist($project);
+
+        $membership = (new ProjectMember())
+            ->setProject($project)
+            ->setUser($this->getUser())
+            ->setRole(ProjectMember::ROLE_ADMIN);
+        $em->persist($membership);
+
+        $em->flush();
     }
 
     #[Route('/project/{id}/edit', name: 'project_edit', methods: ['POST'])]
