@@ -1,21 +1,154 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}Users{% endblock %}
+
+{% block stylesheets %}
+    .user-search {
+        display: flex;
+        gap: 8px;
+    }
+    .user-search .form-control {
+        width: min(280px, 60vw);
+        min-height: 40px;
+        background-color: var(--field-bg);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 10px;
+    }
+    .user-search .form-control:hover { border-color: var(--muted); }
+    .user-search .form-control:focus {
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px var(--ring);
+    }
+    .table-wrap { overflow-x: auto; }
+    .user-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .user-table th {
+        text-align: left;
+        white-space: nowrap;
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--muted);
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--line);
+    }
+    .user-table td {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--line-soft);
+        font-size: 0.95rem;
+        vertical-align: middle;
+    }
+    .user-table tr:last-child td { border-bottom: none; }
+    .user-table tr.is-inactive .user-name { color: var(--muted); }
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 180px;
+    }
+    .user-name {
+        display: block;
+        font-weight: 600;
+        color: var(--ink);
+        text-decoration: none;
+    }
+    .user-name:hover { text-decoration: underline; }
+    .user-handle {
+        display: block;
+        font-size: 0.82rem;
+        color: var(--muted);
+    }
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    .muted { color: var(--muted); }
+    .user-count {
+        margin: 0 0 12px;
+        font-size: 0.9rem;
+        color: var(--muted);
+    }
+{% endblock %}
 
 {% block body %}
+    <div class="page-header">
+        <h1>Users</h1>
+        <form method="get" action="{{ path('list') }}" class="user-search" role="search">
+            <input type="search" name="q" value="{{ term }}" class="form-control" placeholder="Search name or email" aria-label="Search users">
+            <button type="submit" class="btn-outline-brand">Search</button>
+        </form>
+    </div>
 
-{% if users %}
-<table>
-<tr>
-{% for user in users %}
-<th>{{user.username}}</th>
-{% endfor %}
-</tr>
-</table>
-{% else  %}
-<h3>No users exist in the database</h3>
-{% endif %}
+    <p class="user-count">
+        {% if term %}{{ users|length }} {{ users|length == 1 ? 'user matches' : 'users match' }} "{{ term }}"{% else %}{{ users|length }} {{ users|length == 1 ? 'user' : 'users' }}{% endif %}
+    </p>
 
-
-
+    <div class="app-card">
+        {% if users %}
+        <div class="table-wrap">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                {% set isSelf = user.id == app.user.id %}
+                <tr class="{{ user.active ? '' : 'is-inactive' }}">
+                    <td>
+                        <div class="user-cell">
+                            {% include 'partials/_avatar.html.twig' with {user: user} %}
+                            <div>
+                                <a class="user-name" href="{{ path('user_show', {id: user.id}) }}">{{ user.displayName ?: user.username }}{% if isSelf %} <span class="muted">(you)</span>{% endif %}</a>
+                                {% if user.displayName %}<span class="user-handle">{{ user.username }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ user.email ?: '-' }}</td>
+                    <td><span class="tag {{ user.admin ? 'tag-accepted' : 'tag-closed' }}">{{ user.admin ? 'Admin' : 'User' }}</span></td>
+                    <td><span class="tag {{ user.active ? 'tag-processed' : 'tag-urgent' }}">{{ user.active ? 'Active' : 'Deactivated' }}</span></td>
+                    <td>{{ user.createdAt|date('M j, Y') }}</td>
+                    <td>
+                        {% if not isSelf %}
+                        <div class="user-actions">
+                            <form method="post" action="{{ path('user_role', {id: user.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('manage-user-' ~ user.id) }}">
+                                <input type="hidden" name="role" value="{{ user.admin ? 'user' : 'admin' }}">
+                                <button type="submit" class="btn-outline-brand">{{ user.admin ? 'Remove admin' : 'Make admin' }}</button>
+                            </form>
+                            <form method="post" action="{{ path('user_active', {id: user.id}) }}"{% if user.active %} onsubmit="return confirm('Deactivate {{ user.username|e('js') }}? They will be signed out and unable to sign in. Their issues and comments are kept.');"{% endif %}>
+                                <input type="hidden" name="_token" value="{{ csrf_token('manage-user-' ~ user.id) }}">
+                                <input type="hidden" name="active" value="{{ user.active ? '0' : '1' }}">
+                                <button type="submit" class="btn-outline-brand{{ user.active ? ' is-danger' : '' }}">{{ user.active ? 'Deactivate' : 'Reactivate' }}</button>
+                            </form>
+                            {% if not user.hasActivity %}
+                            <form method="post" action="{{ path('user_delete', {id: user.id}) }}" onsubmit="return confirm('Delete {{ user.username|e('js') }} permanently? This cannot be undone.');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
+                                <button type="submit" class="btn-outline-brand is-danger">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% elseif term %}
+        <div class="empty-state">No users match "{{ term }}". Check the spelling or search by email.</div>
+        {% else %}
+        <div class="empty-state">No users yet.</div>
+        {% endif %}
+    </div>
 {% endblock %}

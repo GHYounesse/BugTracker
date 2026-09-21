@@ -7,6 +7,7 @@ use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\User;
 use App\Repository\ProjectRepository;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -131,8 +132,25 @@ class IssueType extends AbstractType
                     'class'=>'form-select'],]
 
             );
-            $builder->add('assigned',EntityType::class,['class'=>User::class,'choice_label'=>'username','required'=>false,'attr'=>[
-                'class'=>'form-select'],]);
+            // deactivated users can't take new work; keep the current assignee
+            // selectable so editing an old issue doesn't fail validation
+            $current = $options['data'] instanceof Issue ? $options['data']->getAssigned() : null;
+            $builder->add('assigned',EntityType::class,[
+                'class'=>User::class,
+                'choice_label'=>'username',
+                'required'=>false,
+                'attr'=>['class'=>'form-select'],
+                'query_builder'=>function (UserRepository $repository) use ($current) {
+                    $qb = $repository->createQueryBuilder('u')
+                        ->andWhere('u.active = true')
+                        ->orderBy('u.username', 'ASC');
+                    if ($current) {
+                        $qb->orWhere('u = :current')->setParameter('current', $current);
+                    }
+
+                    return $qb;
+                },
+            ]);
         }
     }
 

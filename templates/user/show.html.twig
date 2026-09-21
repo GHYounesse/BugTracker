@@ -1,21 +1,86 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{user.username}}{% endblock %}
+{% block title %}{{ user.displayName ?: user.username }}{% endblock %}
+
+{% block stylesheets %}
+    .profile {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    .profile-head {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .profile-id { flex: 1 1 220px; min-width: 0; }
+    .profile-id h1 {
+        margin: 0 0 4px;
+        font-size: 1.7rem;
+        line-height: 1.15;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+        overflow-wrap: anywhere;
+    }
+    .profile-handle { color: var(--muted); font-size: 0.95rem; }
+    .profile-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 0 0 20px;
+        padding: 0;
+        list-style: none;
+    }
+    .profile-stat { padding: 16px 18px; }
+    .profile-stat strong {
+        display: block;
+        font-size: 1.9rem;
+        line-height: 1;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        font-variant-numeric: tabular-nums;
+    }
+    .profile-stat span { color: var(--muted); font-size: 0.88rem; }
+    .signout { margin: 8px 0 0; }
+{% endblock %}
 
 {% block body %}
+    {% set isSelf = user.id == app.user.id %}
+    {% if not isSelf %}<a href="{{ path('list') }}" class="back-link">Back to users</a>{% endif %}
 
+    <div class="profile">
+        <div class="app-card detail-card">
+            <div class="profile-head">
+                {% include 'partials/_avatar.html.twig' with {user: user, size: 'lg'} %}
+                <div class="profile-id">
+                    <h1>{{ user.displayName ?: user.username }}</h1>
+                    <div class="profile-handle">{{ user.displayName ? user.username ~ (user.email ? ' - ' ~ user.email : '') : (user.email ?: 'No email on file') }}</div>
+                    <div class="profile-tags">
+                        <span class="tag {{ user.admin ? 'tag-accepted' : 'tag-closed' }}">{{ user.admin ? 'Admin' : 'User' }}</span>
+                        {% if not user.active %}<span class="tag tag-urgent">Deactivated</span>{% endif %}
+                        <span class="tag tag-low">Joined {{ user.createdAt|date('M j, Y') }}</span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <a href="{{ path('user_edit', {id: user.id}) }}" class="btn-brand">Edit profile</a>
+                    {% if isSelf %}<a href="{{ path('user_password') }}" class="btn-outline-brand">Change password</a>{% endif %}
+                </div>
+            </div>
+        </div>
 
-<table>
-<tr>
+        <ul class="profile-stats">
+            <li class="app-card profile-stat"><strong>{{ user.reportedIssues|length }}</strong><span>Reported</span></li>
+            <li class="app-card profile-stat"><strong>{{ user.assignedIssues|length }}</strong><span>Assigned</span></li>
+            <li class="app-card profile-stat"><strong>{{ user.comments|length }}</strong><span>Comments</span></li>
+        </ul>
 
-<th>{{user.username}}</th>
-
-</tr>
-</table>
-
-
-<form method="post" action="{{ path('app_logout') }}">
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-    <button type="submit" class="btn btn-info">Logout</button>
-</form>
+        {% if isSelf %}
+        <form method="post" action="{{ path('app_logout') }}" class="signout">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+            <button type="submit" class="btn-outline-brand">Log out</button>
+        </form>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -25,7 +25,7 @@
           </li>
           {% if is_granted('ROLE_ADMIN') %}
           <li class="nav-item">
-            <a class="nav-link{{ current_route == 'list' ? ' active' : '' }}" href="{{ path('list') }}">Manage Users</a>
+            <a class="nav-link{{ current_route == 'list' ? ' active' : '' }}" href="{{ path('list') }}">Users</a>
           </li>
           {% endif %}
         </ul>
@@ -35,11 +35,12 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              {{ app.user.userIdentifier }}
+              {% include 'partials/_avatar.html.twig' with {user: app.user, size: 'sm'} %}
+              {{ app.user.displayName ?: app.user.userIdentifier }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{{ path('user_show', {id: app.user.id}) }}">My Profile</a></li>
+              <li><a class="dropdown-item" href="{{ path('user_show', {id: app.user.id}) }}">My profile</a></li>
+              <li><a class="dropdown-item" href="{{ path('user_password') }}">Change password</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form method="post" action="{{ path('app_logout') }}">

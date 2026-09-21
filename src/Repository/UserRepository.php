@@ -43,6 +43,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
+     * Admin user list: optional case-insensitive match on username, email or display name.
+     *
+     * @return User[]
+     */
+    public function search(?string $term): array
+    {
+        $qb = $this->createQueryBuilder('u')->orderBy('u.username', 'ASC');
+
+        $term = trim((string) $term);
+        if ($term !== '') {
+            $qb->andWhere('LOWER(u.username) LIKE :term OR LOWER(u.email) LIKE :term OR LOWER(u.displayName) LIKE :term')
+                ->setParameter('term', '%'.mb_strtolower($term).'%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void

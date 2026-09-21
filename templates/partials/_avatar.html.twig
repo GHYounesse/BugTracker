@@ -1,0 +1,7 @@
+{# user: User, size: '' | 'sm' | 'lg' #}
+{% set size_class = (size|default('')) ? ' avatar-' ~ size : '' %}
+{% if user.image %}
+<img class="avatar{{ size_class }}" src="{{ asset('uploads/avatars/' ~ user.image) }}" alt="">
+{% else %}
+<span class="avatar{{ size_class }}" aria-hidden="true">{{ (user.displayName ?: user.username)|first|upper }}</span>
+{% endif %}

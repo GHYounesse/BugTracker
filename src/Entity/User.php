@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -16,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -58,6 +59,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
+
+    #[ORM\Column(options: ['default' => true])]
+    private bool $active = true;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Project::class)]
     private Collection $ownedProjects;
@@ -269,6 +273,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->displayName = $displayName;
 
         return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array('ROLE_ADMIN', $this->getRoles(), true);
+    }
+
+    /**
+     * True when other records point at this account. Such accounts are
+     * deactivated rather than deleted so issue and comment history survives.
+     */
+    public function hasActivity(): bool
+    {
+        return !$this->reportedIssues->isEmpty()
+            || !$this->assignedIssues->isEmpty()
+            || !$this->comments->isEmpty()
+            || !$this->ownedProjects->isEmpty();
+    }
+
+    /**
+     * Called with the freshly loaded user when a session is restored. Returning
+     * false signs the person out, which is how deactivating, demoting or changing
+     * the password of an account takes effect on sessions that are already open.
+     */
+    public function isEqualTo(UserInterface $user): bool
+    {
+        if (!$user instanceof self || !$user->isActive()) {
+            return false;
+        }
+
+        $mine = $this->getRoles();
+        $theirs = $user->getRoles();
+        sort($mine);
+        sort($theirs);
+
+        return $this->password === $user->password
+            && $this->username === $user->username
+            && $mine === $theirs;
     }
 
     public function getCreatedAt(): \DateTimeInterface

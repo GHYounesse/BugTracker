@@ -131,8 +131,8 @@ class ProjectController extends AbstractController
         $role = (string) $request->request->get('role');
 
         $user = $username !== '' ? $em->getRepository(User::class)->findOneBy(['username' => $username]) : null;
-        if (!$user) {
-            $this->addFlash('error', sprintf('No user found with username "%s".', $username));
+        if (!$user || !$user->isActive()) {
+            $this->addFlash('error', sprintf('No active user found with username "%s".', $username));
 
             return $this->redirectToRoute('project_index');
         }
