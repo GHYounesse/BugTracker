@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block stylesheets %}
+    {% include 'partials/_error_page.css.twig' %}
+{% endblock %}
+
+{% block body %}
+    {% include 'partials/_error_page.html.twig' with {
+        eyebrow: '404',
+        heading: "We can't find that page",
+        body: "It may have been moved, deleted, or the link might just be out of date."
+    } %}
+{% endblock %}

@@ -3,280 +3,52 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Forgot password</title>
+    <title>Forgot password · BugTracker</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     {{ importmap('app') }}
     <style>
-        :root {
-            --brand: #3b82f6;
-            --brand-dark: #2563eb;
-
-            --body-bg: radial-gradient(circle at top, #1e2140 0%, #0f1123 65%, #0a0b18 100%);
-            --card-bg: rgba(255, 255, 255, 0.04);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-            --text-heading: #f8fafc;
-            --text-muted: #94a3b8;
-            --text-label: #cbd5e1;
-            --input-bg: rgba(255, 255, 255, 0.06);
-            --input-border: rgba(255, 255, 255, 0.1);
-            --input-text: #f1f5f9;
-            --input-placeholder: #64748b;
-            --input-focus-bg: rgba(255, 255, 255, 0.09);
-            --link-color: #93c5fd;
-            --toggle-bg: rgba(255, 255, 255, 0.06);
-            --toggle-border: rgba(255, 255, 255, 0.1);
-            --toggle-icon: #cbd5e1;
-            --alert-danger-bg: rgba(239, 68, 68, 0.15);
-            --alert-danger-text: #fca5a5;
-            --alert-danger-border: rgba(239, 68, 68, 0.3);
-        }
-        html[data-theme="light"] {
-            --body-bg: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 65%, #ffffff 100%);
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(15, 23, 42, 0.08);
-            --card-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
-            --text-heading: #1e293b;
-            --text-muted: #64748b;
-            --text-label: #475569;
-            --input-bg: rgba(15, 23, 42, 0.03);
-            --input-border: rgba(15, 23, 42, 0.12);
-            --input-text: #1e293b;
-            --input-placeholder: #94a3b8;
-            --input-focus-bg: rgba(15, 23, 42, 0.05);
-            --link-color: #2563eb;
-            --toggle-bg: rgba(15, 23, 42, 0.04);
-            --toggle-border: rgba(15, 23, 42, 0.1);
-            --toggle-icon: #475569;
-            --alert-danger-bg: rgba(239, 68, 68, 0.1);
-            --alert-danger-text: #b91c1c;
-            --alert-danger-border: rgba(239, 68, 68, 0.25);
-        }
-        body {
-            min-height: 100vh;
-            margin: 0;
-            background: var(--body-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            transition: background 0.2s ease;
-        }
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 40px 36px;
-            box-shadow: var(--card-shadow);
-            backdrop-filter: blur(6px);
-            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .theme-toggle {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            flex-shrink: 0;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--toggle-bg);
-            border: 1px solid var(--toggle-border);
-            color: var(--toggle-icon);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.15s ease, transform 0.1s ease;
-        }
-        .theme-toggle:hover {
-            transform: translateY(-1px);
-        }
-        .theme-toggle svg {
-            width: 16px;
-            height: 16px;
-        }
-        .theme-toggle .icon-moon { display: none; }
-        html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
-        html[data-theme="light"] .theme-toggle .icon-moon { display: block; }
-        .brand-badge {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: block;
-            object-fit: cover;
-            margin: 0 auto 16px;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
-        }
-        .brand-name {
-            color: var(--text-heading);
-            font-weight: 700;
-            font-size: 1.4rem;
-            text-align: center;
-            margin-bottom: 4px;
-        }
-        .brand-tagline {
-            color: var(--text-muted);
-            text-align: center;
-            font-size: 0.85rem;
-            margin-bottom: 32px;
-        }
-        .field-label {
-            color: var(--text-label);
-            font-size: 0.82rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            display: block;
-        }
-        .input-icon-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
-            padding: 0 14px;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 10px;
-            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-        }
-        .input-icon-group > svg {
-            flex-shrink: 0;
-            color: var(--text-muted);
-            opacity: 0.8;
-        }
-        .input-icon-group input {
-            flex: 1 1 auto;
-            min-width: 0;
-            width: 100%;
-            padding: 11px 0;
-            background: transparent;
-            border: none;
-            color: var(--input-text);
-            font-size: 0.95rem;
-        }
-        .input-icon-group input:focus {
-            outline: none;
-        }
-        .input-icon-group input::placeholder {
-            color: var(--input-placeholder);
-        }
-        .input-icon-group:focus-within {
-            border-color: var(--brand);
-            background: var(--input-focus-bg);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-        }
-        .field-errors {
-            color: var(--alert-danger-text);
-            font-size: 0.8rem;
-            list-style: none;
-            padding: 0;
-            margin: -10px 0 16px;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--brand), var(--brand-dark));
-            color: #fff;
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-top: 8px;
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
-        }
-        .btn-login:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-            color: #fff;
-        }
-        .btn-login:disabled {
-            opacity: 0.7;
-            cursor: default;
-            transform: none !important;
-        }
-        .btn-login:focus-visible,
-        .theme-toggle:focus-visible,
-        .register-link a:focus-visible {
-            outline: 2px solid var(--brand);
-            outline-offset: 2px;
-        }
-        .register-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--text-muted);
-            font-size: 0.88rem;
-        }
-        .register-link a {
-            color: var(--link-color);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-        .alert-custom {
-            border-radius: 10px;
-            font-size: 0.88rem;
-            padding: 12px 14px;
-            margin-bottom: 18px;
-            border: 1px solid transparent;
-        }
-        .alert-custom.alert-danger {
-            background: var(--alert-danger-bg);
-            color: var(--alert-danger-text);
-            border-color: var(--alert-danger-border);
-        }
+        {% include 'partials/_auth.css.twig' %}
     </style>
-    <script>
-        (function () {
-            var stored = null;
-            try { stored = localStorage.getItem('bugtracker-theme'); } catch (e) {}
-            var theme = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
+    {% include 'partials/_auth_theme_init.js.twig' %}
   </head>
   <body>
+    <main class="auth-center">
+      <div class="auth-card">
+        <header class="brand">
+          <img src="{{ asset('images/logo.png') }}" alt="">
+          <span>BugTracker</span>
+        </header>
 
-    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </button>
+        <h1>Forgot password?</h1>
+        <p class="lede">Enter the email on your account and we'll send you a link to reset it.</p>
 
-    <div class="login-card">
         {% for message in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger alert-custom">{{ message }}</div>
+        <div class="alert-custom alert-danger" role="alert">{{ message }}</div>
         {% endfor %}
 
-        <img class="brand-badge" src="{{ asset('images/logo.png') }}" alt="BugTracker logo">
-        <div class="brand-name">Forgot password?</div>
-        <div class="brand-tagline">Enter your email and we'll send you a reset link</div>
-
         {{ form_start(requestForm, {'attr': {'id': 'requestForm'}}) }}
-            <label class="field-label" for="{{ requestForm.email.vars.id }}">Email</label>
-            <div class="input-icon-group">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-                {{ form_widget(requestForm.email) }}
+          <div class="field-group">
+            <label for="{{ requestForm.email.vars.id }}">Email</label>
+            <div class="field">
+              {{ form_widget(requestForm.email, {'attr': {'placeholder': 'you@example.com', 'autocomplete': 'email', 'autofocus': true}}) }}
             </div>
-            <ul class="field-errors">{{ form_errors(requestForm.email) }}</ul>
+            <div class="field-errors">{{ form_errors(requestForm.email) }}</div>
+          </div>
 
-            <button class="btn-login" type="submit" id="requestSubmit">Send reset link</button>
+          <button class="btn-login" type="submit" id="requestSubmit">Send reset link</button>
         {{ form_end(requestForm) }}
 
-        <span class="register-link">Remembered it? <a href="{{ path('app_login') }}">Back to login</a></span>
-    </div>
+        <p class="switch">Remembered it? <a href="{{ path('app_login') }}">Sign in</a></p>
+      </div>
+    </main>
 
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+
+    {% include 'partials/_theme_toggle_script.js.twig' %}
     <script>
-        document.getElementById('themeToggle').addEventListener('click', function () {
-            var html = document.documentElement;
-            var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', next);
-            try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
-        });
-
         document.getElementById('requestForm').addEventListener('submit', function () {
             var submit = document.getElementById('requestSubmit');
             submit.disabled = true;

@@ -1,0 +1,7 @@
+{# Shared body for the custom error pages (403/404/generic). Needs: eyebrow, heading, body. #}
+<div class="error-page">
+    <span class="error-code">{{ eyebrow }}</span>
+    <h1>{{ heading }}</h1>
+    <p>{{ body }}</p>
+    <a href="{{ path('app_home') }}" class="btn-brand">Back to dashboard</a>
+</div>

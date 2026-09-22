@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Access denied{% endblock %}
+
+{% block stylesheets %}
+    {% include 'partials/_error_page.css.twig' %}
+{% endblock %}
+
+{% block body %}
+    {% include 'partials/_error_page.html.twig' with {
+        eyebrow: '403',
+        heading: "You don't have access to this",
+        body: "Either it belongs to a project you're not a member of, or the action needs a role you don't have."
+    } %}
+{% endblock %}

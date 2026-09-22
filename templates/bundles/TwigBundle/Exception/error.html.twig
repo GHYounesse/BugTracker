@@ -1,0 +1,16 @@
+{# Fallback for any status code without its own template (500, 503, ...). #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Something went wrong{% endblock %}
+
+{% block stylesheets %}
+    {% include 'partials/_error_page.css.twig' %}
+{% endblock %}
+
+{% block body %}
+    {% include 'partials/_error_page.html.twig' with {
+        eyebrow: '' ~ status_code|default(500),
+        heading: 'Something went wrong on our end',
+        body: 'Try again in a moment. If it keeps happening, let an admin know.'
+    } %}
+{% endblock %}

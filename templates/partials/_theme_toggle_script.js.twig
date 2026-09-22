@@ -1,0 +1,8 @@
+<script>
+    document.getElementById('themeToggle').addEventListener('click', function () {
+        var html = document.documentElement;
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
+    });
+</script>

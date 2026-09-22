@@ -1,0 +1,343 @@
+{# Shared by every standalone auth page (login, register, the three reset-password
+   screens): tokens, base reset, and the field/button/alert component classes. Each
+   page still owns its own layout (split-screen vs a single centered card) and copy.
+   Pulling this into one file is what keeps the auth pages from drifting out of sync
+   with each other - the old duplicated-per-page version was how the reset-password
+   screens ended up on a different palette and a different light/dark default than
+   login and register. #}
+@font-face {
+    font-family: "Bricolage Grotesque";
+    src: url("{{ asset('fonts/bricolage-grotesque.woff2') }}") format("woff2");
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --font: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    --bg: #f4f6fa;
+    --ink: #0b1220;
+    --muted: #5b667a;
+    --line: #d3dae6;
+    --field-bg: #ffffff;
+    --surface-solid: #ffffff;
+    --signal: #2563eb;
+    --signal-hover: #1d4ed8;
+    --ring: rgba(37, 99, 235, 0.25);
+    --link: #1d4ed8;
+
+    --stage-bg: #0b1220;
+    --stage-ink: #eaf0fb;
+    --stage-muted: #8f9db6;
+    --stage-line: rgba(255, 255, 255, 0.09);
+    --stage-row: rgba(255, 255, 255, 0.045);
+    --stage-lock: #6ea8ff;
+    --stage-ring: rgba(110, 168, 255, 0.22);
+
+    --alert-danger-bg: rgba(229, 72, 77, 0.09);
+    --alert-danger-text: #b42328;
+    --alert-danger-border: rgba(229, 72, 77, 0.28);
+    --alert-warning-bg: rgba(245, 158, 11, 0.12);
+    --alert-warning-text: #8a4b06;
+    --alert-warning-border: rgba(245, 158, 11, 0.32);
+    --alert-success-bg: rgba(34, 197, 94, 0.11);
+    --alert-success-text: #14703a;
+    --alert-success-border: rgba(34, 197, 94, 0.3);
+}
+html[data-theme="dark"] {
+    --bg: #080d19;
+    --ink: #eaf0fb;
+    --muted: #93a0b8;
+    --line: #223049;
+    --field-bg: #0f1829;
+    --surface-solid: #111c33;
+    --signal: #2563eb;
+    --signal-hover: #3b7bff;
+    --ring: rgba(96, 150, 255, 0.35);
+    --link: #8db6ff;
+
+    --stage-bg: #0f1a30;
+
+    --alert-danger-bg: rgba(239, 68, 68, 0.14);
+    --alert-danger-text: #fca5a5;
+    --alert-danger-border: rgba(239, 68, 68, 0.32);
+    --alert-warning-bg: rgba(245, 158, 11, 0.14);
+    --alert-warning-text: #fcd34d;
+    --alert-warning-border: rgba(245, 158, 11, 0.35);
+    --alert-success-bg: rgba(34, 197, 94, 0.14);
+    --alert-success-text: #86efac;
+    --alert-success-border: rgba(34, 197, 94, 0.32);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 1rem;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ---------- brand ---------- */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+}
+.brand span {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+h1 {
+    margin: 0 0 24px;
+    font-size: 2.1rem;
+    line-height: 1.1;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+}
+.lede {
+    margin: -14px 0 28px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* ---------- form ---------- */
+.field-group { margin-bottom: 16px; }
+.field-group > label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 12px 0 14px;
+    background: var(--field-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field:hover { border-color: var(--muted); }
+.field:focus-within {
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px var(--ring);
+}
+.field input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 46px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.98rem;
+}
+.field input:focus { outline: none; }
+.field input::placeholder { color: var(--muted); opacity: 0.75; }
+.field svg {
+    flex-shrink: 0;
+    color: var(--muted);
+}
+
+.field-errors ul {
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--alert-danger-text);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.password-toggle {
+    flex-shrink: 0;
+    display: flex;
+    padding: 6px;
+    margin: 0;
+    background: none;
+    border: 0;
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+}
+.password-toggle:hover { color: var(--ink); }
+.password-toggle svg { width: 18px; height: 18px; }
+.password-toggle .icon-eye-off { display: none; }
+.password-toggle.is-visible .icon-eye { display: none; }
+.password-toggle.is-visible .icon-eye-off { display: block; }
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    -webkit-user-select: none;
+    user-select: none;
+}
+.check label { margin: 0; cursor: pointer; }
+.check input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    background-color: var(--field-bg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 11px 11px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.check input[type="checkbox"]:hover { border-color: var(--signal); }
+.check input[type="checkbox"]:checked {
+    background-color: var(--signal);
+    border-color: var(--signal);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5'/%3E%3C/svg%3E");
+}
+
+.btn-login {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 20px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--signal);
+    color: #fff;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.btn-login:hover { background: var(--signal-hover); color: #fff; }
+.btn-login:active { transform: translateY(1px); }
+.btn-login:disabled { opacity: 0.7; cursor: default; transform: none; }
+
+.switch {
+    margin: 22px 0 0;
+    font-size: 0.92rem;
+    color: var(--muted);
+    text-align: center;
+}
+.switch a {
+    color: var(--link);
+    font-weight: 600;
+    text-decoration: none;
+}
+.switch a:hover { text-decoration: underline; }
+
+.btn-login:focus-visible,
+.theme-toggle:focus-visible,
+.password-toggle:focus-visible,
+.switch a:focus-visible,
+.alert-custom button:focus-visible,
+.check input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+}
+
+/* ---------- alerts ---------- */
+.alert-custom {
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+.alert-custom.alert-danger { background: var(--alert-danger-bg); color: var(--alert-danger-text); border-color: var(--alert-danger-border); }
+.alert-custom.alert-warning { background: var(--alert-warning-bg); color: var(--alert-warning-text); border-color: var(--alert-warning-border); }
+.alert-custom.alert-success { background: var(--alert-success-bg); color: var(--alert-success-text); border-color: var(--alert-success-border); }
+.alert-custom form { display: inline; }
+.alert-custom button {
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ---------- theme toggle (page-corner control, intentionally fixed) ---------- */
+.theme-toggle {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.theme-toggle:hover { transform: translateY(-1px); }
+.theme-toggle svg { width: 17px; height: 17px; }
+.theme-toggle .icon-moon { display: none; }
+html:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
+html:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+
+@media (max-width: 900px) {
+    .theme-toggle { right: 16px; bottom: 16px; }
+}
+
+/* ---------- single centered card (the three reset-password screens) ---------- */
+.auth-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 40px 36px;
+    box-shadow: 0 20px 50px rgba(8, 13, 25, 0.12);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+html[data-theme="dark"] .auth-card { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); }
+.auth-card.is-centered { text-align: center; }
+.auth-card .brand { justify-content: center; margin-bottom: 20px; }
+.auth-card h1 { font-size: 1.5rem; text-align: center; }
+.auth-card .lede { text-align: center; }

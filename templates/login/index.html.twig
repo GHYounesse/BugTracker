@@ -7,84 +7,9 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     {{ importmap('app') }}
     <style>
-        @font-face {
-            font-family: "Bricolage Grotesque";
-            src: url("{{ asset('fonts/bricolage-grotesque.woff2') }}") format("woff2");
-            font-weight: 200 800;
-            font-style: normal;
-            font-display: swap;
-        }
+        {% include 'partials/_auth.css.twig' %}
 
-        :root {
-            --font: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-
-            --bg: #f4f6fa;
-            --ink: #0b1220;
-            --muted: #5b667a;
-            --line: #d3dae6;
-            --field-bg: #ffffff;
-            --surface-solid: #ffffff;
-            --signal: #2563eb;
-            --signal-hover: #1d4ed8;
-            --ring: rgba(37, 99, 235, 0.25);
-            --link: #1d4ed8;
-
-            --stage-bg: #0b1220;
-            --stage-ink: #eaf0fb;
-            --stage-muted: #8f9db6;
-            --stage-line: rgba(255, 255, 255, 0.09);
-            --stage-row: rgba(255, 255, 255, 0.045);
-            --stage-lock: #6ea8ff;
-            --stage-ring: rgba(110, 168, 255, 0.22);
-
-            --alert-danger-bg: rgba(229, 72, 77, 0.09);
-            --alert-danger-text: #b42328;
-            --alert-danger-border: rgba(229, 72, 77, 0.28);
-            --alert-warning-bg: rgba(245, 158, 11, 0.12);
-            --alert-warning-text: #8a4b06;
-            --alert-warning-border: rgba(245, 158, 11, 0.32);
-            --alert-success-bg: rgba(34, 197, 94, 0.11);
-            --alert-success-text: #14703a;
-            --alert-success-border: rgba(34, 197, 94, 0.3);
-        }
-        html[data-theme="dark"] {
-            --bg: #080d19;
-            --ink: #eaf0fb;
-            --muted: #93a0b8;
-            --line: #223049;
-            --field-bg: #0f1829;
-            --surface-solid: #111c33;
-            --signal: #2563eb;
-            --signal-hover: #3b7bff;
-            --ring: rgba(96, 150, 255, 0.35);
-            --link: #8db6ff;
-
-            --stage-bg: #0f1a30;
-
-            --alert-danger-bg: rgba(239, 68, 68, 0.14);
-            --alert-danger-text: #fca5a5;
-            --alert-danger-border: rgba(239, 68, 68, 0.32);
-            --alert-warning-bg: rgba(245, 158, 11, 0.14);
-            --alert-warning-text: #fcd34d;
-            --alert-warning-border: rgba(245, 158, 11, 0.35);
-            --alert-success-bg: rgba(34, 197, 94, 0.14);
-            --alert-success-text: #86efac;
-            --alert-success-border: rgba(34, 197, 94, 0.32);
-        }
-
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: var(--bg);
-            color: var(--ink);
-            font-family: var(--font);
-            font-size: 1rem;
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        /* ---------- layout ---------- */
+        /* ---------- layout: split form + product stage ---------- */
         .auth {
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
@@ -102,36 +27,8 @@
             margin-block: auto;
             padding-block: 40px;
         }
+        h1 { margin-bottom: 28px; }
 
-        /* ---------- brand ---------- */
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .brand img {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 1px solid var(--line);
-        }
-        .brand span {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-
-        h1 {
-            margin: 0 0 28px;
-            font-size: 2.1rem;
-            line-height: 1.1;
-            font-weight: 650;
-            letter-spacing: -0.035em;
-        }
-
-        /* ---------- form ---------- */
-        .field-group { margin-bottom: 18px; }
         .label-row {
             display: flex;
             align-items: baseline;
@@ -150,166 +47,9 @@
             text-decoration: none;
         }
         .label-row a:hover { text-decoration: underline; }
+        .label-row a:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 
-        .field {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 48px;
-            padding: 0 12px 0 14px;
-            background: var(--field-bg);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-        .field:hover { border-color: var(--muted); }
-        .field:focus-within {
-            border-color: var(--signal);
-            box-shadow: 0 0 0 3px var(--ring);
-        }
-        .field input {
-            flex: 1 1 auto;
-            min-width: 0;
-            height: 46px;
-            padding: 0;
-            background: transparent;
-            border: 0;
-            color: var(--ink);
-            font: inherit;
-            font-size: 0.98rem;
-        }
-        .field input:focus { outline: none; }
-        .field input::placeholder { color: var(--muted); opacity: 0.75; }
-
-        .password-toggle {
-            flex-shrink: 0;
-            display: flex;
-            padding: 6px;
-            margin: 0;
-            background: none;
-            border: 0;
-            border-radius: 6px;
-            color: var(--muted);
-            cursor: pointer;
-        }
-        .password-toggle:hover { color: var(--ink); }
-        .password-toggle svg { width: 18px; height: 18px; }
-        .password-toggle .icon-eye-off { display: none; }
-        .password-toggle.is-visible .icon-eye { display: none; }
-        .password-toggle.is-visible .icon-eye-off { display: block; }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 4px 0 22px;
-            font-size: 0.9rem;
-            color: var(--muted);
-            cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        .remember-me input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            flex-shrink: 0;
-            width: 18px;
-            height: 18px;
-            margin: 0;
-            border-radius: 5px;
-            border: 1px solid var(--line);
-            background-color: var(--field-bg);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 11px 11px;
-            cursor: pointer;
-            transition: background-color 0.15s ease, border-color 0.15s ease;
-        }
-        .remember-me input[type="checkbox"]:hover { border-color: var(--signal); }
-        .remember-me input[type="checkbox"]:checked {
-            background-color: var(--signal);
-            border-color: var(--signal);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.5 3.5L13 4.5'/%3E%3C/svg%3E");
-        }
-
-        .btn-login {
-            width: 100%;
-            min-height: 48px;
-            padding: 0 16px;
-            border: 0;
-            border-radius: 10px;
-            background: var(--signal);
-            color: #fff;
-            font: inherit;
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: -0.005em;
-            cursor: pointer;
-            transition: background-color 0.15s ease, transform 0.1s ease;
-        }
-        .btn-login:hover { background: var(--signal-hover); }
-        .btn-login:active { transform: translateY(1px); }
-        .btn-login:disabled { opacity: 0.7; cursor: default; transform: none; }
-
-        .switch {
-            margin: 22px 0 0;
-            font-size: 0.92rem;
-            color: var(--muted);
-        }
-        .switch a {
-            color: var(--link);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .switch a:hover { text-decoration: underline; }
-
-        .btn-login:focus-visible,
-        .theme-toggle:focus-visible,
-        .password-toggle:focus-visible,
-        .label-row a:focus-visible,
-        .switch a:focus-visible,
-        .remember-me input[type="checkbox"]:focus-visible {
-            outline: 2px solid var(--signal);
-            outline-offset: 2px;
-        }
-
-        /* ---------- alerts ---------- */
-        .alert-custom {
-            margin: 0 0 20px;
-            padding: 12px 14px;
-            border: 1px solid transparent;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            line-height: 1.45;
-        }
-        .alert-custom.alert-danger { background: var(--alert-danger-bg); color: var(--alert-danger-text); border-color: var(--alert-danger-border); }
-        .alert-custom.alert-warning { background: var(--alert-warning-bg); color: var(--alert-warning-text); border-color: var(--alert-warning-border); }
-        .alert-custom.alert-success { background: var(--alert-success-bg); color: var(--alert-success-text); border-color: var(--alert-success-border); }
-
-        /* ---------- theme toggle (page-corner control, intentionally fixed) ---------- */
-        .theme-toggle {
-            position: fixed;
-            right: 28px;
-            bottom: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            padding: 0;
-            border-radius: 50%;
-            background: var(--surface-solid);
-            border: 1px solid var(--line);
-            color: var(--ink);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-        .theme-toggle:hover { transform: translateY(-1px); }
-        .theme-toggle svg { width: 17px; height: 17px; }
-        .theme-toggle .icon-moon { display: none; }
-        html:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
-        html:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+        .switch { text-align: left; }
 
         /* ---------- stage: a peek at the product ---------- */
         .stage {
@@ -421,17 +161,9 @@
             .stage { display: none; }
             .auth-form { padding: 24px; }
             h1 { font-size: 1.85rem; }
-            .theme-toggle { right: 16px; bottom: 16px; }
         }
     </style>
-    <script>
-        (function () {
-            var stored = null;
-            try { stored = localStorage.getItem('bugtracker-theme'); } catch (e) {}
-            var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
+    {% include 'partials/_auth_theme_init.js.twig' %}
   </head>
   <body>
     <main class="auth">
@@ -445,12 +177,12 @@
           <h1>Sign in</h1>
 
           {% for message in app.flashes('reset_password_success') %}
-          <div class="alert alert-success alert-custom" role="status">{{ message }}</div>
+          <div class="alert-custom alert-success" role="status">{{ message }}</div>
           {% endfor %}
 
           {% if error %}
           {% set isThrottled = 'Too many failed login attempts' in error.messageKey %}
-          <div class="alert {{ isThrottled ? 'alert-warning' : 'alert-danger' }} alert-custom" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+          <div class="alert-custom {{ isThrottled ? 'alert-warning' : 'alert-danger' }}" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
           {% endif %}
 
           <form method="post" id="loginForm">
@@ -470,14 +202,14 @@
               </div>
               <div class="field">
                 <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required>
-                <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">
-                  <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
+                <button type="button" class="password-toggle" data-toggle-for="password" aria-label="Show password">
+                  <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path></svg>
                 </button>
               </div>
             </div>
 
-            <label class="remember-me" for="_remember_me">
+            <label class="check" for="_remember_me" style="margin: 4px 0 22px;">
               <input type="checkbox" id="_remember_me" name="_remember_me">
               Remember me
             </label>
@@ -533,26 +265,13 @@
     </main>
 
     <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
 
+    {% include 'partials/_theme_toggle_script.js.twig' %}
+    {% include 'partials/_password_toggle_script.js.twig' %}
     <script>
-        document.getElementById('themeToggle').addEventListener('click', function () {
-            var html = document.documentElement;
-            var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            try { localStorage.setItem('bugtracker-theme', next); } catch (e) {}
-        });
-
-        document.getElementById('passwordToggle').addEventListener('click', function () {
-            var password = document.getElementById('password');
-            var showing = password.type === 'text';
-            password.type = showing ? 'password' : 'text';
-            this.classList.toggle('is-visible', !showing);
-            this.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
-        });
-
         document.getElementById('loginForm').addEventListener('submit', function () {
             var submit = document.getElementById('loginSubmit');
             submit.disabled = true;
