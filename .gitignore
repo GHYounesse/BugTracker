@@ -17,3 +17,10 @@
 ###< symfony/asset-mapper ###
 
 /.claude/
+
+# user-uploaded content: issue attachments and profile avatars
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/avatars/
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
