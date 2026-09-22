@@ -1,0 +1,12 @@
+{
+	frankenphp
+}
+
+# Render assigns the port at runtime via $PORT; bare ":port" listens on all
+# interfaces, which is what a container behind Render's proxy needs (no
+# hostname routing happens here - Render's edge handles that).
+:{$PORT:80} {
+	root * /app/public
+	encode zstd br gzip
+	php_server
+}

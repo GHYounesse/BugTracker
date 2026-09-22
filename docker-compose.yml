@@ -1,6 +1,27 @@
-version: '3'
-
 services:
+###> local testing: the app itself, built from the Dockerfile ###
+# Builds and runs the same image the app would actually be deployed with
+# (FrankenPHP, prod-mode asset compile, migrations on boot) so `docker compose
+# up --build` is a real test of the Dockerfile, not just of the database.
+# Not meant to replace `symfony server:start`/`php -S` for day-to-day coding -
+# there's no bind-mount, so code changes need a rebuild to show up.
+  app:
+    build:
+      context: .
+    depends_on:
+      - database
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: prod
+      # throwaway, local-only value - never used for anything but this container
+      APP_SECRET: local-docker-testing-secret-do-not-use-in-real-deployments
+      DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-15}&charset=utf8
+      MAILER_DSN: null://null
+    volumes:
+      - uploads_data:/app/public/uploads
+###< local testing: the app itself ###
+
 ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
@@ -16,6 +37,7 @@ services:
 ###< doctrine/doctrine-bundle ###
 
 volumes:
+  uploads_data:
 ###> doctrine/doctrine-bundle ###
   database_data:
 ###< doctrine/doctrine-bundle ###

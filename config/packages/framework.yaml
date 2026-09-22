@@ -4,6 +4,15 @@ framework:
     #csrf_protection: true
     http_method_override: false
 
+    # Unset (empty) by default so local dev, where there is no proxy in front
+    # of the app, is unaffected. Set via the TRUSTED_PROXIES env var on a host
+    # that sits behind a reverse proxy (Render, Railway, ...) so Symfony reads
+    # the real client IP/scheme from X-Forwarded-* instead of the proxy's -
+    # without this, `session.cookie_secure: auto` below can't tell the
+    # request was actually HTTPS.
+    trusted_proxies: '%env(default::TRUSTED_PROXIES)%'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port']
+
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
     session:

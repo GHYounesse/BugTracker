@@ -68,6 +68,14 @@ php -S 127.0.0.1:8000 -t public
 
 Visit `http://127.0.0.1:8000`, register an account, and log in.
 
+### Running it in Docker
+
+`docker compose up --build` brings up the app itself (FrankenPHP, the same
+`Dockerfile` a real deployment would use) alongside the database, instead of
+just the bare Postgres container. Visit `http://localhost:8080`. There's no
+bind-mount, so this is for testing the container image, not day-to-day
+coding — use `symfony server:start`/`php -S` above for that.
+
 ### A note on special characters in `DATABASE_URL`
 
 Symfony's `.env` loader treats `$` as the start of a variable reference, and `doctrine.yaml` resolves `%...%` patterns in the DSN as container parameters. If your DB password has either character, percent-encode it (`rawurlencode()`) **and then double every `%`** in the result before pasting it into `DATABASE_URL`, e.g. a password containing `$` encodes to `%24`, which becomes `%%24` in `.env`. Skipping the doubling step produces a cryptic "The parameter \"24\" must be defined" error.
