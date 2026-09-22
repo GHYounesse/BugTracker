@@ -108,13 +108,17 @@
     .fact dd.is-empty { color: var(--muted); font-weight: 400; }
     .fact dd.is-overdue { color: var(--danger); }
 
-    .comment {
+    .timeline-item {
         display: flex;
         gap: 12px;
         padding: 16px 0;
         border-bottom: 1px solid var(--line-soft);
     }
-    .comment:first-of-type { padding-top: 4px; }
+    .timeline-item:first-of-type { padding-top: 4px; }
+    .timeline-item.is-activity {
+        padding: 10px 0;
+        font-size: 0.88rem;
+    }
     .comment-main { flex: 1 1 auto; min-width: 0; }
     .comment-header {
         display: flex;
@@ -126,6 +130,21 @@
     .comment-author { font-weight: 650; font-size: 0.95rem; }
     .comment-date { color: var(--muted); font-size: 0.82rem; }
     .comment-body { max-width: 70ch; margin: 0; color: var(--soft); line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
+
+    .activity-desc {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px 6px;
+        color: var(--muted);
+        line-height: 1.5;
+    }
+    .activity-desc strong { color: var(--ink); font-weight: 650; }
+    .activity-desc .tag { font-size: 0.7rem; padding: 2px 9px; }
+    .activity-date { flex-shrink: 0; color: var(--muted); font-size: 0.82rem; }
+
     .comment-form { margin-top: 20px; }
     .comment-form textarea.form-control {
         min-height: 96px;
@@ -201,21 +220,26 @@
 
                 <div class="app-card detail-card">
                     <div class="doc-section">
-                        <h2>Comments ({{ issue.comments|length }})</h2>
+                        <h2>Activity</h2>
 
-                        {% for comment in issue.comments %}
-                        <div class="comment">
-                            {% include 'partials/_avatar.html.twig' with {user: comment.author, size: 'sm'} %}
-                            <div class="comment-main">
-                                <div class="comment-header">
-                                    <span class="comment-author">{{ comment.author.displayName ?: comment.author.userIdentifier }}</span>
-                                    <span class="comment-date">{{ comment.createdAt|date('M j, Y H:i') }}</span>
+                        {% for entry in timeline %}
+                            {% if entry.type == 'comment' %}
+                            {% set comment = entry.item %}
+                            <div class="timeline-item">
+                                {% include 'partials/_avatar.html.twig' with {user: comment.author, size: 'sm'} %}
+                                <div class="comment-main">
+                                    <div class="comment-header">
+                                        <span class="comment-author">{{ comment.author.displayName ?: comment.author.userIdentifier }}</span>
+                                        <span class="comment-date">{{ comment.createdAt|date('M j, Y H:i') }}</span>
+                                    </div>
+                                    <p class="comment-body">{{ comment.content }}</p>
                                 </div>
-                                <p class="comment-body">{{ comment.content }}</p>
                             </div>
-                        </div>
+                            {% else %}
+                            {% include 'partials/_issue_activity.html.twig' with {activity: entry.item} %}
+                            {% endif %}
                         {% else %}
-                        <p class="muted-note">No comments yet. Add the first one below.</p>
+                        <p class="muted-note">No activity yet. Add the first comment below.</p>
                         {% endfor %}
 
                         {{ form_start(commentForm, {action: path('issue_comment', {id: issue.id}), attr: {class: 'styled-form comment-form'}}) }}

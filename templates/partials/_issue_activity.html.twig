@@ -1,0 +1,25 @@
+{# One line in the issue activity timeline: who changed what, from what, to what. #}
+<div class="timeline-item is-activity">
+    {% if activity.actor %}
+        {% include 'partials/_avatar.html.twig' with {user: activity.actor, size: 'sm'} %}
+    {% else %}
+        <span class="avatar avatar-sm" aria-hidden="true">{{ activity.actorUsername|first|upper }}</span>
+    {% endif %}
+    <div class="activity-desc">
+        <strong>{{ activity.actor ? (activity.actor.displayName ?: activity.actor.userIdentifier) : activity.actorUsername }}</strong>
+        {% if activity.field == 'status' %}
+            changed status from <span class="tag tag-{{ activity.oldValue }}">{{ activity.oldValue }}</span> to <span class="tag tag-{{ activity.newValue }}">{{ activity.newValue }}</span>
+        {% elseif activity.field == 'priority' %}
+            changed priority from <span class="tag tag-{{ activity.oldValue }}">{{ activity.oldValue }}</span> to <span class="tag tag-{{ activity.newValue }}">{{ activity.newValue }}</span>
+        {% elseif activity.field == 'assigned' %}
+            {% if activity.oldValue and activity.newValue %}
+                reassigned this from <strong>{{ activity.oldValue }}</strong> to <strong>{{ activity.newValue }}</strong>
+            {% elseif activity.newValue %}
+                assigned this to <strong>{{ activity.newValue }}</strong>
+            {% else %}
+                unassigned this issue
+            {% endif %}
+        {% endif %}
+    </div>
+    <span class="activity-date">{{ activity.createdAt|date('M j, Y H:i') }}</span>
+</div>

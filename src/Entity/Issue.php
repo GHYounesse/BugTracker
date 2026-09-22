@@ -114,12 +114,16 @@ class Issue
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Comment::class)]
     private Collection $comments;
 
+    #[ORM\OneToMany(mappedBy: 'issue', targetEntity: IssueActivity::class)]
+    private Collection $activities;
+
     #[ORM\ManyToMany(targetEntity: self::class)]
     private Collection $relations;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->activities = new ArrayCollection();
         $this->relations = new ArrayCollection();
     }
 
@@ -359,6 +363,14 @@ class Issue
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, IssueActivity>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
     }
 
     /**

@@ -5,10 +5,13 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Issue;
+use App\Entity\IssueActivity;
 use App\Entity\Project;
+use App\Entity\User;
 use App\Form\CommentType;
 use App\Form\IssueType;
 use App\Form\ProjectType;
+use App\Repository\IssueActivityRepository;
 use App\Repository\IssueRepository;
 use App\Security\Voter\IssueVoter;
 use Doctrine\ORM\EntityManager;
@@ -178,7 +181,7 @@ class IssueController extends AbstractController
     }
 
     #[Route('/issue/{id}', name: 'issue_show', methods: ['GET'])]
-    public function show(int $id, EntityManagerInterface $em): Response
+    public function show(int $id, EntityManagerInterface $em, IssueActivityRepository $activityRepository): Response
     {
         $issue = $em->getRepository(Issue::class)->find($id);
         if (!$issue) {
@@ -189,10 +192,57 @@ class IssueController extends AbstractController
 
         $commentForm = $this->createForm(CommentType::class, new Comment());
 
+        // comments and status/priority/assignee changes in one feed, oldest first
+        $timeline = [];
+        foreach ($issue->getComments() as $comment) {
+            $timeline[] = ['at' => $comment->getCreatedAt(), 'type' => 'comment', 'item' => $comment];
+        }
+        foreach ($activityRepository->findForIssue($issue) as $activity) {
+            $timeline[] = ['at' => $activity->getCreatedAt(), 'type' => 'activity', 'item' => $activity];
+        }
+        usort($timeline, fn (array $a, array $b) => $a['at'] <=> $b['at']);
+
         return $this->render('issue/show.html.twig', [
             'issue' => $issue,
             'commentForm' => $commentForm->createView(),
+            'timeline' => $timeline,
         ]);
+    }
+
+    /**
+     * Compares $before (a snapshot taken right after loading the issue, before the
+     * form bound to it) against the issue's current values, and persists one
+     * IssueActivity row per field that actually changed. Only status, priority and
+     * assigned are tracked; call this after validating the form but before flush.
+     *
+     * @param array<string, ?string> $before keyed by IssueActivity::FIELD_*, as captured pre-submit
+     */
+    private function recordActivity(Issue $issue, array $before, EntityManagerInterface $em): void
+    {
+        /** @var User $actor */
+        $actor = $this->getUser();
+
+        $after = [
+            IssueActivity::FIELD_STATUS => $issue->getStatus(),
+            IssueActivity::FIELD_PRIORITY => $issue->getPriority(),
+            IssueActivity::FIELD_ASSIGNED => $issue->getAssigned()?->getUsername(),
+        ];
+
+        foreach (IssueActivity::FIELDS as $field) {
+            if ($before[$field] === $after[$field]) {
+                continue;
+            }
+
+            $activity = (new IssueActivity())
+                ->setIssue($issue)
+                ->setActor($actor)
+                ->setActorUsername($actor->getUsername())
+                ->setField($field)
+                ->setOldValue($before[$field])
+                ->setNewValue($after[$field])
+                ->setCreatedAt(new \DateTime());
+            $em->persist($activity);
+        }
     }
 
     #[Route('/issue/{id}/edit', name: 'issue_edit', methods: ['GET', 'POST'])]
@@ -204,6 +254,14 @@ class IssueController extends AbstractController
         }
 
         $this->denyAccessUnlessGranted(IssueVoter::EDIT, $issue);
+
+        // snapshot before the form binds: for a data_class form, handleRequest() writes
+        // straight onto $issue via the setters, so this has to run before that call
+        $before = [
+            IssueActivity::FIELD_STATUS => $issue->getStatus(),
+            IssueActivity::FIELD_PRIORITY => $issue->getPriority(),
+            IssueActivity::FIELD_ASSIGNED => $issue->getAssigned()?->getUsername(),
+        ];
 
         $form = $this->createForm(IssueType::class, $issue, [
             'user' => $this->getUser(),
@@ -229,6 +287,7 @@ class IssueController extends AbstractController
             }
 
             $issue->setUpdatedAt(new \DateTime());
+            $this->recordActivity($issue, $before, $em);
             $em->flush();
 
             return $this->redirectToRoute('issue_show', ['id' => $issue->getId()]);
