@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block stylesheets %}
+    .notif-list {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    .notif-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--line-soft);
+        color: var(--ink);
+        text-decoration: none;
+    }
+    .notif-row:first-child { border-top-left-radius: 14px; border-top-right-radius: 14px; }
+    .notif-row:last-child { border-bottom: none; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; }
+    .notif-row:hover { background: var(--surface-2); }
+    .notif-row.is-unread { background: color-mix(in srgb, var(--signal) 6%, transparent); }
+    .notif-row.is-unread:hover { background: color-mix(in srgb, var(--signal) 10%, transparent); }
+    .notif-icon { background: var(--surface-2); color: var(--muted); }
+    .notif-icon svg { width: 16px; height: 16px; }
+    .notif-main { flex: 1 1 auto; min-width: 0; }
+    .notif-text {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+    .notif-text strong { font-weight: 650; }
+    .notif-issue { color: var(--link); font-weight: 550; }
+    .notif-excerpt {
+        margin: 4px 0 0;
+        padding: 8px 10px;
+        background: var(--surface-2);
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+    .notif-date {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.78rem;
+    }
+    .notif-dot {
+        flex-shrink: 0;
+        width: 8px;
+        height: 8px;
+        margin-top: 6px;
+        border-radius: 50%;
+        background: var(--signal);
+    }
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1>Notifications</h1>
+        {% if notifications|filter(n => not n.read)|length %}
+        <form method="post" action="{{ path('notification_mark_all_read') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('mark-all-notifications-read') }}">
+            <button type="submit" class="btn-outline-brand">Mark all as read</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="notif-list">
+        {% if notifications %}
+        <div class="app-card">
+            {% for notification in notifications %}
+                {% include 'partials/_notification.html.twig' %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="app-card empty-state">Nothing yet. You'll see it here when someone assigns you an issue, mentions you, comments on something you're involved with, or a due date is coming up.</div>
+        {% endif %}
+    </div>
+{% endblock %}

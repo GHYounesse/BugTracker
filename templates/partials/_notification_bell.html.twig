@@ -1,0 +1,8 @@
+{# Computed fresh on every page load with app.user, via the unread_notification_count
+   Twig function (src/Twig/NotificationExtension.php) - no polling, consistent with
+   the rest of this app's plain server-rendered style. #}
+{% set unread = unread_notification_count(app.user) %}
+<a class="theme-toggle notification-bell" href="{{ path('notification_index') }}" aria-label="Notifications{{ unread > 0 ? ' (' ~ unread ~ ' unread)' : '' }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    {% if unread > 0 %}<span class="notification-badge">{{ unread > 99 ? '99+' : unread }}</span>{% endif %}
+</a>

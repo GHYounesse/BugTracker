@@ -201,13 +201,38 @@
                 background: var(--surface);
                 border: 1px solid var(--line);
                 color: var(--ink);
+                text-decoration: none;
                 cursor: pointer;
             }
-            .theme-toggle:hover { border-color: var(--muted); }
+            .theme-toggle:hover { border-color: var(--muted); color: var(--ink); }
             .theme-toggle svg { width: 16px; height: 16px; }
             .theme-toggle .icon-moon { display: none; }
             html:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
             html:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+
+            .notification-bell { position: relative; }
+            .notification-badge {
+                position: absolute;
+                top: -3px;
+                right: -3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 17px;
+                height: 17px;
+                padding: 0 4px;
+                border-radius: 999px;
+                border: 2px solid var(--bg);
+                background: #dc2626;
+                color: #fff;
+                font-size: 0.62rem;
+                font-weight: 700;
+                line-height: 1;
+                font-variant-numeric: tabular-nums;
+            }
+
+            /* @mentions inside comment text (see App\Twig\MentionExtension) */
+            .mention { color: var(--link); font-weight: 600; }
 
             /* ---------- buttons ---------- */
             .btn-brand {

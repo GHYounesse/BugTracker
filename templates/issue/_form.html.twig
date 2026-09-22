@@ -98,6 +98,15 @@
                     <div class="field-errors">{{ form_errors(form.assigned) }}</div>
                 </div>
                 {% endif %}
+
+                {% if form.dueDate is defined %}
+                <div>
+                    {{ form_label(form.dueDate, 'Due date', {label_attr: {class: 'form-label'}}) }}
+                    {{ form_widget(form.dueDate) }}
+                    <p class="side-note">Assignee and reporter get a reminder once this is close.</p>
+                    <div class="field-errors">{{ form_errors(form.dueDate) }}</div>
+                </div>
+                {% endif %}
             </div>
         </aside>
     </div>

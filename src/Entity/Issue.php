@@ -107,6 +107,15 @@ class Issue
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $environment = null;
 
+    /**
+     * When the "due soon" reminder last fired for this issue's current due date.
+     * Cleared whenever the due date changes, so a rescheduled issue can be
+     * flagged again. Not exposed as a form field; only the notification command
+     * and IssueController touch it.
+     */
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dueSoonNotifiedAt = null;
+
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Comment::class)]
     private Collection $comments;
 
@@ -316,6 +325,18 @@ class Issue
     public function getEnvironment(): ?string
     {
         return $this->environment;
+    }
+
+    public function getDueSoonNotifiedAt(): ?\DateTimeInterface
+    {
+        return $this->dueSoonNotifiedAt;
+    }
+
+    public function setDueSoonNotifiedAt(?\DateTimeInterface $dueSoonNotifiedAt): self
+    {
+        $this->dueSoonNotifiedAt = $dueSoonNotifiedAt;
+
+        return $this;
     }
 
     public function setEnvironment(?string $environment): self

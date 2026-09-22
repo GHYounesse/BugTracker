@@ -61,6 +61,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
+     * Active users matching any of the given usernames, case-insensitively.
+     * Used to resolve @mentions in comment text.
+     *
+     * @param string[] $usernames
+     *
+     * @return User[]
+     */
+    public function findActiveByUsernames(array $usernames): array
+    {
+        $usernames = array_values(array_unique(array_map(mb_strtolower(...), $usernames)));
+        if (!$usernames) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('u')
+            ->andWhere('LOWER(u.username) IN (:usernames)')
+            ->andWhere('u.active = true')
+            ->setParameter('usernames', $usernames)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void

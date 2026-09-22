@@ -7,6 +7,7 @@ use App\Entity\Category;
 use App\Entity\Comment;
 use App\Entity\Issue;
 use App\Entity\IssueActivity;
+use App\Entity\Notification;
 use App\Entity\Project;
 use App\Entity\User;
 use App\Form\CommentType;
@@ -14,7 +15,10 @@ use App\Form\IssueType;
 use App\Form\ProjectType;
 use App\Repository\IssueActivityRepository;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectMemberRepository;
+use App\Repository\UserRepository;
 use App\Security\Voter\IssueVoter;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -35,7 +39,7 @@ class IssueController extends AbstractController
     private const UPLOAD_DIR = '/public/uploads';
 
     #[Route('/issue', name: 'app_issue')]
-    public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger)
+    public function new(Request $request, EntityManagerInterface $em, SluggerInterface $slugger, NotificationService $notifier)
     {
         if ($this->getUser()) {
             $issue = new Issue();
@@ -51,6 +55,7 @@ class IssueController extends AbstractController
                 $issue->setUpdatedAt(new \DateTime());
                 $em->persist($issue);
                 $this->storeAttachments($form->get('attachments')->getData() ?? [], $issue, null, $slugger, $em);
+                $this->notifyIfAssigned($issue, null, $notifier);
                 $em->flush();
                 $this->addFlash('success', 'Issue created.');
 
@@ -241,6 +246,82 @@ class IssueController extends AbstractController
     }
 
     /**
+     * Notifies the assignee when they're newly assigned (set for the first time, or
+     * changed to a different person) by someone other than themselves. $beforeUsername
+     * is the pre-submit assignee, or null for a brand new issue.
+     */
+    private function notifyIfAssigned(Issue $issue, ?string $beforeUsername, NotificationService $notifier): void
+    {
+        $assigned = $issue->getAssigned();
+        if (!$assigned || $assigned->getUsername() === $beforeUsername) {
+            return;
+        }
+
+        /** @var User $actor */
+        $actor = $this->getUser();
+        if ($assigned->getId() === $actor->getId()) {
+            return;
+        }
+
+        $notifier->notify($assigned, Notification::TYPE_ASSIGNED, $issue, $actor);
+    }
+
+    /**
+     * Notifies people about a new comment: anyone @mentioned in it (who can actually
+     * view the issue) gets a "mentioned" notification; the issue's reporter, its
+     * assignee, and everyone who has commented before get a "commented" notification.
+     * The comment's author is never notified about their own comment, and a mention
+     * takes priority over the generic "commented" notification for the same person.
+     */
+    private function notifyComment(Issue $issue, Comment $comment, NotificationService $notifier, UserRepository $userRepository, ProjectMemberRepository $projectMembers): void
+    {
+        $author = $comment->getAuthor();
+        $content = $comment->getContent();
+
+        preg_match_all('/@([a-zA-Z0-9_.\-]{3,180})/', $content, $matches);
+
+        /** @var array<int, User> $mentioned keyed by user id */
+        $mentioned = [];
+        if ($matches[1]) {
+            foreach ($userRepository->findActiveByUsernames($matches[1]) as $candidate) {
+                if ($candidate->getId() === $author->getId()) {
+                    continue;
+                }
+                // only notify a mention if that person could actually open the issue
+                $canView = $candidate->isAdmin() || $projectMembers->findOneForProjectAndUser($issue->getProject(), $candidate);
+                if ($canView) {
+                    $mentioned[$candidate->getId()] = $candidate;
+                }
+            }
+        }
+        foreach ($mentioned as $user) {
+            $notifier->notify($user, Notification::TYPE_MENTIONED, $issue, $author, $comment, $content);
+        }
+
+        /** @var array<int, User> $participants keyed by user id: reporter, assignee, prior commenters */
+        $participants = [];
+        if ($issue->getReporter()) {
+            $participants[$issue->getReporter()->getId()] = $issue->getReporter();
+        }
+        if ($issue->getAssigned()) {
+            $participants[$issue->getAssigned()->getId()] = $issue->getAssigned();
+        }
+        foreach ($issue->getComments() as $existing) {
+            if ($existing->getAuthor()) {
+                $participants[$existing->getAuthor()->getId()] = $existing->getAuthor();
+            }
+        }
+        unset($participants[$author->getId()]);
+        foreach (array_keys($mentioned) as $id) {
+            unset($participants[$id]);
+        }
+
+        foreach ($participants as $user) {
+            $notifier->notify($user, Notification::TYPE_COMMENTED, $issue, $author, $comment, $content);
+        }
+    }
+
+    /**
      * Moves each uploaded file into public/uploads and creates an Attachment row for
      * it, owned by the current user. A file that fails to move is silently skipped
      * (matches the previous single-attachment behaviour) rather than failing the
@@ -288,7 +369,7 @@ class IssueController extends AbstractController
     }
 
     #[Route('/issue/{id}/edit', name: 'issue_edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function edit(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger, NotificationService $notifier): Response
     {
         $issue = $em->getRepository(Issue::class)->find($id);
         if (!$issue) {
@@ -304,6 +385,7 @@ class IssueController extends AbstractController
             IssueActivity::FIELD_PRIORITY => $issue->getPriority(),
             IssueActivity::FIELD_ASSIGNED => $issue->getAssigned()?->getUsername(),
         ];
+        $beforeDueDate = $issue->getDueDate();
 
         $form = $this->createForm(IssueType::class, $issue, [
             'user' => $this->getUser(),
@@ -314,6 +396,11 @@ class IssueController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $issue->setUpdatedAt(new \DateTime());
             $this->recordActivity($issue, $before, $em);
+            $this->notifyIfAssigned($issue, $before[IssueActivity::FIELD_ASSIGNED], $notifier);
+            // rescheduling clears the "already reminded" flag so a new due date can be flagged again
+            if ($issue->getDueDate() != $beforeDueDate) {
+                $issue->setDueSoonNotifiedAt(null);
+            }
             $this->storeAttachments($form->get('attachments')->getData() ?? [], $issue, null, $slugger, $em);
             $em->flush();
 
@@ -333,7 +420,7 @@ class IssueController extends AbstractController
     }
 
     #[Route('/issue/{id}/comment', name: 'issue_comment', methods: ['POST'])]
-    public function addComment(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger, IssueActivityRepository $activityRepository): Response
+    public function addComment(int $id, Request $request, EntityManagerInterface $em, SluggerInterface $slugger, IssueActivityRepository $activityRepository, NotificationService $notifier, UserRepository $userRepository, ProjectMemberRepository $projectMembers): Response
     {
         $issue = $em->getRepository(Issue::class)->find($id);
         if (!$issue) {
@@ -350,6 +437,7 @@ class IssueController extends AbstractController
             $comment->setAuthor($this->getUser());
             $comment->setIssue($issue);
             $comment->setCreatedAt(new \DateTime());
+            $this->notifyComment($issue, $comment, $notifier, $userRepository, $projectMembers);
             $em->persist($comment);
             $this->storeAttachments($form->get('attachments')->getData() ?? [], $issue, $comment, $slugger, $em);
             $em->flush();

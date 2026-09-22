@@ -1,0 +1,30 @@
+{# One notification row. Needs: notification. Clicking it marks it read and opens the issue. #}
+{% set n = notification %}
+<a href="{{ path('notification_open', {id: n.id}) }}" class="notif-row{{ n.read ? '' : ' is-unread' }}">
+    {% if n.actor %}
+        {% include 'partials/_avatar.html.twig' with {user: n.actor, size: 'sm'} %}
+    {% elseif n.actorUsername %}
+        <span class="avatar avatar-sm" aria-hidden="true">{{ n.actorUsername|first|upper }}</span>
+    {% else %}
+        <span class="avatar avatar-sm notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
+        </span>
+    {% endif %}
+    <div class="notif-main">
+        <p class="notif-text">
+            {% if n.type == 'assigned' %}
+                <strong>{{ n.actor ? (n.actor.displayName ?: n.actorUsername) : n.actorUsername }}</strong> assigned you to
+            {% elseif n.type == 'mentioned' %}
+                <strong>{{ n.actor ? (n.actor.displayName ?: n.actorUsername) : n.actorUsername }}</strong> mentioned you in
+            {% elseif n.type == 'commented' %}
+                <strong>{{ n.actor ? (n.actor.displayName ?: n.actorUsername) : n.actorUsername }}</strong> commented on
+            {% else %}
+                Due soon:
+            {% endif %}
+            <span class="notif-issue">#{{ n.issue.id }} {{ n.issue.summary }}</span>
+        </p>
+        {% if n.excerpt %}<p class="notif-excerpt">{{ n.excerpt }}</p>{% endif %}
+        <span class="notif-date">{{ n.createdAt|date('M j, Y H:i') }}</span>
+    </div>
+    {% if not n.read %}<span class="notif-dot" aria-hidden="true"></span>{% endif %}
+</a>

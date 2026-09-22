@@ -196,7 +196,7 @@
                                         <span class="comment-author">{{ comment.author.displayName ?: comment.author.userIdentifier }}</span>
                                         <span class="comment-date">{{ comment.createdAt|date('M j, Y H:i') }}</span>
                                     </div>
-                                    <p class="comment-body">{{ comment.content }}</p>
+                                    <p class="comment-body">{{ comment.content|highlight_mentions }}</p>
                                     {% if comment.attachments|length %}
                                     <div class="comment-attachments">
                                         {% include 'partials/_attachments.html.twig' with {attachments: comment.attachments, issue: issue} %}
@@ -214,6 +214,7 @@
                         {{ form_start(commentForm, {action: path('issue_comment', {id: issue.id}), attr: {class: 'styled-form comment-form'}}) }}
                             {{ form_label(commentForm.content, 'Add a comment', {label_attr: {class: 'form-label'}}) }}
                             {{ form_widget(commentForm.content, {attr: {class: 'form-control', rows: 3, placeholder: 'Share an update, a question, or what you found.'}}) }}
+                            <p class="side-note">Type @username to notify someone directly.</p>
                             <div class="field-errors">{{ form_errors(commentForm.content) }}</div>
                             {{ form_widget(commentForm.attachments) }}
                             <p class="side-note">Attach JPEG, PNG, GIF, WebP or PDF files, up to 5&nbsp;MB each.</p>
