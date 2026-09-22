@@ -56,6 +56,8 @@ class IssueRepository extends ServiceEntityRepository
      * @param string        $sort           one of self::SORTS
      * @param Category|null $category       restrict to a single category
      * @param string|null   $severity       restrict to a single severity, one of Issue::SEVERITIES
+     * @param string|null   $search         free-text search; a bare number or "#123" matches the issue
+     *                                      number exactly, anything else matches summary/description/steps
      */
     public function findForDashboard(
         ?User $membershipUser,
@@ -64,6 +66,7 @@ class IssueRepository extends ServiceEntityRepository
         string $sort = self::SORT_NEWEST,
         ?Category $category = null,
         ?string $severity = null,
+        ?string $search = null,
     ): array {
         $qb = $this->createQueryBuilder('i');
 
@@ -88,6 +91,19 @@ class IssueRepository extends ServiceEntityRepository
 
         if ($severity) {
             $qb->andWhere('i.severity = :severity')->setParameter('severity', $severity);
+        }
+
+        $search = trim((string) $search);
+        if ($search !== '') {
+            // "#214", "214" or any other run of digits is treated as an issue number lookup;
+            // anything else searches the issue's own text fields (not comments)
+            $asNumber = ltrim($search, '#');
+            if (ctype_digit($asNumber)) {
+                $qb->andWhere('i.id = :searchId')->setParameter('searchId', (int) $asNumber);
+            } else {
+                $qb->andWhere('LOWER(i.summary) LIKE :searchTerm OR LOWER(i.description) LIKE :searchTerm OR LOWER(i.stepsToReproduce) LIKE :searchTerm')
+                    ->setParameter('searchTerm', '%'.mb_strtolower($search).'%');
+            }
         }
 
         match ($sort) {

@@ -109,6 +109,8 @@ class IssueController extends AbstractController
              $selectedSeverity = null;
          }
 
+         $search = trim((string) $request->query->get('q', ''));
+
          $issueRepository = $entityManager->getRepository(Issue::class);
          $issues = $issueRepository->findForDashboard(
              $isAdmin ? null : $user,
@@ -116,7 +118,8 @@ class IssueController extends AbstractController
              $onlyMine ? $user : null,
              $sort,
              $selectedCategory,
-             $selectedSeverity
+             $selectedSeverity,
+             $search
          );
 
          $allByStatus = array_fill_keys(Issue::STATUSES, []);
@@ -162,6 +165,8 @@ class IssueController extends AbstractController
              'selectedCategoryId' => $selectedCategoryId,
              'severities' => Issue::SEVERITIES,
              'selectedSeverity' => $selectedSeverity,
+             'search' => $search,
+             'searchResultCount' => $search !== '' ? count($issues) : null,
              'openCount' => $openCount,
              'overdueCount' => $overdueCount,
              'unassignedCount' => $unassignedCount,
