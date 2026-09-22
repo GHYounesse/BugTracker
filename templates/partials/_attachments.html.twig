@@ -1,0 +1,31 @@
+{# Grid of attachments: image thumbnails that open full-size in a new tab, file
+   chips for everything else. issue is required (for the delete permission check);
+   attachments defaults to issue.ownAttachments when not passed explicitly. #}
+{% set attachments = attachments|default(issue.ownAttachments) %}
+{% if attachments|length %}
+<div class="attachment-grid">
+    {% for attachment in attachments %}
+    {% set canDelete = is_granted('ISSUE_EDIT', issue) or (attachment.uploadedBy and attachment.uploadedBy.id == app.user.id) %}
+    <div class="attachment-item">
+        {% if attachment.image %}
+        <a class="attachment-thumb" href="{{ asset('uploads/' ~ attachment.filename) }}" target="_blank" rel="noopener">
+            <img src="{{ asset('uploads/' ~ attachment.filename) }}" alt="{{ attachment.originalFilename }}" loading="lazy">
+        </a>
+        {% else %}
+        <a class="attachment-file" href="{{ asset('uploads/' ~ attachment.filename) }}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
+            <span>{{ attachment.originalFilename }}</span>
+        </a>
+        {% endif %}
+        {% if canDelete %}
+        <form method="post" action="{{ path('attachment_delete', {id: attachment.id}) }}" class="attachment-delete-form" onsubmit="return confirm('Remove {{ attachment.originalFilename|e('js') }}?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete-attachment-' ~ attachment.id) }}">
+            <button type="submit" class="attachment-delete" aria-label="Remove {{ attachment.originalFilename }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

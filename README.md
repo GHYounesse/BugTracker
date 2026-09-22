@@ -21,8 +21,8 @@ A self-hosted bug/issue tracker built with Symfony. Report bugs, triage them thr
 
 ## Features
 
-- **Issue lifecycle** — create, view, and edit issues with status (`new` → `confirmed` → `assigned` → `processed` → `closed`), priority, severity, and file attachments
-- **Threaded comments** on each issue
+- **Issue lifecycle** — create, view, and edit issues with status (`new` → `confirmed` → `assigned` → `processed` → `closed`), priority, severity, and multiple file attachments with image previews
+- **Threaded comments** on each issue, which can carry their own attachments
 - **Projects & Categories** — full CRUD for both, used to organize issues (Projects use in-page modals since they're a single-field resource; Categories get dedicated pages)
 - **Dashboard** — issues grouped by status at a glance
 - **Authentication** — registration with password confirmation, login with brute-force throttling (5 attempts), CSRF-protected logout, role-based access control (`ROLE_USER` / `ROLE_ADMIN`)

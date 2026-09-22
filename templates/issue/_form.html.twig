@@ -41,13 +41,14 @@
                 </div>
 
                 <div>
-                    {{ form_label(form.attachment, 'Attachment', {label_attr: {class: 'form-label'}}) }}
-                    {{ form_widget(form.attachment) }}
-                    {% if issue is defined and issue.attachment %}
-                        <p class="side-note">Current file: <a href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">{{ issue.attachment }}</a>. Upload a new one to replace it.</p>
+                    {{ form_label(form.attachments, 'Attachments', {label_attr: {class: 'form-label'}}) }}
+                    {% if issue is defined and issue.ownAttachments|length %}
+                        {% include 'partials/_attachments.html.twig' with {attachments: issue.ownAttachments, issue: issue} %}
+                        <p class="side-note">Add more below, or remove one above.</p>
                     {% endif %}
-                    <p class="side-note">JPEG, PNG, GIF or PDF, up to 5 MB.</p>
-                    <div class="field-errors">{{ form_errors(form.attachment) }}</div>
+                    {{ form_widget(form.attachments) }}
+                    <p class="side-note">JPEG, PNG, GIF, WebP or PDF, up to 5 MB each. You can select more than one file.</p>
+                    <div class="field-errors">{{ form_errors(form.attachments) }}</div>
                 </div>
 
                 <div class="issue-actions">

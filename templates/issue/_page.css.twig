@@ -58,3 +58,76 @@
         line-height: 1.45;
         color: var(--muted);
     }
+
+    /* ---------- attachments: shared by the issue form, the issue page and comments ---------- */
+    .attachment-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 4px 6px 0 0;
+    }
+    .attachment-item { position: relative; }
+    .attachment-thumb {
+        display: block;
+        width: 120px;
+        height: 120px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--surface-2);
+    }
+    .attachment-thumb:hover { border-color: var(--signal); }
+    .attachment-thumb img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .attachment-file {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 240px;
+        height: 120px;
+        padding: 10px 14px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--ink);
+        font-weight: 550;
+        text-decoration: none;
+        text-align: center;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .attachment-file:hover { border-color: var(--signal); }
+    .attachment-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+    .attachment-file svg { flex-shrink: 0; width: 22px; height: 22px; color: var(--muted); }
+    .attachment-delete-form { position: absolute; top: -8px; right: -8px; }
+    .attachment-delete {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--surface);
+        color: var(--muted);
+        cursor: pointer;
+    }
+    .attachment-delete:hover { color: var(--danger); border-color: var(--danger-line); background: var(--danger-bg); }
+    .attachment-delete svg { width: 12px; height: 12px; }
+
+    /* compact variant used inline under a comment */
+    .comment-attachments {
+        margin-top: 10px;
+    }
+    .comment-attachments .attachment-thumb,
+    .comment-attachments .attachment-file {
+        width: 84px;
+        height: 84px;
+    }
+    .comment-attachments .attachment-file svg { width: 18px; height: 18px; }
+    .comment-attachments .attachment-file span { font-size: 0.72rem; }

@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
 class IssueType extends AbstractType
@@ -74,23 +75,28 @@ class IssueType extends AbstractType
                 'class'=>'form-control',
                 'rows'=>6,],
             ])
-            ->add('attachment',FileType::class,[
+            ->add('attachments',FileType::class,[
                 'mapped'=>false,
                 'required'=>false,
+                'multiple'=>true,
                 'constraints'=>[
-                    new File([
-                        'maxSize'=>'5M',
-                        'mimeTypes'=>[
-                            'image/jpeg',
-                            'image/png',
-                            'image/gif',
-                            'application/pdf',
-                        ],
-                        'mimeTypesMessage'=>'Please upload a valid image (JPEG, PNG, GIF) or PDF file.',
+                    new All([
+                        new File([
+                            'maxSize'=>'5M',
+                            'mimeTypes'=>[
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                                'image/webp',
+                                'application/pdf',
+                            ],
+                            'mimeTypesMessage'=>'Please upload a valid image (JPEG, PNG, GIF, WebP) or PDF file.',
+                        ]),
                     ]),
                 ],
                 'attr'=>[
-                'class'=>'form-control',],
+                'class'=>'form-control',
+                'accept'=>'image/jpeg,image/png,image/gif,image/webp,application/pdf',],
             ])
             ->add('project',EntityType::class,['class'=>Project::class,'choice_label'=>'name','attr'=>[
                 'class'=>'form-select'],

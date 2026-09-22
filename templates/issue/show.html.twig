@@ -55,32 +55,6 @@
     }
     .muted-note { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
-    .attachment-image {
-        display: block;
-        max-width: min(100%, 520px);
-        max-height: 340px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        object-fit: contain;
-        background: var(--surface-2);
-    }
-    .attachment-file {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        max-width: 100%;
-        padding: 10px 14px;
-        background: var(--surface-2);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        color: var(--ink);
-        font-weight: 550;
-        text-decoration: none;
-    }
-    .attachment-file:hover { border-color: var(--signal); }
-    .attachment-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .attachment-file svg { flex-shrink: 0; width: 18px; height: 18px; color: var(--muted); }
-
     .facts { margin: 0; }
     .fact {
         display: flex;
@@ -152,13 +126,13 @@
         line-height: 1.5;
         resize: vertical;
     }
+    .comment-form .form-control[type="file"] { margin-top: 10px; }
     .comment-form .btn-brand { margin-top: 12px; }
 {% endblock %}
 
 {% block body %}
     {% set today = date() %}
     {% set isOverdue = issue.dueDate and issue.dueDate < today and issue.status != 'closed' %}
-    {% set image_types = ['jpg', 'jpeg', 'png', 'gif'] %}
 
     <div class="issue-form">
         <a href="{{ path('app_home') }}" class="back-link">Back to dashboard</a>
@@ -200,20 +174,10 @@
                     </div>
                     {% endif %}
 
-                    {% if issue.attachment %}
-                    {% set ext = issue.attachment|split('.')|last|lower %}
+                    {% if issue.ownAttachments|length %}
                     <div class="doc-section">
-                        <h2>Attachment</h2>
-                        {% if ext in image_types %}
-                            <a href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">
-                                <img class="attachment-image" src="{{ asset('uploads/' ~ issue.attachment) }}" alt="Attachment: {{ issue.attachment }}">
-                            </a>
-                        {% else %}
-                            <a class="attachment-file" href="{{ asset('uploads/' ~ issue.attachment) }}" target="_blank" rel="noopener">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
-                                <span>{{ issue.attachment }}</span>
-                            </a>
-                        {% endif %}
+                        <h2>Attachments ({{ issue.ownAttachments|length }})</h2>
+                        {% include 'partials/_attachments.html.twig' with {attachments: issue.ownAttachments, issue: issue} %}
                     </div>
                     {% endif %}
                 </div>
@@ -233,6 +197,11 @@
                                         <span class="comment-date">{{ comment.createdAt|date('M j, Y H:i') }}</span>
                                     </div>
                                     <p class="comment-body">{{ comment.content }}</p>
+                                    {% if comment.attachments|length %}
+                                    <div class="comment-attachments">
+                                        {% include 'partials/_attachments.html.twig' with {attachments: comment.attachments, issue: issue} %}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% else %}
@@ -246,6 +215,9 @@
                             {{ form_label(commentForm.content, 'Add a comment', {label_attr: {class: 'form-label'}}) }}
                             {{ form_widget(commentForm.content, {attr: {class: 'form-control', rows: 3, placeholder: 'Share an update, a question, or what you found.'}}) }}
                             <div class="field-errors">{{ form_errors(commentForm.content) }}</div>
+                            {{ form_widget(commentForm.attachments) }}
+                            <p class="side-note">Attach JPEG, PNG, GIF, WebP or PDF files, up to 5&nbsp;MB each.</p>
+                            <div class="field-errors">{{ form_errors(commentForm.attachments) }}</div>
                             <button type="submit" class="btn-brand">Post comment</button>
                         {{ form_end(commentForm) }}
                     </div>

@@ -96,10 +96,6 @@ class Issue
     private ?string $description = null;
 
     #[Groups(['issue:list', 'issue:item'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $attachment = null;
-
-    #[Groups(['issue:list', 'issue:item'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
@@ -117,12 +113,17 @@ class Issue
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: IssueActivity::class)]
     private Collection $activities;
 
+    /** Every attachment on this issue, including ones posted with a comment. */
+    #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Attachment::class, orphanRemoval: true)]
+    private Collection $attachments;
+
     #[ORM\ManyToMany(targetEntity: self::class)]
     private Collection $relations;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->attachments = new ArrayCollection();
         $this->activities = new ArrayCollection();
         $this->relations = new ArrayCollection();
     }
@@ -288,18 +289,6 @@ class Issue
         return $this;
     }
 
-    public function getAttachment(): ?string
-    {
-        return $this->attachment;
-    }
-
-    public function setAttachment(?string $attachment): self
-    {
-        $this->attachment = $attachment;
-
-        return $this;
-    }
-
     public function getDueDate(): ?\DateTimeInterface
     {
         return $this->dueDate;
@@ -371,6 +360,35 @@ class Issue
     public function getActivities(): Collection
     {
         return $this->activities;
+    }
+
+    /**
+     * @return Collection<int, Attachment>
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(Attachment $attachment): self
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+            $attachment->setIssue($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Attachments posted directly on the issue (not alongside a comment), for the
+     * "Attachments" section at the top of the issue page.
+     *
+     * @return Collection<int, Attachment>
+     */
+    public function getOwnAttachments(): Collection
+    {
+        return $this->attachments->filter(fn (Attachment $a) => $a->getComment() === null);
     }
 
     /**
