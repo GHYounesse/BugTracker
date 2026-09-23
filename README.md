@@ -9,15 +9,17 @@ A self-hosted bug/issue tracker built with Symfony. Report bugs, triage them thr
 
 ## Screenshots
 
-> Drop PNGs into `docs/screenshots/` with the filenames below and they'll show up here automatically — nothing else to change.
+### Login & Dashboard
 
 | Login | Dashboard |
 |---|---|
-| `docs/screenshots/login.png` | `docs/screenshots/dashboard.png` |
+| ![Login](docs/screenshots/login.PNG) | ![Dashboard](docs/screenshots/dashboard.PNG) |
 
-| Issue detail | Categories |
+### Issue Management
+
+| Issue Detail | User Management |
 |---|---|
-| `docs/screenshots/issue-detail.png` | `docs/screenshots/categories.png` |
+| ![Issue Detail](docs/screenshots/issue-detail.PNG) | ![User Management](docs/screenshots/user-management.PNG) |
 
 ## Features
 
